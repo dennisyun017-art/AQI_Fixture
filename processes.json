@@ -1,0 +1,20 @@
+{
+  "torque": {
+    "label": "토크 측정",
+    "icon": "🔧",
+    "enabled": true,
+    "description": "Point 순서대로 측정 → OK/NG 판정"
+  },
+  "leak": {
+    "label": "Leak Check",
+    "icon": "💨",
+    "enabled": true,
+    "description": "기준값 표시 → 수동 입력 → PASS/FAIL 판정"
+  },
+  "photo": {
+    "label": "사진 증빙",
+    "icon": "📷",
+    "enabled": true,
+    "description": "카메라/파일 업로드"
+  }
+}

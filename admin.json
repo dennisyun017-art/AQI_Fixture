@@ -1,0 +1,8 @@
+{
+  "_설명": "관리자 계정 목록. 비밀번호는 평문 저장이므로 GitHub Private 저장소에서만 사용하세요.",
+  "admin": {
+    "password": "psk1234",
+    "name": "시스템 관리자",
+    "role": "admin"
+  }
+}
