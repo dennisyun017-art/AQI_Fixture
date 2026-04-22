@@ -1,1 +1,23 @@
-
+{
+  "ECOLITE": {
+    "module": [
+      "EFEM",
+      "TM",
+      "PM1",
+      "PM2",
+      "PM3",
+      "SU"
+    ]
+  },
+  "GENEVA": {
+    "module": [
+      "EFEM",
+      "PM",
+      "Station1",
+      "Station2",
+      "Station3",
+      "Station4",
+      "Station5"
+    ]
+  }
+}
