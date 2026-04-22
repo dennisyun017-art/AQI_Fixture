@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AQI Fixture System</title>
+<style>
+/*
+============================================
+파일명  : 20260422_AQI_Fixture_v1.2.html
+작성일  : 2026-04-22
+작성자  : Dennis
+버전    : v1.4
+--------------------------------------------
+개정이력
+v1.0  2026-04-22  최초 작성 (화면1 로그인 + 화면2 세션시작)
+v1.1  2026-04-22  Supabase URL/KEY 적용
+v1.2  2026-04-22  하드코딩 제거 → config 파일 기반으로 변경
+v1.3  2026-04-22  CONFIG_KEYS 도입 → JSON 키 변경 시 HTML 수정 불필요
+v1.4  2026-04-22  화면3 공정 선택 메뉴 추가 (workflow.json 기반)
+============================================
+*/
+
+/* ===== 설정 영역 - 여기만 수정하세요 ===== */
+:root {
+  --primary:  #1A3A5C;
+  --accent:   #E8A020;
+  --bg:       #F0F3F7;
+  --surface:  #FFFFFF;
+  --text:     #1A2535;
+  --text-sub: #5A6A7E;
+  --border:   #D0D8E4;
+  --ok:       #1E8C45;
+  --ng:       #C0392B;
+  --radius:   10px;
+}
+/* ========================================= */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── 공통 헤더 ── */
+.app-header {
+  background: var(--primary);
+  color: #fff;
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.app-header .logo { font-size: 18px; font-weight: 700; letter-spacing: 1px; }
+.app-header .logo span { color: var(--accent); }
+.session-info { font-size: 12px; color: rgba(255,255,255,0.75); text-align: right; display: none; }
+
+/* ── 화면 ── */
+.screen { display: none; max-width: 560px; margin: 32px auto; padding: 0 16px 80px; }
+.screen.active { display: block; }
+
+/* ── 카드 ── */
+.card { background: var(--surface); border-radius: var(--radius); padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 16px; }
+.card-title { font-size: 13px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--accent); display: inline-block; }
+
+/* ── 로그인 히어로 ── */
+.login-hero { text-align: center; padding: 40px 28px 28px; }
+.login-hero .badge { display: inline-block; background: var(--primary); color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: 2px; padding: 4px 12px; border-radius: 20px; margin-bottom: 12px; }
+.login-hero h1 { font-size: 26px; font-weight: 800; color: var(--primary); margin-bottom: 6px; }
+.login-hero p { font-size: 13px; color: var(--text-sub); }
+
+/* ── 폼 ── */
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-sub); margin-bottom: 6px; letter-spacing: 0.5px; }
+.form-group label .required { color: var(--ng); margin-left: 2px; }
+.form-control {
+  width: 100%; height: 44px; border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 0 14px; font-size: 15px; color: var(--text); background: #fff;
+  transition: border-color 0.2s; appearance: none;
+}
+.form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,58,92,0.1); }
+.form-control:disabled { background: #F5F7FA; color: var(--text-sub); cursor: not-allowed; }
+select.form-control {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A6A7E' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer;
+}
+
+/* ── 버튼 ── */
+.btn { width: 100%; height: 50px; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: #14304f; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,58,92,0.3); }
+.btn-accent { background: var(--accent); color: var(--primary); }
+.btn-accent:hover { background: #d4911c; transform: translateY(-1px); }
+.btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
+.btn-outline:hover { background: var(--primary); color: #fff; }
+
+/* ── 세그먼트 ── */
+.segment-group { display: flex; gap: 8px; }
+.segment-btn { flex: 1; height: 44px; border: 1.5px solid var(--border); border-radius: 8px; background: #fff; color: var(--text-sub); font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.segment-btn.active { border-color: var(--primary); background: var(--primary); color: #fff; }
+
+/* ── 정보 박스 ── */
+.info-box { background: #EEF3F9; border-left: 4px solid var(--primary); border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 16px; }
+.info-box .info-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+.info-box .info-row:last-child { margin-bottom: 0; }
+.info-box .info-label { color: var(--text-sub); }
+.info-box .info-value { font-weight: 700; color: var(--primary); }
+
+/* ── 로딩 오버레이 ── */
+.loading-overlay {
+  position: fixed; inset: 0; background: rgba(255,255,255,0.85);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 999; gap: 16px;
+}
+.loading-overlay.hidden { display: none; }
+.spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; }
+.loading-text { font-size: 14px; color: var(--text-sub); font-weight: 600; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── 토스트 ── */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: #fff; padding: 12px 24px; border-radius: 24px; font-size: 14px; font-weight: 600; z-index: 998; transition: transform 0.3s ease; white-space: nowrap; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.ok { background: var(--ok); }
+.toast.ng { background: var(--ng); }
+
+/* ── 에러 메시지 ── */
+.error-msg { background: #FDF0EF; border: 1px solid var(--ng); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: var(--ng); margin-bottom: 16px; display: none; }
+.error-msg.show { display: block; }
+
+/* ── 스텝 표시 ── */
+.step-indicator { display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
+.step { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.step-circle { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--border); background: #fff; color: var(--text-sub); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.step.active .step-circle { background: var(--primary); border-color: var(--primary); color: #fff; }
+.step.done .step-circle { background: var(--ok); border-color: var(--ok); color: #fff; }
+.step-label { font-size: 10px; color: var(--text-sub); white-space: nowrap; }
+.step.active .step-label { color: var(--primary); font-weight: 700; }
+.step-line { width: 36px; height: 2px; background: var(--border); margin-bottom: 16px; }
+.step-line.done { background: var(--ok); }
+
+.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+/* ── 공정 카드 (화면3) ── */
+.process-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.process-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  color: var(--text);
+}
+.process-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(26,58,92,0.12);
+}
+.process-card.done {
+  border-color: var(--ok);
+  background: #F0FAF4;
+}
+.process-card.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.process-card-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.process-icon {
+  font-size: 28px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  border-radius: 10px;
+}
+.process-card.done .process-icon {
+  background: #D4EDDA;
+}
+.process-label {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+.process-desc {
+  font-size: 12px;
+  color: var(--text-sub);
+  margin-top: 2px;
+}
+.process-status {
+  font-size: 22px;
+}
+.process-arrow {
+  color: var(--text-sub);
+  font-size: 18px;
+}
+/* 완료 배지 */
+.done-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--ok);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 8px;
+}
+/* WO 요약 */
+.wo-summary {
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.wo-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.wo-summary-item .label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.wo-summary-item .value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+.wo-summary-item .value.accent { color: var(--accent); }
+
+
+</style>
+</head>
+<body>
+
+<!-- 로딩 오버레이 -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">설정 불러오는 중...</div>
+</div>
+
+<!-- 헤더 -->
+<header class="app-header">
+  <div class="logo">AQI <span>FIXTURE</span></div>
+  <div class="session-info" id="sessionInfo">
+    <div id="headerFixture"></div>
+    <div id="headerWorker"></div>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════
+     화면 1: 로그인
+════════════════════════════════════ -->
+<div class="screen active" id="screen-login">
+
+  <div class="card login-hero">
+    <div class="badge">PSK · AQI FIXTURE SYSTEM</div>
+    <h1>작업 시작</h1>
+    <p>Fixture ID와 작업자 정보를 선택하세요</p>
+  </div>
+
+  <div class="error-msg" id="loginError"></div>
+
+  <div class="card">
+    <span class="card-title">로그인 정보</span>
+
+    <div class="form-group">
+      <label>Fixture ID <span class="required">*</span></label>
+      <select class="form-control" id="fixtureId">
+        <option value="">-- Fixture 선택 --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>협력사 <span class="required">*</span></label>
+      <select class="form-control" id="companyCode" onchange="onCompanyChange()">
+        <option value="">-- 협력사 선택 --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>작업자 <span class="required">*</span></label>
+      <select class="form-control" id="workerName" disabled>
+        <option value="">-- 협력사 먼저 선택 --</option>
+      </select>
+    </div>
+
+    <hr class="divider">
+    <button class="btn btn-primary" onclick="doLogin()">작업 시작하기 →</button>
+  </div>
+
+</div>
+
+
+<!-- ════════════════════════════════════
+     화면 2: 세션 시작
+════════════════════════════════════ -->
+<div class="screen" id="screen-session">
+
+  <div class="step-indicator">
+    <div class="step done"><div class="step-circle">✓</div><div class="step-label">로그인</div></div>
+    <div class="step-line done"></div>
+    <div class="step active"><div class="step-circle">2</div><div class="step-label">작업정보</div></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-circle">3</div><div class="step-label">토크측정</div></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-circle">4</div><div class="step-label">Leak Check</div></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-circle">5</div><div class="step-label">사진/완료</div></div>
+  </div>
+
+  <div class="info-box" id="loginSummary"></div>
+  <div class="error-msg" id="sessionError"></div>
+
+  <div class="card">
+    <span class="card-title">작업 정보 입력</span>
+
+    <div class="form-group">
+      <label>모델 <span class="required">*</span></label>
+      <select class="form-control" id="modelName" onchange="onModelChange()">
+        <option value="">-- 모델 선택 --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>WO 번호 <span class="required">*</span></label>
+      <input type="text" class="form-control" id="woNumber" placeholder="예: WO-2026-001" maxlength="30">
+    </div>
+
+    <div class="form-group">
+      <label>Module <span class="required">*</span></label>
+      <input type="text" class="form-control" id="moduleName" placeholder="Module 번호 입력" maxlength="30">
+    </div>
+
+    <div class="form-group">
+      <label>고객사</label>
+      <input type="text" class="form-control" id="customerName" placeholder="고객사명 (선택)" maxlength="30">
+    </div>
+
+    <hr class="divider">
+
+    <div class="form-group">
+      <label>Module <span class="required">*</span></label>
+      <select class="form-control" id="stationSelect" disabled>
+        <option value="">-- 모델 먼저 선택 --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>점검 차수 <span class="required">*</span></label>
+      <div class="segment-group">
+        <button class="segment-btn" id="btn1cha" onclick="selectCheckType('1차')">1차 점검</button>
+        <button class="segment-btn" id="btn2cha" onclick="selectCheckType('2차')">2차 점검</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="display:flex; gap:10px;">
+    <button class="btn btn-outline" style="flex:1" onclick="goScreen('login')">← 뒤로</button>
+    <button class="btn btn-accent" style="flex:2" onclick="startSession()">측정 시작 →</button>
+  </div>
+
+</div>
+
+
+<!-- ════════════════════════════════════════
+     화면 3: 공정 선택 메뉴
+════════════════════════════════════════ -->
+<div class="screen" id="screen-process">
+
+  <!-- 스텝 표시 -->
+  <div class="step-indicator">
+    <div class="step done"><div class="step-circle">✓</div><div class="step-label">로그인</div></div>
+    <div class="step-line done"></div>
+    <div class="step done"><div class="step-circle">✓</div><div class="step-label">작업정보</div></div>
+    <div class="step-line done"></div>
+    <div class="step active"><div class="step-circle">3</div><div class="step-label">공정선택</div></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-circle">4</div><div class="step-label">완료확인</div></div>
+  </div>
+
+  <!-- WO 요약 -->
+  <div class="wo-summary" id="woSummary"></div>
+
+  <!-- 공정 카드 목록 -->
+  <div class="card">
+    <span class="card-title">공정 선택</span>
+    <p style="font-size:13px;color:var(--text-sub);margin-bottom:16px;">
+      공정을 선택하여 측정을 진행하세요. 완료된 공정은 ✅로 표시됩니다.
+    </p>
+    <div class="process-grid" id="processGrid">
+      <!-- workflow.json + processes.json 기반으로 동적 생성 -->
+    </div>
+  </div>
+
+  <!-- 하단 버튼 -->
+  <div style="display:flex; gap:10px;">
+    <button class="btn btn-outline" style="flex:1" onclick="goScreen('session')">← 뒤로</button>
+    <button class="btn btn-primary" style="flex:2" onclick="goScreen('complete')">완료 확인 →</button>
+  </div>
+
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== 설정 영역 - 여기만 수정하세요 ===== */
+const CONFIG = {
+  SUPABASE_URL : 'https://snokdamzbxavdcyqnfin.supabase.co',
+  SUPABASE_KEY : 'sb_publishable_LgN_qLBUbq_1wmTaNzrseQ_fUjdOqka',
+
+  // config 파일 경로 (같은 폴더에 config/ 폴더가 있어야 함)
+  CONFIG_BASE  : './config',
+};
+/* ========================================= */
+
+// 앱 상태
+const STATE = {
+  fixtureId: '', companyCode: '', workerName: '',
+  model: '', wo: '', module: '', customer: '',
+  stationName: '', checkType: '', sessionId: '',
+  completedProcesses: [],  // 완료된 공정 목록
+};
+
+// config 데이터 (파일에서 로드)
+let CFG = { companies: {}, fixtures: [], models: {}, processes: {}, workflow: {} };
+
+// ===== JSON 키 매핑 - 여기만 수정하면 HTML 수정 불필요 =====
+// JSON 파일 구조가 바뀌면 아래 키 이름만 변경하세요.
+const CONFIG_KEYS = {
+  fixtures : { list    : 'list'    },  // fixtures.json  → 배열 키
+  company  : { name    : 'name',       // companies.json → 회사명 키
+               workers : 'workers' },  // companies.json → 작업자 배열 키
+  model    : { items   : 'module'  },  // models.json    → 목록 키
+};
+// ===========================================================
+
+// ── 앱 초기화: config 파일 로드 ─────────────
+async function initApp() {
+  showLoading(true);
+  try {
+    const [companies, fixtures, models, processes, workflow] = await Promise.all([
+      fetchConfig('companies.json'),
+      fetchConfig('fixtures.json'),
+      fetchConfig('models.json'),
+      fetchConfig('processes.json'),
+      fetchConfig('workflow.json'),
+    ]);
+    CFG.companies = companies;
+    CFG.fixtures  = fixtures[CONFIG_KEYS.fixtures.list] || [];
+    CFG.models    = models;
+    CFG.processes = processes;
+    CFG.workflow  = workflow;
+    buildLoginDropdowns();
+    buildModelDropdown();
+  } catch (e) {
+    console.error('config 로드 실패:', e);
+    showError('loginError', '⚠️ 설정 파일을 불러오지 못했습니다. 페이지를 새로고침 해주세요.');
+  } finally {
+    showLoading(false);
+  }
+}
+
+// config 파일 fetch
+async function fetchConfig(filename) {
+  const res = await fetch(`${CONFIG.CONFIG_BASE}/${filename}`);
+  if (!res.ok) throw new Error(`${filename} 로드 실패`);
+  return res.json();
+}
+
+// ── 드롭다운 구성 ────────────────────────────
+
+function buildLoginDropdowns() {
+  // Fixture 목록 — CONFIG_KEYS.fixtures.list 키로 읽음
+  const fxSel = document.getElementById('fixtureId');
+  CFG.fixtures.forEach(fx => {
+    fxSel.innerHTML += `<option value="${fx}">${fx}</option>`;
+  });
+
+  // 협력사 목록 — CONFIG_KEYS.company.name 키로 읽음
+  const coSel = document.getElementById('companyCode');
+  Object.entries(CFG.companies).forEach(([code, info]) => {
+    const companyName = info[CONFIG_KEYS.company.name] || code;
+    coSel.innerHTML += `<option value="${code}">${companyName} (${code})</option>`;
+  });
+}
+
+function buildModelDropdown() {
+  const modSel = document.getElementById('modelName');
+  Object.keys(CFG.models).forEach(model => {
+    modSel.innerHTML += `<option value="${model}">${model}</option>`;
+  });
+}
+
+// ── 협력사 선택 시 작업자 목록 업데이트 ─────
+function onCompanyChange() {
+  const code    = document.getElementById('companyCode').value;
+  const wrkSel  = document.getElementById('workerName');
+  wrkSel.innerHTML = '<option value="">-- 작업자 선택 --</option>';
+
+  if (code && CFG.companies[code]) {
+    const workers = CFG.companies[code][CONFIG_KEYS.company.workers] || [];
+    workers.forEach(w => {
+      wrkSel.innerHTML += `<option value="${w}">${w}</option>`;
+    });
+    wrkSel.disabled = false;
+  } else {
+    wrkSel.innerHTML = '<option value="">-- 협력사 먼저 선택 --</option>';
+    wrkSel.disabled = true;
+  }
+}
+
+// ── 모델 선택 시 Module 목록 업데이트 ───────
+// ※ models.json의 "module" 키만 읽습니다.
+//    모델 추가/수정은 models.json만 편집하면 됩니다. HTML 수정 불필요.
+function onModelChange() {
+  const model = document.getElementById('modelName').value;
+  const stSel = document.getElementById('stationSelect');
+  stSel.innerHTML = '<option value="">-- Module 선택 --</option>';
+
+  const itemKey = CONFIG_KEYS.model.items;
+  if (model && CFG.models[model]?.[itemKey]?.length) {
+    CFG.models[model][itemKey].forEach(item => {
+      stSel.innerHTML += `<option value="${item}">${item}</option>`;
+    });
+    stSel.disabled = false;
+  } else {
+    stSel.innerHTML = '<option value="">-- 모델 먼저 선택 --</option>';
+    stSel.disabled = true;
+  }
+}
+
+// ── 로그인 ───────────────────────────────────
+function doLogin() {
+  const fixtureId   = document.getElementById('fixtureId').value;
+  const companyCode = document.getElementById('companyCode').value;
+  const workerName  = document.getElementById('workerName').value;
+
+  hideError('loginError');
+  if (!fixtureId)   { showError('loginError', 'Fixture ID를 선택해 주세요.'); return; }
+  if (!companyCode) { showError('loginError', '협력사를 선택해 주세요.'); return; }
+  if (!workerName)  { showError('loginError', '작업자를 선택해 주세요.'); return; }
+
+  STATE.fixtureId   = fixtureId;
+  STATE.companyCode = companyCode;
+  STATE.workerName  = workerName;
+
+  // 헤더 업데이트
+  document.getElementById('headerFixture').textContent = fixtureId;
+  document.getElementById('headerWorker').textContent  = CFG.companies[companyCode]?.[CONFIG_KEYS.company.name] + ' · ' + workerName;
+  document.getElementById('sessionInfo').style.display = 'block';
+
+  // 로그인 요약
+  document.getElementById('loginSummary').innerHTML = `
+    <div class="info-row"><span class="info-label">Fixture</span><span class="info-value">${fixtureId}</span></div>
+    <div class="info-row"><span class="info-label">협력사</span><span class="info-value">${CFG.companies[companyCode]?.[CONFIG_KEYS.company.name]}</span></div>
+    <div class="info-row"><span class="info-label">작업자</span><span class="info-value">${workerName}</span></div>
+  `;
+
+  goScreen('session');
+  showToast('로그인 완료 ✓', 'ok');
+}
+
+// ── 차수 선택 ────────────────────────────────
+function selectCheckType(type) {
+  STATE.checkType = type;
+  document.getElementById('btn1cha').classList.toggle('active', type === '1차');
+  document.getElementById('btn2cha').classList.toggle('active', type === '2차');
+}
+
+// ── 세션 시작 ────────────────────────────────
+async function startSession() {
+  const model    = document.getElementById('modelName').value;
+  const wo       = document.getElementById('woNumber').value.trim();
+  const module   = document.getElementById('moduleName').value.trim();
+  const customer = document.getElementById('customerName').value.trim();
+  const station  = document.getElementById('stationSelect').value;
+
+  hideError('sessionError');
+  if (!model)           { showError('sessionError', '모델을 선택해 주세요.'); return; }
+  if (!wo)              { showError('sessionError', 'WO 번호를 입력해 주세요.'); return; }
+  if (!module)          { showError('sessionError', 'Module을 입력해 주세요.'); return; }
+  if (!station)         { showError('sessionError', 'Station을 선택해 주세요.'); return; }
+  if (!STATE.checkType) { showError('sessionError', '점검 차수를 선택해 주세요.'); return; }
+
+  STATE.model = model; STATE.wo = wo;
+  STATE.module = module; STATE.customer = customer;
+  STATE.stationName = station;
+
+  // 세션 ID 생성
+  const now = new Date();
+  const d = now.toISOString().slice(0,10).replace(/-/g,'');
+  const t = now.toTimeString().slice(0,8).replace(/:/g,'');
+  STATE.sessionId = `AQI-${d}-${t}-${STATE.fixtureId}`;
+
+  showLoading(true, '세션 저장 중...');
+
+  try {
+    const res = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/aqi_sessions`, {
+      method : 'POST',
+      headers: {
+        'Content-Type' : 'application/json',
+        'apikey'       : CONFIG.SUPABASE_KEY,
+        'Authorization': 'Bearer ' + CONFIG.SUPABASE_KEY,
+        'Prefer'       : 'return=minimal',
+      },
+      body: JSON.stringify({
+        id          : STATE.sessionId,
+        fixture_id  : STATE.fixtureId,
+        company_code: STATE.companyCode,
+        worker_name : STATE.workerName,
+        wo          : STATE.wo,
+        model       : STATE.model,
+        customer    : STATE.customer,
+        check_type  : STATE.checkType,
+        completed   : false,
+      }),
+    });
+    if (res.ok) {
+      showToast('세션 생성 완료 ✓', 'ok');
+    } else {
+      showToast('⚠️ DB 저장 실패 — 로컬 진행', '', 3000);
+    }
+  } catch {
+    showToast('⚠️ DB 미연결 — 로컬 진행', '', 3000);
+  } finally {
+    showLoading(false);
+  }
+
+  // 화면3(공정 선택)으로 이동
+  setTimeout(() => {
+    buildProcessScreen();
+    goScreen('process');
+  }, 600);
+}
+
+// ── 유틸 함수 ────────────────────────────────
+
+function goScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function showToast(msg, type = '', duration = 2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => { t.className = 'toast ' + type; }, duration);
+}
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function hideError(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+function showLoading(show, text = '설정 불러오는 중...') {
+  const el = document.getElementById('loadingOverlay');
+  el.querySelector('.loading-text').textContent = text;
+  el.classList.toggle('hidden', !show);
+}
+
+
+// ── 화면3: 공정 선택 화면 구성 ───────────────
+// workflow.json + processes.json 을 읽어 해당 협력사+모델+Module의 공정 카드를 동적으로 생성
+function buildProcessScreen() {
+
+  // WO 요약 표시
+  document.getElementById('woSummary').innerHTML = `
+    <div class="wo-summary-item">
+      <span class="label">WO</span>
+      <span class="value accent">${STATE.wo}</span>
+    </div>
+    <div class="wo-summary-item">
+      <span class="label">모델</span>
+      <span class="value">${STATE.model}</span>
+    </div>
+    <div class="wo-summary-item">
+      <span class="label">Module</span>
+      <span class="value">${STATE.stationName}</span>
+    </div>
+    <div class="wo-summary-item">
+      <span class="label">차수</span>
+      <span class="value">${STATE.checkType}</span>
+    </div>
+    <div class="wo-summary-item">
+      <span class="label">작업자</span>
+      <span class="value">${STATE.workerName}</span>
+    </div>
+  `;
+
+  // workflow.json 에서 해당 협력사+모델+Module의 공정 목록 읽기
+  const processKeys = CFG.workflow?.[STATE.companyCode]?.[STATE.model]?.[STATE.stationName] || [];
+
+  const grid = document.getElementById('processGrid');
+  grid.innerHTML = '';
+
+  if (processKeys.length === 0) {
+    // workflow.json에 해당 조합이 없을 경우 안내
+    grid.innerHTML = `
+      <div style="text-align:center;padding:32px;color:var(--text-sub);">
+        <div style="font-size:32px;margin-bottom:8px;">⚙️</div>
+        <div style="font-weight:700;margin-bottom:4px;">공정 미정의</div>
+        <div style="font-size:13px;">workflow.json에 해당 조합의 공정을 등록해 주세요.</div>
+        <div style="font-size:12px;margin-top:8px;color:var(--text-sub);">
+          ${STATE.companyCode} → ${STATE.model} → ${STATE.stationName}
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // processes.json 기반으로 카드 생성
+  processKeys.forEach(key => {
+    const proc = CFG.processes?.[key];
+    if (!proc || !proc.enabled) return;
+
+    const isDone  = STATE.completedProcesses.includes(key);
+    const card    = document.createElement('div');
+    card.className = 'process-card' + (isDone ? ' done' : '');
+    card.onclick   = () => enterProcess(key);
+
+    card.innerHTML = `
+      <div class="process-card-left">
+        <div class="process-icon">${proc.icon || '📋'}</div>
+        <div>
+          <div class="process-label">
+            ${proc.label}
+            ${isDone ? '<span class="done-badge">✓ 완료</span>' : ''}
+          </div>
+          <div class="process-desc">${proc.description || ''}</div>
+        </div>
+      </div>
+      <div class="process-arrow">${isDone ? '✅' : '›'}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ── 공정 진입 ─────────────────────────────────
+// 각 공정(토크/Leak/사진) 화면으로 이동
+// 3-A, 3-B, 3-C 화면 개발 후 여기에 연결 예정
+function enterProcess(key) {
+  const proc = CFG.processes?.[key];
+  if (!proc) return;
+
+  // 각 공정 화면 개발 후 아래 주석을 교체하세요
+  // if (key === 'torque') { goScreen('torque'); return; }
+  // if (key === 'leak')   { goScreen('leak');   return; }
+  // if (key === 'photo')  { goScreen('photo');  return; }
+
+  // 임시: 개발 전 안내
+  alert(
+    `[${proc.icon} ${proc.label}] 화면\n\n` +
+    `이 공정은 다음 STEP에서 개발 예정입니다.\n` +
+    `완료 처리 테스트를 위해 임시로 완료 처리합니다.`
+  );
+
+  // 임시 완료 처리 (실제 개발 후 제거)
+  if (!STATE.completedProcesses.includes(key)) {
+    STATE.completedProcesses.push(key);
+  }
+  buildProcessScreen(); // 카드 새로고침
+}
+
+// ── 앱 시작 ──────────────────────────────────
+initApp();
+</script>
+</body>
+</html>
