@@ -1803,32 +1803,46 @@
     }
 
     // 전체 목록 그리기 (헤더 + 필터행 + 데이터행)
+    // ※ data-key 속성 + 이벤트 위임 방식으로 따옴표 충돌 완전 제거
     function drawAdminList() {
       var el = document.getElementById('admin-list');
       if (!DB.length) {
         el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">등록된 사례가 없습니다.</div>';
         return;
       }
-      el.innerHTML =
-        '<div class="admin-list-head">' +
-          '<span onclick="sortBy('id')">' + 'No' + arr('id') + '</span>' +
-          '<span onclick="sortBy('cat')">' + 'Category' + arr('cat') + '</span>' +
-          '<span onclick="sortBy('model')">' + 'Model' + arr('model') + '</span>' +
-          '<span onclick="sortBy('title')">' + 'Title' + arr('title') + '</span>' +
-          '<span onclick="sortBy('vendor')">' + '발생 협력사' + arr('vendor') + '</span>' +
-          '<span onclick="sortBy('grade')">' + '등급' + arr('grade') + '</span>' +
-          '<span onclick="sortBy('status')">' + '상태' + arr('status') + '</span>' +
-        '</div>' +
-        '<div class="admin-filter-row">' +
-          '<input type="text" id="af-no"     placeholder="No"       value="' + adminFilter.no     + '" oninput="onFilterInput('no',this.value)">' +
-          '<input type="text" id="af-cat"    placeholder="Category" value="' + adminFilter.cat    + '" oninput="onFilterInput('cat',this.value)">' +
-          '<input type="text" id="af-model"  placeholder="Model"    value="' + adminFilter.model  + '" oninput="onFilterInput('model',this.value)">' +
-          '<input type="text" id="af-title"  placeholder="Title"    value="' + adminFilter.title  + '" oninput="onFilterInput('title',this.value)">' +
-          '<input type="text" id="af-vendor" placeholder="협력사"  value="' + adminFilter.vendor + '" oninput="onFilterInput('vendor',this.value)">' +
-          '<input type="text" id="af-grade"  placeholder="등급"    value="' + adminFilter.grade  + '" oninput="onFilterInput('grade',this.value)">' +
-          '<input type="text" id="af-status" placeholder="상태"    value="' + adminFilter.status + '" oninput="onFilterInput('status',this.value)">' +
-        '</div>' +
-        '<div id="admin-list-body"></div>';
+
+      var keys     = ['id','cat','model','title','vendor','grade','status'];
+      var labels   = ['No','Category','Model','Title','발생 협력사','등급','상태'];
+      var pholds   = ['No','Category','Model','Title','협력사','등급','상태'];
+      var fvals    = [adminFilter.no,adminFilter.cat,adminFilter.model,
+                      adminFilter.title,adminFilter.vendor,adminFilter.grade,adminFilter.status];
+
+      // 헤더
+      var headHTML = '<div class="admin-list-head">' +
+        keys.map(function(k,i){ return '<span data-sk="'+k+'">'+labels[i]+arr(k)+'</span>'; }).join('') +
+      '</div>';
+
+      // 필터 행
+      var filterHTML = '<div class="admin-filter-row">' +
+        keys.map(function(k,i){
+          return '<input type="text" id="af-'+k+'" data-fk="'+k+'" placeholder="'+pholds[i]+'" value="'+(fvals[i]||'')+'">';
+        }).join('') +
+      '</div>';
+
+      el.innerHTML = headHTML + filterHTML + '<div id="admin-list-body"></div>';
+
+      // 헤더 클릭 → 정렬 (이벤트 위임)
+      el.querySelector('.admin-list-head').addEventListener('click', function(e) {
+        var t = e.target.closest('[data-sk]');
+        if (t) sortBy(t.getAttribute('data-sk'));
+      });
+
+      // 필터 입력 → 디바운스 (이벤트 위임)
+      el.querySelector('.admin-filter-row').addEventListener('input', function(e) {
+        var inp = e.target;
+        if (inp.dataset.fk) onFilterInput(inp.dataset.fk, inp.value);
+      });
+
       renderDataRows();
     }
 
