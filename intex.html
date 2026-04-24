@@ -1,808 +1,1792 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AQI Fixture System</title>
-<style>
-/*
-============================================
-파일명  : 20260422_AQI_Fixture_v1.2.html
-작성일  : 2026-04-22
-작성자  : Dennis
-버전    : v1.4
---------------------------------------------
-개정이력
-v1.0  2026-04-22  최초 작성 (화면1 로그인 + 화면2 세션시작)
-v1.1  2026-04-22  Supabase URL/KEY 적용
-v1.2  2026-04-22  하드코딩 제거 → config 파일 기반으로 변경
-v1.3  2026-04-22  CONFIG_KEYS 도입 → JSON 키 변경 시 HTML 수정 불필요
-v1.4  2026-04-22  화면3 공정 선택 메뉴 추가 (workflow.json 기반)
-============================================
-*/
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>외관 불량 실패 사례 DB</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
 
-/* ===== 설정 영역 - 여기만 수정하세요 ===== */
-:root {
-  --primary:  #1A3A5C;
-  --accent:   #E8A020;
-  --bg:       #F0F3F7;
-  --surface:  #FFFFFF;
-  --text:     #1A2535;
-  --text-sub: #5A6A7E;
-  --border:   #D0D8E4;
-  --ok:       #1E8C45;
-  --ng:       #C0392B;
-  --radius:   10px;
-}
-/* ========================================= */
+    :root {
+      --bg: #fff;
+      --bg2: #f5f5f5;
+      --bg3: #ebebeb;
+      --text: #111;
+      --text2: #555;
+      --text3: #999;
+      --border: #e0e0e0;
+      --border2: #ccc;
+      --green: #0f6e56;
+      --green-bg: #e1f5ee;
+      --red-bg: #fcebeb;
+      --red-txt: #a32d2d;
+      --amber-bg: #faeeda;
+      --amber-txt: #854f0b;
+      --teal-bg: #e1f5ee;
+      --teal-txt: #0f6e56;
+      --blue-bg: #e6f1fb;
+      --blue-txt: #185fa5;
+      --r: 8px;
+      --rl: 12px;
+    }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
+      background: #f0f0f0;
+      color: var(--text);
+      font-size: 14px
+    }
 
-body {
-  font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-}
+    /* 헤더 */
+    .hdr {
+      background: #1a1a1a;
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
 
-/* ── 공통 헤더 ── */
-.app-header {
-  background: var(--primary);
-  color: #fff;
-  padding: 0 24px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-.app-header .logo { font-size: 18px; font-weight: 700; letter-spacing: 1px; }
-.app-header .logo span { color: var(--accent); }
-.session-info { font-size: 12px; color: rgba(255,255,255,0.75); text-align: right; display: none; }
+    .hdr h1 {
+      font-size: 16px;
+      font-weight: 600
+    }
 
-/* ── 화면 ── */
-.screen { display: none; max-width: 560px; margin: 32px auto; padding: 0 16px 80px; }
-.screen.active { display: block; }
+    .hdr-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px
+    }
 
-/* ── 카드 ── */
-.card { background: var(--surface); border-radius: var(--radius); padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 16px; }
-.card-title { font-size: 13px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--accent); display: inline-block; }
+    .badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px
+    }
 
-/* ── 로그인 히어로 ── */
-.login-hero { text-align: center; padding: 40px 28px 28px; }
-.login-hero .badge { display: inline-block; background: var(--primary); color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: 2px; padding: 4px 12px; border-radius: 20px; margin-bottom: 12px; }
-.login-hero h1 { font-size: 26px; font-weight: 800; color: var(--primary); margin-bottom: 6px; }
-.login-hero p { font-size: 13px; color: var(--text-sub); }
+    .badge-gray {
+      background: #333;
+      color: #ccc
+    }
 
-/* ── 폼 ── */
-.form-group { margin-bottom: 16px; }
-.form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-sub); margin-bottom: 6px; letter-spacing: 0.5px; }
-.form-group label .required { color: var(--ng); margin-left: 2px; }
-.form-control {
-  width: 100%; height: 44px; border: 1.5px solid var(--border); border-radius: 8px;
-  padding: 0 14px; font-size: 15px; color: var(--text); background: #fff;
-  transition: border-color 0.2s; appearance: none;
-}
-.form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,58,92,0.1); }
-.form-control:disabled { background: #F5F7FA; color: var(--text-sub); cursor: not-allowed; }
-select.form-control {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A6A7E' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer;
-}
+    .badge-green {
+      background: #2d4a2d;
+      color: #7ec87e;
+      display: none
+    }
 
-/* ── 버튼 ── */
-.btn { width: 100%; height: 50px; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; }
-.btn-primary { background: var(--primary); color: #fff; }
-.btn-primary:hover { background: #14304f; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,58,92,0.3); }
-.btn-accent { background: var(--accent); color: var(--primary); }
-.btn-accent:hover { background: #d4911c; transform: translateY(-1px); }
-.btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
-.btn-outline:hover { background: var(--primary); color: #fff; }
+    .btn-sm {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit
+    }
 
-/* ── 세그먼트 ── */
-.segment-group { display: flex; gap: 8px; }
-.segment-btn { flex: 1; height: 44px; border: 1.5px solid var(--border); border-radius: 8px; background: #fff; color: var(--text-sub); font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-.segment-btn.active { border-color: var(--primary); background: var(--primary); color: #fff; }
+    .btn-login {
+      border: 1px solid #555;
+      background: none;
+      color: #aaa
+    }
 
-/* ── 정보 박스 ── */
-.info-box { background: #EEF3F9; border-left: 4px solid var(--primary); border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 16px; }
-.info-box .info-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
-.info-box .info-row:last-child { margin-bottom: 0; }
-.info-box .info-label { color: var(--text-sub); }
-.info-box .info-value { font-weight: 700; color: var(--primary); }
+    .btn-login:hover {
+      border-color: #999;
+      color: #fff
+    }
 
-/* ── 로딩 오버레이 ── */
-.loading-overlay {
-  position: fixed; inset: 0; background: rgba(255,255,255,0.85);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  z-index: 999; gap: 16px;
-}
-.loading-overlay.hidden { display: none; }
-.spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; }
-.loading-text { font-size: 14px; color: var(--text-sub); font-weight: 600; }
-@keyframes spin { to { transform: rotate(360deg); } }
+    .btn-logout {
+      border: 1px solid #4a6a4a;
+      background: none;
+      color: #7ec87e;
+      display: none
+    }
 
-/* ── 토스트 ── */
-.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: #fff; padding: 12px 24px; border-radius: 24px; font-size: 14px; font-weight: 600; z-index: 998; transition: transform 0.3s ease; white-space: nowrap; }
-.toast.show { transform: translateX(-50%) translateY(0); }
-.toast.ok { background: var(--ok); }
-.toast.ng { background: var(--ng); }
+    .btn-logout:hover {
+      color: #9ee09e
+    }
 
-/* ── 에러 메시지 ── */
-.error-msg { background: #FDF0EF; border: 1px solid var(--ng); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: var(--ng); margin-bottom: 16px; display: none; }
-.error-msg.show { display: block; }
+    .btn-save-file {
+      border: 1px solid #4a6a8a;
+      background: none;
+      color: #7ab0de;
+      display: none
+    }
 
-/* ── 스텝 표시 ── */
-.step-indicator { display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
-.step { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.step-circle { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--border); background: #fff; color: var(--text-sub); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
-.step.active .step-circle { background: var(--primary); border-color: var(--primary); color: #fff; }
-.step.done .step-circle { background: var(--ok); border-color: var(--ok); color: #fff; }
-.step-label { font-size: 10px; color: var(--text-sub); white-space: nowrap; }
-.step.active .step-label { color: var(--primary); font-weight: 700; }
-.step-line { width: 36px; height: 2px; background: var(--border); margin-bottom: 16px; }
-.step-line.done { background: var(--ok); }
+    .btn-save-file:hover {
+      color: #9ecaee
+    }
 
-.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+    /* 탭 */
+    .tab-wrap {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px
+    }
 
-/* ── 공정 카드 (화면3) ── */
-.process-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-.process-card {
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px 22px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
-  color: var(--text);
-}
-.process-card:hover {
-  border-color: var(--primary);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(26,58,92,0.12);
-}
-.process-card.done {
-  border-color: var(--ok);
-  background: #F0FAF4;
-}
-.process-card.disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-.process-card-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.process-icon {
-  font-size: 28px;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg);
-  border-radius: 10px;
-}
-.process-card.done .process-icon {
-  background: #D4EDDA;
-}
-.process-label {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--text);
-}
-.process-desc {
-  font-size: 12px;
-  color: var(--text-sub);
-  margin-top: 2px;
-}
-.process-status {
-  font-size: 22px;
-}
-.process-arrow {
-  color: var(--text-sub);
-  font-size: 18px;
-}
-/* 완료 배지 */
-.done-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--ok);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 10px;
-  margin-left: 8px;
-}
-/* WO 요약 */
-.wo-summary {
-  background: var(--primary);
-  color: #fff;
-  border-radius: var(--radius);
-  padding: 16px 20px;
-  margin-bottom: 16px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.wo-summary-item {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.wo-summary-item .label {
-  font-size: 10px;
-  color: rgba(255,255,255,0.6);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.wo-summary-item .value {
-  font-size: 14px;
-  font-weight: 700;
-  color: #fff;
-}
-.wo-summary-item .value.accent { color: var(--accent); }
+    .tab-bar {
+      display: flex
+    }
 
+    .tab {
+      padding: 12px 20px;
+      font-size: 13px;
+      cursor: pointer;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text2);
+      background: none;
+      font-family: inherit;
+      font-weight: 500
+    }
 
-</style>
+    .tab.on {
+      color: #1a1a1a;
+      border-bottom-color: #1a1a1a
+    }
+
+    .tab-admin {
+      display: none
+    }
+
+    /* 컨텐츠 */
+    .content {
+      padding: 20px 24px;
+      max-width: 1280px;
+      margin: 0 auto
+    }
+
+    .sec {
+      display: none
+    }
+
+    .sec.on {
+      display: block
+    }
+
+    /* 필터 */
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      align-items: center
+    }
+
+    .filter-row input,
+    .filter-row select {
+      font-size: 13px;
+      padding: 7px 10px;
+      border-radius: var(--r);
+      border: 1px solid var(--border2);
+      background: #fff;
+      color: var(--text);
+      font-family: inherit;
+      outline: none
+    }
+
+    .filter-row input:focus,
+    .filter-row select:focus {
+      border-color: #555
+    }
+
+    .filter-row input {
+      flex: 1;
+      min-width: 150px
+    }
+
+    /* 통계 */
+    .stat-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 10px 16px;
+      flex: 1;
+      min-width: 90px
+    }
+
+    .stat-num {
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text2);
+      margin-top: 4px
+    }
+
+    /* 카드 그리드 */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 12px
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--rl);
+      padding: 14px;
+      cursor: pointer;
+      transition: box-shadow .15s, border-color .15s;
+      position: relative
+    }
+
+    .card:hover {
+      border-color: #999;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .08)
+    }
+
+    .card.closed {
+      opacity: .5
+    }
+
+    .card-img {
+      width: 100%;
+      height: 110px;
+      background: var(--bg2);
+      border-radius: var(--r);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      color: var(--text3);
+      font-size: 11px;
+      border: 1px dashed var(--border2);
+      gap: 4px;
+      overflow: hidden
+    }
+
+    .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: var(--r)
+    }
+
+    .tags {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-bottom: 8px
+    }
+
+    .tag {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 600
+    }
+
+    .tag-a {
+      background: var(--red-bg);
+      color: var(--red-txt)
+    }
+
+    .tag-b {
+      background: var(--amber-bg);
+      color: var(--amber-txt)
+    }
+
+    .tag-c {
+      background: var(--teal-bg);
+      color: var(--teal-txt)
+    }
+
+    .tag-n {
+      background: var(--bg2);
+      color: var(--text2)
+    }
+
+    .tag-open {
+      background: var(--blue-bg);
+      color: var(--blue-txt)
+    }
+
+    .tag-close {
+      background: #f1efe8;
+      color: #5f5e5a
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      line-height: 1.4
+    }
+
+    .card-sub {
+      font-size: 12px;
+      color: var(--text2);
+      margin-bottom: 6px
+    }
+
+    .card-meta {
+      font-size: 11px;
+      color: var(--text3)
+    }
+
+    .empty {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text3);
+      font-size: 13px;
+      background: #fff;
+      border-radius: var(--rl);
+      border: 1px solid var(--border)
+    }
+
+    .result-info {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 10px
+    }
+
+    /* 체크리스트 */
+    .cl-prog {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--rl);
+      padding: 14px 16px;
+      margin-bottom: 12px
+    }
+
+    .prog-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text2);
+      margin-bottom: 6px
+    }
+
+    .pbar {
+      height: 8px;
+      background: var(--bg3);
+      border-radius: 4px;
+      overflow: hidden
+    }
+
+    .pfill {
+      height: 100%;
+      background: var(--green);
+      border-radius: 4px;
+      transition: width .3s
+    }
+
+    .ci {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: var(--r);
+      border: 1px solid var(--border);
+      margin-bottom: 8px;
+      background: #fff;
+      cursor: pointer
+    }
+
+    .ci:hover {
+      background: var(--bg2)
+    }
+
+    .ci.done {
+      opacity: .55;
+      background: var(--bg2)
+    }
+
+    .ci input[type=checkbox] {
+      width: 17px;
+      height: 17px;
+      margin-top: 2px;
+      flex-shrink: 0;
+      cursor: pointer;
+      accent-color: var(--green)
+    }
+
+    .ci-body {
+      flex: 1;
+      min-width: 0
+    }
+
+    .ci-top {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 4px;
+      flex-wrap: wrap
+    }
+
+    .ci-title {
+      font-size: 13px;
+      font-weight: 600
+    }
+
+    .ci-check {
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.5
+    }
+
+    .btn-detail {
+      font-size: 11px;
+      padding: 4px 10px;
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      background: #fff;
+      color: var(--text2);
+      cursor: pointer;
+      font-family: inherit;
+      flex-shrink: 0
+    }
+
+    .btn-detail:hover {
+      background: var(--bg2)
+    }
+
+    .sign-box {
+      background: #fff;
+      border: 1px dashed var(--border2);
+      border-radius: var(--rl);
+      padding: 20px;
+      text-align: center;
+      margin-top: 16px
+    }
+
+    .sign-label {
+      font-size: 12px;
+      color: var(--green);
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: block
+    }
+
+    .sign-box p {
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 12px
+    }
+
+    .sign-input {
+      font-size: 13px;
+      padding: 7px 12px;
+      border-radius: var(--r);
+      border: 1px solid var(--border2);
+      font-family: inherit;
+      width: 200px;
+      margin-bottom: 10px;
+      outline: none
+    }
+
+    .btn-submit {
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      border-radius: var(--r);
+      padding: 9px 22px;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600
+    }
+
+    .btn-submit:hover {
+      background: #333
+    }
+
+    .btn-reset {
+      font-size: 12px;
+      padding: 7px 14px;
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      background: #fff;
+      color: var(--text2);
+      cursor: pointer;
+      font-family: inherit
+    }
+
+    .btn-reset:hover {
+      background: var(--bg2)
+    }
+
+    /* 모달 공통 */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .55);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 20px
+    }
+
+    .modal-bg.on {
+      display: flex
+    }
+
+    /* 상세 모달 */
+    .modal {
+      background: #fff;
+      border-radius: var(--rl);
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column
+    }
+
+    .modal-head {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      flex-shrink: 0
+    }
+
+    .modal-head-info {
+      flex: 1
+    }
+
+    .modal-head-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 5px
+    }
+
+    .modal-head-sub {
+      font-size: 12px;
+      color: var(--text2)
+    }
+
+    .btn-close {
+      background: none;
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      padding: 5px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text2);
+      font-family: inherit;
+      flex-shrink: 0
+    }
+
+    .btn-close:hover {
+      background: var(--bg2)
+    }
+
+    .modal-body {
+      padding: 16px 20px;
+      overflow-y: auto;
+      flex: 1
+    }
+
+    .photo-scroll {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 260px;
+      overflow-y: auto;
+      background: var(--bg2);
+      border-radius: var(--r);
+      padding: 8px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border)
+    }
+
+    .photo-scroll::-webkit-scrollbar {
+      width: 4px
+    }
+
+    .photo-scroll::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 2px
+    }
+
+    .photo-item {
+      width: 100%;
+      border-radius: 6px;
+      object-fit: contain;
+      background: #fff;
+      display: block
+    }
+
+    .photo-empty {
+      height: 130px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text3);
+      font-size: 12px;
+      gap: 6px
+    }
+
+    .photo-count {
+      font-size: 11px;
+      color: var(--text3);
+      margin-bottom: 4px;
+      text-align: right
+    }
+
+    .kv {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      align-items: flex-start
+    }
+
+    .kv .k {
+      color: var(--text2);
+      min-width: 82px;
+      flex-shrink: 0;
+      font-weight: 500
+    }
+
+    .kv .v {
+      color: var(--text);
+      line-height: 1.5;
+      flex: 1
+    }
+
+    .kv .v-green {
+      color: var(--green);
+      font-weight: 600;
+      line-height: 1.5;
+      flex: 1
+    }
+
+    .sep {
+      height: 1px;
+      background: var(--border);
+      margin: 10px 0
+    }
+
+    .admin-ctrl {
+      background: #f8f8f6;
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 12px 14px;
+      margin-top: 14px;
+      display: none
+    }
+
+    .admin-ctrl.show {
+      display: block
+    }
+
+    .admin-ctrl-title {
+      font-size: 11px;
+      color: var(--text3);
+      margin-bottom: 8px;
+      font-weight: 600;
+      letter-spacing: .5px
+    }
+
+    .ctrl-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .btn-open {
+      font-size: 12px;
+      padding: 6px 14px;
+      border-radius: var(--r);
+      border: 1px solid #185fa5;
+      background: var(--blue-bg);
+      color: #185fa5;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600
+    }
+
+    .btn-open:hover {
+      background: #d0e5f7
+    }
+
+    .btn-close-st {
+      font-size: 12px;
+      padding: 6px 14px;
+      border-radius: var(--r);
+      border: 1px solid var(--border2);
+      background: var(--bg2);
+      color: var(--text2);
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600
+    }
+
+    .btn-close-st:hover {
+      background: var(--bg3)
+    }
+
+    .btn-edit {
+      font-size: 12px;
+      padding: 6px 14px;
+      border-radius: var(--r);
+      border: 1px solid #854f0b;
+      background: var(--amber-bg);
+      color: #854f0b;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600
+    }
+
+    .btn-edit:hover {
+      background: #f5dfc0
+    }
+
+    .btn-del {
+      font-size: 12px;
+      padding: 6px 14px;
+      border-radius: var(--r);
+      border: 1px solid var(--red-txt);
+      background: var(--red-bg);
+      color: var(--red-txt);
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600
+    }
+
+    .btn-del:hover {
+      background: #f7d0d0
+    }
+
+    /* 관리자 입력 폼 */
+    .admin-wrap {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--rl);
+      padding: 20px;
+      margin-bottom: 16px
+    }
+
+    .admin-wrap h2 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px
+    }
+
+    .form-grid.full {
+      grid-template-columns: 1fr
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px
+    }
+
+    .field label {
+      font-size: 12px;
+      color: var(--text2);
+      font-weight: 500
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      font-size: 13px;
+      padding: 8px 10px;
+      border-radius: var(--r);
+      border: 1px solid var(--border2);
+      background: #fff;
+      color: var(--text);
+      font-family: inherit;
+      outline: none;
+      width: 100%
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: #555
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 70px;
+      line-height: 1.5
+    }
+
+    .photo-upload-area {
+      border: 1.5px dashed var(--border2);
+      border-radius: var(--r);
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .15s;
+      margin-top: 4px
+    }
+
+    .photo-upload-area:hover {
+      border-color: #888
+    }
+
+    .photo-upload-area input[type=file] {
+      display: none
+    }
+
+    .upload-label {
+      font-size: 12px;
+      color: var(--text2);
+      cursor: pointer;
+      display: block
+    }
+
+    .photo-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px
+    }
+
+    .preview-item {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border)
+    }
+
+    .preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .preview-del {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 18px;
+      height: 18px;
+      background: rgba(0, 0, 0, .6);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      font-size: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1
+    }
+
+    .form-btn-row {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border)
+    }
+
+    .btn-primary {
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      border-radius: var(--r);
+      padding: 9px 22px;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600
+    }
+
+    .btn-primary:hover {
+      background: #333
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--text2);
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      padding: 9px 18px;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg2)
+    }
+
+    /* 관리자 목록 */
+    .admin-list {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--rl);
+      overflow: hidden
+    }
+
+    .admin-list-head {
+      display: grid;
+      grid-template-columns: 40px 1fr 90px 80px 70px 80px;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text2);
+      font-weight: 600
+    }
+
+    .admin-list-row {
+      display: grid;
+      grid-template-columns: 40px 1fr 90px 80px 70px 80px;
+      gap: 8px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      align-items: center;
+      cursor: pointer;
+      transition: background .1s
+    }
+
+    .admin-list-row:last-child {
+      border-bottom: none
+    }
+
+    .admin-list-row:hover {
+      background: var(--bg2)
+    }
+
+    .admin-list-row .title {
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .admin-list-row .meta {
+      color: var(--text2)
+    }
+
+    .admin-list-row .act {
+      display: flex;
+      gap: 6px
+    }
+
+    /* 로그인 모달 */
+    .login-modal {
+      background: #fff;
+      border-radius: var(--rl);
+      padding: 28px 32px;
+      width: 300px;
+      text-align: center
+    }
+
+    .login-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px
+    }
+
+    .login-sub {
+      font-size: 12px;
+      color: var(--text2);
+      margin-bottom: 20px
+    }
+
+    .login-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 14px
+    }
+
+    .login-field input {
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: var(--r);
+      border: 1px solid var(--border2);
+      font-family: inherit;
+      outline: none
+    }
+
+    .login-field input:focus {
+      border-color: #555
+    }
+
+    .btn-login-ok {
+      width: 100%;
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      border-radius: var(--r);
+      padding: 10px;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+      margin-bottom: 8px
+    }
+
+    .btn-login-ok:hover {
+      background: #333
+    }
+
+    .btn-login-cancel {
+      width: 100%;
+      background: none;
+      color: var(--text2);
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      padding: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: inherit
+    }
+
+    .login-err {
+      font-size: 12px;
+      color: var(--red-txt);
+      margin-bottom: 10px;
+      display: none
+    }
+
+    @media(max-width:700px) {
+      .content {
+        padding: 14px 12px
+      }
+
+      .grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr
+      }
+
+      .admin-list-head,
+      .admin-list-row {
+        grid-template-columns: 30px 1fr 70px 60px
+      }
+
+      .admin-list-head span:nth-child(n+5),
+      .admin-list-row>*:nth-child(n+5) {
+        display: none
+      }
+    }
+
+    @media(max-width:400px) {
+      .grid {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- 로딩 오버레이 -->
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="spinner"></div>
-  <div class="loading-text">설정 불러오는 중...</div>
-</div>
-
-<!-- 헤더 -->
-<header class="app-header">
-  <div class="logo">AQI <span>FIXTURE</span></div>
-  <div class="session-info" id="sessionInfo">
-    <div id="headerFixture"></div>
-    <div id="headerWorker"></div>
-  </div>
-</header>
-
-<!-- ════════════════════════════════════
-     화면 1: 로그인
-════════════════════════════════════ -->
-<div class="screen active" id="screen-login">
-
-  <div class="card login-hero">
-    <div class="badge">PSK · AQI FIXTURE SYSTEM</div>
-    <h1>작업 시작</h1>
-    <p>Fixture ID와 작업자 정보를 선택하세요</p>
+  <!-- 헤더 -->
+  <div class="hdr">
+    <div>
+      <div style="font-size:11px;color:#888;margin-bottom:2px">PSK Holdings — 제조부문</div>
+      <h1>외관 불량 실패 사례 DB</h1>
+    </div>
+    <span class="badge badge-gray">협력사 조회용</span>
+    <div class="hdr-right">
+      <span id="db-count">총 0건</span>
+      <span class="badge badge-green" id="admin-badge">관리자 모드</span>
+      <button class="btn-sm btn-save-file" id="btn-save-file" onclick="saveAsFile()">💾 파일로 저장</button>
+      <button class="btn-sm btn-login" id="btn-login" onclick="showLogin()">관리자 로그인</button>
+      <button class="btn-sm btn-logout" id="btn-logout" onclick="doLogout()">로그아웃</button>
+    </div>
   </div>
 
-  <div class="error-msg" id="loginError"></div>
-
-  <div class="card">
-    <span class="card-title">로그인 정보</span>
-
-    <div class="form-group">
-      <label>Fixture ID <span class="required">*</span></label>
-      <select class="form-control" id="fixtureId">
-        <option value="">-- Fixture 선택 --</option>
-      </select>
+  <!-- 탭 -->
+  <div class="tab-wrap">
+    <div class="tab-bar">
+      <button class="tab on" onclick="switchTab('search')">검색 / 카드뷰</button>
+      <button class="tab" onclick="switchTab('cl')">작업 전 체크리스트</button>
+      <button class="tab tab-admin" id="tab-admin" onclick="switchTab('admin')">관리자 DB 관리</button>
     </div>
-
-    <div class="form-group">
-      <label>협력사 <span class="required">*</span></label>
-      <select class="form-control" id="companyCode" onchange="onCompanyChange()">
-        <option value="">-- 협력사 선택 --</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>작업자 <span class="required">*</span></label>
-      <select class="form-control" id="workerName" disabled>
-        <option value="">-- 협력사 먼저 선택 --</option>
-      </select>
-    </div>
-
-    <hr class="divider">
-    <button class="btn btn-primary" onclick="doLogin()">작업 시작하기 →</button>
   </div>
 
-</div>
+  <div class="content">
 
-
-<!-- ════════════════════════════════════
-     화면 2: 세션 시작
-════════════════════════════════════ -->
-<div class="screen" id="screen-session">
-
-  <div class="step-indicator">
-    <div class="step done"><div class="step-circle">✓</div><div class="step-label">로그인</div></div>
-    <div class="step-line done"></div>
-    <div class="step active"><div class="step-circle">2</div><div class="step-label">작업정보</div></div>
-    <div class="step-line"></div>
-    <div class="step"><div class="step-circle">3</div><div class="step-label">토크측정</div></div>
-    <div class="step-line"></div>
-    <div class="step"><div class="step-circle">4</div><div class="step-label">Leak Check</div></div>
-    <div class="step-line"></div>
-    <div class="step"><div class="step-circle">5</div><div class="step-label">사진/완료</div></div>
-  </div>
-
-  <div class="info-box" id="loginSummary"></div>
-  <div class="error-msg" id="sessionError"></div>
-
-  <div class="card">
-    <span class="card-title">작업 정보 입력</span>
-
-    <div class="form-group">
-      <label>모델 <span class="required">*</span></label>
-      <select class="form-control" id="modelName" onchange="onModelChange()">
-        <option value="">-- 모델 선택 --</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>WO 번호 <span class="required">*</span></label>
-      <input type="text" class="form-control" id="woNumber" placeholder="예: WO-2026-001" maxlength="30">
-    </div>
-
-    <div class="form-group">
-      <label>Module <span class="required">*</span></label>
-      <input type="text" class="form-control" id="moduleName" placeholder="Module 번호 입력" maxlength="30">
-    </div>
-
-    <div class="form-group">
-      <label>고객사</label>
-      <input type="text" class="form-control" id="customerName" placeholder="고객사명 (선택)" maxlength="30">
-    </div>
-
-    <hr class="divider">
-
-    <div class="form-group">
-      <label>Module <span class="required">*</span></label>
-      <select class="form-control" id="stationSelect" disabled>
-        <option value="">-- 모델 먼저 선택 --</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>점검 차수 <span class="required">*</span></label>
-      <div class="segment-group">
-        <button class="segment-btn" id="btn1cha" onclick="selectCheckType('1차')">1차 점검</button>
-        <button class="segment-btn" id="btn2cha" onclick="selectCheckType('2차')">2차 점검</button>
+    <!-- 검색/카드뷰 -->
+    <div id="sec-search" class="sec on">
+      <div class="stat-row" id="stat-row"></div>
+      <div class="filter-row">
+        <input id="kw" type="text" placeholder="키워드 검색 (부품명, 불량내용...)">
+        <select id="fm">
+          <option value="">전체 모델</option>
+          <option>GENEVA STP300xp</option>
+          <option>ECOLITE3000</option>
+          <option>CVD-3000</option>
+          <option>ALD-200</option>
+          <option>ETCH-500</option>
+        </select>
+        <select id="fcat">
+          <option value="">전체 카테고리</option>
+          <option>배관류</option>
+          <option>가공품</option>
+          <option>체결부품</option>
+          <option>전장부품</option>
+        </select>
+        <select id="ft">
+          <option value="">전체 불량유형</option>
+          <option>치수오차</option>
+          <option>형상불일치</option>
+          <option>센터링</option>
+          <option>표면불량</option>
+        </select>
+        <select id="fg">
+          <option value="">전체 등급</option>
+          <option>A</option>
+          <option>B</option>
+          <option>C</option>
+        </select>
+        <select id="fs">
+          <option value="">전체 상태</option>
+          <option value="Open">Open</option>
+          <option value="Close">Close</option>
+        </select>
       </div>
+      <div class="result-info" id="result-info"></div>
+      <div id="card-grid" class="grid"></div>
     </div>
 
-  </div>
-
-  <div style="display:flex; gap:10px;">
-    <button class="btn btn-outline" style="flex:1" onclick="goScreen('login')">← 뒤로</button>
-    <button class="btn btn-accent" style="flex:2" onclick="startSession()">측정 시작 →</button>
-  </div>
-
-</div>
-
-
-<!-- ════════════════════════════════════════
-     화면 3: 공정 선택 메뉴
-════════════════════════════════════════ -->
-<div class="screen" id="screen-process">
-
-  <!-- 스텝 표시 -->
-  <div class="step-indicator">
-    <div class="step done"><div class="step-circle">✓</div><div class="step-label">로그인</div></div>
-    <div class="step-line done"></div>
-    <div class="step done"><div class="step-circle">✓</div><div class="step-label">작업정보</div></div>
-    <div class="step-line done"></div>
-    <div class="step active"><div class="step-circle">3</div><div class="step-label">공정선택</div></div>
-    <div class="step-line"></div>
-    <div class="step"><div class="step-circle">4</div><div class="step-label">완료확인</div></div>
-  </div>
-
-  <!-- WO 요약 -->
-  <div class="wo-summary" id="woSummary"></div>
-
-  <!-- 공정 카드 목록 -->
-  <div class="card">
-    <span class="card-title">공정 선택</span>
-    <p style="font-size:13px;color:var(--text-sub);margin-bottom:16px;">
-      공정을 선택하여 측정을 진행하세요. 완료된 공정은 ✅로 표시됩니다.
-    </p>
-    <div class="process-grid" id="processGrid">
-      <!-- workflow.json + processes.json 기반으로 동적 생성 -->
-    </div>
-  </div>
-
-  <!-- 하단 버튼 -->
-  <div style="display:flex; gap:10px;">
-    <button class="btn btn-outline" style="flex:1" onclick="goScreen('session')">← 뒤로</button>
-    <button class="btn btn-primary" style="flex:2" onclick="goScreen('complete')">완료 확인 →</button>
-  </div>
-
-</div>
-
-<!-- 토스트 -->
-<div class="toast" id="toast"></div>
-
-<script>
-/* ===== 설정 영역 - 여기만 수정하세요 ===== */
-const CONFIG = {
-  SUPABASE_URL : 'https://snokdamzbxavdcyqnfin.supabase.co',
-  SUPABASE_KEY : 'sb_publishable_LgN_qLBUbq_1wmTaNzrseQ_fUjdOqka',
-
-  // config 파일 경로 (같은 폴더에 config/ 폴더가 있어야 함)
-  CONFIG_BASE  : './config',
-};
-/* ========================================= */
-
-// 앱 상태
-const STATE = {
-  fixtureId: '', companyCode: '', workerName: '',
-  model: '', wo: '', module: '', customer: '',
-  stationName: '', checkType: '', sessionId: '',
-  completedProcesses: [],  // 완료된 공정 목록
-};
-
-// config 데이터 (파일에서 로드)
-let CFG = { companies: {}, fixtures: [], models: {}, processes: {}, workflow: {} };
-
-// ===== JSON 키 매핑 - 여기만 수정하면 HTML 수정 불필요 =====
-// JSON 파일 구조가 바뀌면 아래 키 이름만 변경하세요.
-const CONFIG_KEYS = {
-  fixtures : { list    : 'list'    },  // fixtures.json  → 배열 키
-  company  : { name    : 'name',       // companies.json → 회사명 키
-               workers : 'workers' },  // companies.json → 작업자 배열 키
-  model    : { items   : 'module'  },  // models.json    → 목록 키
-};
-// ===========================================================
-
-// ── 앱 초기화: config 파일 로드 ─────────────
-async function initApp() {
-  showLoading(true);
-  try {
-    const [companies, fixtures, models, processes, workflow] = await Promise.all([
-      fetchConfig('companies.json'),
-      fetchConfig('fixtures.json'),
-      fetchConfig('models.json'),
-      fetchConfig('processes.json'),
-      fetchConfig('workflow.json'),
-    ]);
-    CFG.companies = companies;
-    CFG.fixtures  = fixtures[CONFIG_KEYS.fixtures.list] || [];
-    CFG.models    = models;
-    CFG.processes = processes;
-    CFG.workflow  = workflow;
-    buildLoginDropdowns();
-    buildModelDropdown();
-  } catch (e) {
-    console.error('config 로드 실패:', e);
-    showError('loginError', '⚠️ 설정 파일을 불러오지 못했습니다. 페이지를 새로고침 해주세요.');
-  } finally {
-    showLoading(false);
-  }
-}
-
-// config 파일 fetch
-async function fetchConfig(filename) {
-  const res = await fetch(`${CONFIG.CONFIG_BASE}/${filename}`);
-  if (!res.ok) throw new Error(`${filename} 로드 실패`);
-  return res.json();
-}
-
-// ── 드롭다운 구성 ────────────────────────────
-
-function buildLoginDropdowns() {
-  // Fixture 목록 — CONFIG_KEYS.fixtures.list 키로 읽음
-  const fxSel = document.getElementById('fixtureId');
-  CFG.fixtures.forEach(fx => {
-    fxSel.innerHTML += `<option value="${fx}">${fx}</option>`;
-  });
-
-  // 협력사 목록 — CONFIG_KEYS.company.name 키로 읽음
-  const coSel = document.getElementById('companyCode');
-  Object.entries(CFG.companies).forEach(([code, info]) => {
-    const companyName = info[CONFIG_KEYS.company.name] || code;
-    coSel.innerHTML += `<option value="${code}">${companyName} (${code})</option>`;
-  });
-}
-
-function buildModelDropdown() {
-  const modSel = document.getElementById('modelName');
-  Object.keys(CFG.models).forEach(model => {
-    modSel.innerHTML += `<option value="${model}">${model}</option>`;
-  });
-}
-
-// ── 협력사 선택 시 작업자 목록 업데이트 ─────
-function onCompanyChange() {
-  const code    = document.getElementById('companyCode').value;
-  const wrkSel  = document.getElementById('workerName');
-  wrkSel.innerHTML = '<option value="">-- 작업자 선택 --</option>';
-
-  if (code && CFG.companies[code]) {
-    const workers = CFG.companies[code][CONFIG_KEYS.company.workers] || [];
-    workers.forEach(w => {
-      wrkSel.innerHTML += `<option value="${w}">${w}</option>`;
-    });
-    wrkSel.disabled = false;
-  } else {
-    wrkSel.innerHTML = '<option value="">-- 협력사 먼저 선택 --</option>';
-    wrkSel.disabled = true;
-  }
-}
-
-// ── 모델 선택 시 Module 목록 업데이트 ───────
-// ※ models.json의 "module" 키만 읽습니다.
-//    모델 추가/수정은 models.json만 편집하면 됩니다. HTML 수정 불필요.
-function onModelChange() {
-  const model = document.getElementById('modelName').value;
-  const stSel = document.getElementById('stationSelect');
-  stSel.innerHTML = '<option value="">-- Module 선택 --</option>';
-
-  const itemKey = CONFIG_KEYS.model.items;
-  if (model && CFG.models[model]?.[itemKey]?.length) {
-    CFG.models[model][itemKey].forEach(item => {
-      stSel.innerHTML += `<option value="${item}">${item}</option>`;
-    });
-    stSel.disabled = false;
-  } else {
-    stSel.innerHTML = '<option value="">-- 모델 먼저 선택 --</option>';
-    stSel.disabled = true;
-  }
-}
-
-// ── 로그인 ───────────────────────────────────
-function doLogin() {
-  const fixtureId   = document.getElementById('fixtureId').value;
-  const companyCode = document.getElementById('companyCode').value;
-  const workerName  = document.getElementById('workerName').value;
-
-  hideError('loginError');
-  if (!fixtureId)   { showError('loginError', 'Fixture ID를 선택해 주세요.'); return; }
-  if (!companyCode) { showError('loginError', '협력사를 선택해 주세요.'); return; }
-  if (!workerName)  { showError('loginError', '작업자를 선택해 주세요.'); return; }
-
-  STATE.fixtureId   = fixtureId;
-  STATE.companyCode = companyCode;
-  STATE.workerName  = workerName;
-
-  // 헤더 업데이트
-  document.getElementById('headerFixture').textContent = fixtureId;
-  document.getElementById('headerWorker').textContent  = CFG.companies[companyCode]?.[CONFIG_KEYS.company.name] + ' · ' + workerName;
-  document.getElementById('sessionInfo').style.display = 'block';
-
-  // 로그인 요약
-  document.getElementById('loginSummary').innerHTML = `
-    <div class="info-row"><span class="info-label">Fixture</span><span class="info-value">${fixtureId}</span></div>
-    <div class="info-row"><span class="info-label">협력사</span><span class="info-value">${CFG.companies[companyCode]?.[CONFIG_KEYS.company.name]}</span></div>
-    <div class="info-row"><span class="info-label">작업자</span><span class="info-value">${workerName}</span></div>
-  `;
-
-  goScreen('session');
-  showToast('로그인 완료 ✓', 'ok');
-}
-
-// ── 차수 선택 ────────────────────────────────
-function selectCheckType(type) {
-  STATE.checkType = type;
-  document.getElementById('btn1cha').classList.toggle('active', type === '1차');
-  document.getElementById('btn2cha').classList.toggle('active', type === '2차');
-}
-
-// ── 세션 시작 ────────────────────────────────
-async function startSession() {
-  const model    = document.getElementById('modelName').value;
-  const wo       = document.getElementById('woNumber').value.trim();
-  const module   = document.getElementById('moduleName').value.trim();
-  const customer = document.getElementById('customerName').value.trim();
-  const station  = document.getElementById('stationSelect').value;
-
-  hideError('sessionError');
-  if (!model)           { showError('sessionError', '모델을 선택해 주세요.'); return; }
-  if (!wo)              { showError('sessionError', 'WO 번호를 입력해 주세요.'); return; }
-  if (!module)          { showError('sessionError', 'Module을 입력해 주세요.'); return; }
-  if (!station)         { showError('sessionError', 'Station을 선택해 주세요.'); return; }
-  if (!STATE.checkType) { showError('sessionError', '점검 차수를 선택해 주세요.'); return; }
-
-  STATE.model = model; STATE.wo = wo;
-  STATE.module = module; STATE.customer = customer;
-  STATE.stationName = station;
-
-  // 세션 ID 생성
-  const now = new Date();
-  const d = now.toISOString().slice(0,10).replace(/-/g,'');
-  const t = now.toTimeString().slice(0,8).replace(/:/g,'');
-  STATE.sessionId = `AQI-${d}-${t}-${STATE.fixtureId}`;
-
-  showLoading(true, '세션 저장 중...');
-
-  try {
-    const res = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/aqi_sessions`, {
-      method : 'POST',
-      headers: {
-        'Content-Type' : 'application/json',
-        'apikey'       : CONFIG.SUPABASE_KEY,
-        'Authorization': 'Bearer ' + CONFIG.SUPABASE_KEY,
-        'Prefer'       : 'return=minimal',
-      },
-      body: JSON.stringify({
-        id          : STATE.sessionId,
-        fixture_id  : STATE.fixtureId,
-        company_code: STATE.companyCode,
-        worker_name : STATE.workerName,
-        wo          : STATE.wo,
-        model       : STATE.model,
-        customer    : STATE.customer,
-        check_type  : STATE.checkType,
-        completed   : false,
-      }),
-    });
-    if (res.ok) {
-      showToast('세션 생성 완료 ✓', 'ok');
-    } else {
-      showToast('⚠️ DB 저장 실패 — 로컬 진행', '', 3000);
-    }
-  } catch {
-    showToast('⚠️ DB 미연결 — 로컬 진행', '', 3000);
-  } finally {
-    showLoading(false);
-  }
-
-  // 화면3(공정 선택)으로 이동
-  setTimeout(() => {
-    buildProcessScreen();
-    goScreen('process');
-  }, 600);
-}
-
-// ── 유틸 함수 ────────────────────────────────
-
-function goScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + name).classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-function showToast(msg, type = '', duration = 2500) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast ' + type + ' show';
-  setTimeout(() => { t.className = 'toast ' + type; }, duration);
-}
-
-function showError(id, msg) {
-  const el = document.getElementById(id);
-  el.textContent = msg;
-  el.classList.add('show');
-}
-
-function hideError(id) {
-  document.getElementById(id).classList.remove('show');
-}
-
-function showLoading(show, text = '설정 불러오는 중...') {
-  const el = document.getElementById('loadingOverlay');
-  el.querySelector('.loading-text').textContent = text;
-  el.classList.toggle('hidden', !show);
-}
-
-
-// ── 화면3: 공정 선택 화면 구성 ───────────────
-// workflow.json + processes.json 을 읽어 해당 협력사+모델+Module의 공정 카드를 동적으로 생성
-function buildProcessScreen() {
-
-  // WO 요약 표시
-  document.getElementById('woSummary').innerHTML = `
-    <div class="wo-summary-item">
-      <span class="label">WO</span>
-      <span class="value accent">${STATE.wo}</span>
-    </div>
-    <div class="wo-summary-item">
-      <span class="label">모델</span>
-      <span class="value">${STATE.model}</span>
-    </div>
-    <div class="wo-summary-item">
-      <span class="label">Module</span>
-      <span class="value">${STATE.stationName}</span>
-    </div>
-    <div class="wo-summary-item">
-      <span class="label">차수</span>
-      <span class="value">${STATE.checkType}</span>
-    </div>
-    <div class="wo-summary-item">
-      <span class="label">작업자</span>
-      <span class="value">${STATE.workerName}</span>
-    </div>
-  `;
-
-  // workflow.json 에서 해당 협력사+모델+Module의 공정 목록 읽기
-  const processKeys = CFG.workflow?.[STATE.companyCode]?.[STATE.model]?.[STATE.stationName] || [];
-
-  const grid = document.getElementById('processGrid');
-  grid.innerHTML = '';
-
-  if (processKeys.length === 0) {
-    // workflow.json에 해당 조합이 없을 경우 안내
-    grid.innerHTML = `
-      <div style="text-align:center;padding:32px;color:var(--text-sub);">
-        <div style="font-size:32px;margin-bottom:8px;">⚙️</div>
-        <div style="font-weight:700;margin-bottom:4px;">공정 미정의</div>
-        <div style="font-size:13px;">workflow.json에 해당 조합의 공정을 등록해 주세요.</div>
-        <div style="font-size:12px;margin-top:8px;color:var(--text-sub);">
-          ${STATE.companyCode} → ${STATE.model} → ${STATE.stationName}
+    <!-- 체크리스트 -->
+    <div id="sec-cl" class="sec">
+      <div class="filter-row" style="margin-bottom:12px">
+        <select id="cl-model">
+          <option value="">모델 선택</option>
+          <option>GENEVA STP300xp</option>
+          <option>ECOLITE3000</option>
+          <option>CVD-3000</option>
+          <option>ALD-200</option>
+          <option>ETCH-500</option>
+        </select>
+        <select id="cl-cat">
+          <option value="">카테고리 선택</option>
+          <option>배관류</option>
+          <option>가공품</option>
+          <option>체결부품</option>
+          <option>전장부품</option>
+        </select>
+        <button class="btn-reset" onclick="resetCL()">초기화</button>
+      </div>
+      <div id="cl-prog-wrap" style="display:none" class="cl-prog">
+        <div class="prog-row"><span>확인 진행률</span><span id="prog-txt">0 / 0</span></div>
+        <div class="pbar">
+          <div class="pfill" id="pfill" style="width:0%"></div>
         </div>
       </div>
-    `;
-    return;
-  }
+      <div id="cl-list"></div>
+      <div id="cl-sign" style="display:none" class="sign-box">
+        <span class="sign-label">✓ 모든 항목 확인 완료</span>
+        <p>아래에 작업자 이름을 입력하고 제출하면 조립 착수가 가능합니다.</p>
+        <input class="sign-input" type="text" id="sign-name" placeholder="작업자 이름 입력"><br>
+        <button class="btn-submit" onclick="submitSign()">확인 완료 제출</button>
+      </div>
+    </div>
 
-  // processes.json 기반으로 카드 생성
-  processKeys.forEach(key => {
-    const proc = CFG.processes?.[key];
-    if (!proc || !proc.enabled) return;
+    <!-- 관리자 DB 관리 -->
+    <div id="sec-admin" class="sec">
 
-    const isDone  = STATE.completedProcesses.includes(key);
-    const card    = document.createElement('div');
-    card.className = 'process-card' + (isDone ? ' done' : '');
-    card.onclick   = () => enterProcess(key);
-
-    card.innerHTML = `
-      <div class="process-card-left">
-        <div class="process-icon">${proc.icon || '📋'}</div>
-        <div>
-          <div class="process-label">
-            ${proc.label}
-            ${isDone ? '<span class="done-badge">✓ 완료</span>' : ''}
+      <!-- 신규 등록 / 수정 폼 -->
+      <div class="admin-wrap" id="form-wrap">
+        <h2 id="form-title">신규 사례 등록</h2>
+        <input type="hidden" id="edit-id" value="">
+        <div class="form-grid">
+          <div class="field"><label>모델명 *</label>
+            <select id="f-model">
+              <option value="">선택</option>
+              <option>GENEVA STP300xp</option>
+              <option>ECOLITE3000</option>
+              <option>CVD-3000</option>
+              <option>ALD-200</option>
+              <option>ETCH-500</option>
+            </select>
           </div>
-          <div class="process-desc">${proc.description || ''}</div>
+          <div class="field"><label>카테고리 *</label>
+            <select id="f-cat">
+              <option value="">선택</option>
+              <option>배관류</option>
+              <option>가공품</option>
+              <option>체결부품</option>
+              <option>전장부품</option>
+            </select>
+          </div>
+          <div class="field"><label>부품명 *</label><input type="text" id="f-part" placeholder="예: SUS 배관 Ø25"></div>
+          <div class="field"><label>불량 유형 *</label>
+            <select id="f-type">
+              <option value="">선택</option>
+              <option>치수오차</option>
+              <option>형상불일치</option>
+              <option>센터링</option>
+              <option>표면불량</option>
+            </select>
+          </div>
+          <div class="field"><label>등급 *</label>
+            <select id="f-grade">
+              <option value="">선택</option>
+              <option value="A">A — 고위험 (기능/안전 직결)</option>
+              <option value="B">B — 중위험</option>
+              <option value="C">C — 저위험</option>
+            </select>
+          </div>
+          <div class="field"><label>상태</label>
+            <select id="f-status">
+              <option value="Open">Open (관리 중)</option>
+              <option value="Close">Close (이력)</option>
+            </select>
+          </div>
+          <div class="field"><label>발생 협력사 *</label>
+            <select id="f-vendor">
+              <option value="">선택</option>
+              <option>나우</option>
+              <option>이지스</option>
+              <option>아셈</option>
+              <option>SE&amp;T</option>
+              <option>SAM</option>
+              <option>HTC</option>
+            </select>
+          </div>
+          <div class="field"><label>발생일 *</label><input type="date" id="f-occdate"></div>
+          <div class="field"><label>검사 시작일</label><input type="date" id="f-inspdate"></div>
+          <div class="field"><label>불량 제목 *</label><input type="text" id="f-title" placeholder="카드에 표시되는 요약 제목"></div>
+        </div>
+        <div class="form-grid full">
+          <div class="field"><label>불량 내용 (상세) *</label><textarea id="f-detail"
+              placeholder="납품된 부품의 불량 내용을 구체적으로 기술"></textarea></div>
+          <div class="field"><label>확인 방법 (작업자용) *</label><textarea id="f-check"
+              placeholder="작업자가 조립 전 확인해야 할 방법을 기술 — 체크리스트에 표시됨"></textarea></div>
+          <div class="field"><label>발생 결과</label><textarea id="f-result" placeholder="불량으로 인한 발생 결과 (예: 리크 발생 우려)"
+              style="min-height:50px"></textarea></div>
+          <div class="field"><label>당시 조치 사항</label><textarea id="f-action" placeholder="취한 조치 내용 기술"
+              style="min-height:50px"></textarea></div>
+        </div>
+
+        <!-- 사진 업로드 -->
+        <div class="field">
+          <label>사진 첨부 (PPT → 이미지 변환 후 업로드, 여러 장 가능)</label>
+          <div class="photo-upload-area" onclick="document.getElementById('photo-input').click()">
+            <label class="upload-label">
+              <div style="font-size:22px;opacity:.3;margin-bottom:4px">&#128247;</div>
+              클릭하여 이미지 파일 선택 (JPG, PNG, GIF)
+            </label>
+            <input type="file" id="photo-input" accept="image/*" multiple onchange="handlePhotoUpload(event)">
+          </div>
+          <div class="photo-preview" id="photo-preview"></div>
+        </div>
+
+        <div class="form-btn-row">
+          <button class="btn-secondary" onclick="resetForm()">초기화</button>
+          <button class="btn-primary" onclick="saveRecord()">저장</button>
         </div>
       </div>
-      <div class="process-arrow">${isDone ? '✅' : '›'}</div>
-    `;
-    grid.appendChild(card);
-  });
-}
 
-// ── 공정 진입 ─────────────────────────────────
-// 각 공정(토크/Leak/사진) 화면으로 이동
-// 3-A, 3-B, 3-C 화면 개발 후 여기에 연결 예정
-function enterProcess(key) {
-  const proc = CFG.processes?.[key];
-  if (!proc) return;
+      <!-- 등록된 목록 -->
+      <div class="admin-wrap">
+        <h2>등록된 사례 목록 <span style="font-size:12px;color:var(--text2);font-weight:400" id="admin-list-count"></span></h2>
+        <div class="admin-list" id="admin-list"></div>
+      </div>
 
-  // 각 공정 화면 개발 후 아래 주석을 교체하세요
-  // if (key === 'torque') { goScreen('torque'); return; }
-  // if (key === 'leak')   { goScreen('leak');   return; }
-  // if (key === 'photo')  { goScreen('photo');  return; }
+    </div>
+  </div>
 
-  // 임시: 개발 전 안내
-  alert(
-    `[${proc.icon} ${proc.label}] 화면\n\n` +
-    `이 공정은 다음 STEP에서 개발 예정입니다.\n` +
-    `완료 처리 테스트를 위해 임시로 완료 처리합니다.`
-  );
+  <!-- 상세 모달 -->
+  <div class="modal-bg" id="detail-bg" onclick="bgClick(event,'detail-bg')">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-head-info" id="mh-info"></div>
+        <button class="btn-close" onclick="closeDetail()">닫기</button>
+      </div>
+      <div class="modal-body" id="mb"></div>
+    </div>
+  </div>
 
-  // 임시 완료 처리 (실제 개발 후 제거)
-  if (!STATE.completedProcesses.includes(key)) {
-    STATE.completedProcesses.push(key);
-  }
-  buildProcessScreen(); // 카드 새로고침
-}
+  <!-- 로그인 모달 -->
+  <div class="modal-bg" id="login-bg" onclick="bgClick(event,'login-bg')">
+    <div class="login-modal">
+      <div class="login-title">관리자 로그인</div>
+      <div class="login-sub">당사 담당자 전용</div>
+      <div class="login-field">
+        <input type="text" id="lid" placeholder="아이디" onkeydown="if(event.key==='Enter')doLogin()">
+        <input type="password" id="lpw" placeholder="비밀번호" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="login-err" id="lerr">아이디 또는 비밀번호가 올바르지 않습니다.</div>
+      <button class="btn-login-ok" onclick="doLogin()">로그인</button>
+      <button class="btn-login-cancel" onclick="closeLogin()">취소</button>
+    </div>
+  </div>
 
-// ── 앱 시작 ──────────────────────────────────
-initApp();
-</script>
+  <script>
+    /* ======= 인증 ======= */
+    var AID = 'admin', APW = 'psk1234', isAdmin = false;
+    function showLogin() {
+      document.getElementById('lid').value = '';
+      document.getElementById('lpw').value = '';
+      document.getElementById('lerr').style.display = 'none';
+      document.getElementById('login-bg').classList.add('on');
+      setTimeout(function () { document.getElementById('lid').focus(); }, 100);
+    }
+    function closeLogin() { document.getElementById('login-bg').classList.remove('on'); }
+    function doLogin() {
+      if (document.getElementById('lid').value.trim() === AID && document.getElementById('lpw').value === APW) {
+        isAdmin = true; closeLogin();
+        document.getElementById('admin-badge').style.display = 'inline-block';
+        document.getElementById('btn-login').style.display = 'none';
+        document.getElementById('btn-logout').style.display = 'inline-block';
+        document.getElementById('btn-save-file').style.display = 'inline-block';
+        document.getElementById('tab-admin').style.display = 'inline-block';
+        drawCards(); drawAdminList();
+      } else {
+        document.getElementById('lerr').style.display = 'block';
+      }
+    }
+    function doLogout() {
+      isAdmin = false;
+      document.getElementById('admin-badge').style.display = 'none';
+      document.getElementById('btn-login').style.display = 'inline-block';
+      document.getElementById('btn-logout').style.display = 'none';
+      document.getElementById('btn-save-file').style.display = 'none';
+      document.getElementById('tab-admin').style.display = 'none';
+      closeDetail(); switchTab('search'); drawCards();
+    }
+
+    /* ======= DB ======= */
+    var DB = [
+      {
+        id: 1, model: 'GENEVA STP300xp', cat: '배관류', part: 'Exhaust Box', type: '치수오차', grade: 'A', status: 'Open',
+        title: '배관 외경 +3mm 초과 납품',
+        detail: '납품된 배관 OD(외경)가 설계 도면 대비 약 3mm 크게 제작됨. 조립 시 센터링 흔들림 발생하여 리크(Leak) 우려. 실제 조립 후 리크 테스트에서 불량 판정.',
+        check: '배관 삽입 후 손으로 좌우 흔들어 유격 확인. 흔들림 감지 시 즉시 조립 중단 후 담당자(당사 MFG)에게 사진과 함께 보고.',
+        result: '리크 발생 우려', action: '전량 반품 후 재제작 완료. 협력사 치수 관리 기준 재교육 실시.',
+        vendor: '나우', occDate: '2025-01-08', inspDate: '2025-01-10', photos: []
+      },
+      {
+        id: 1, model: 'CVD-3000', cat: '배관류', part: 'SUS 배관 Ø25', type: '치수오차', grade: 'A', status: 'Open',
+        title: '배관 외경 +3mm 초과 납품',
+        detail: '납품된 배관 OD(외경)가 설계 도면 대비 약 3mm 크게 제작됨. 조립 시 센터링 흔들림 발생하여 리크(Leak) 우려. 실제 조립 후 리크 테스트에서 불량 판정.',
+        check: '배관 삽입 후 손으로 좌우 흔들어 유격 확인. 흔들림 감지 시 즉시 조립 중단 후 담당자(당사 QC)에게 사진과 함께 보고.',
+        result: '리크 발생 우려', action: '전량 반품 후 재제작 완료. 협력사 치수 관리 기준 재교육 실시.',
+        vendor: '나우', occDate: '2025-01-08', inspDate: '2025-01-10', photos: []
+      },
+      {
+        id: 2, model: 'CVD-3000', cat: '가공품', part: '플랜지 A타입', type: '형상불일치', grade: 'A', status: 'Open',
+        title: '플랜지 라운드 형상 상이',
+        detail: '기존 도면 대비 라운드 R값이 다르게 가공되어 납품. 조립 후 체결부 간섭 발생 가능하며 실링 불량으로 이어질 수 있음.',
+        check: '기준품 사진과 라운드 부분 육안 비교. 형상이 다르거나 의심스러우면 조립 중단 후 담당자에게 보고.',
+        result: '체결부 간섭 / 실링 불량', action: '불량품 반품. 도면 R값 명기 후 재발주. 기준품 사진 협력사 배포.',
+        vendor: '이지스', occDate: '2025-02-14', inspDate: '2025-02-15', photos: []
+      },
+      {
+        id: 3, model: 'ALD-200', cat: '배관류', part: '가스 공급 라인 Ø12', type: '센터링', grade: 'A', status: 'Open',
+        title: '가스 라인 센터링 불량',
+        detail: '배관 고정 클램프 위치 오차로 센터링이 틀어진 상태로 납품됨. 진동 환경 장기 운용 시 피로 파단(Fatigue Fracture) 우려.',
+        check: '조립 완료 후 배관 좌우 균형 육안 확인. 틀어짐 감지 시 클램프 위치 재조정.',
+        result: '피로 파단 위험 / 가스 누출', action: '클램프 재조정 후 재납품. 조립 SOP에 센터링 확인 항목 추가.',
+        vendor: '아셈', occDate: '2025-02-28', inspDate: '2025-03-02', photos: []
+      },
+      {
+        id: 4, model: 'ALD-200', cat: '체결부품', part: '볼트 M8×25 SUS', type: '표면불량', grade: 'B', status: 'Close',
+        title: '볼트 나사산 눌림 불량',
+        detail: '나사산 일부가 눌려 체결 토크(Torque) 부족 우려. 진동 환경에서 볼트 풀림 발생 가능.',
+        check: '손으로 돌려보아 뻑뻑하거나 헛도는 볼트 선별 후 전량 교체.',
+        result: '볼트 풀림 / 토크 부족', action: '해당 로트 전수 검사 후 불량품 교체 완료.',
+        vendor: 'SAM', occDate: '2025-03-05', inspDate: '2025-03-06', photos: []
+      },
+      {
+        id: 5, model: 'ETCH-500', cat: '가공품', part: '챔버 링 (Chamber Ring)', type: '치수오차', grade: 'A', status: 'Open',
+        title: '챔버 링 두께 -0.5mm 미달',
+        detail: '링 두께 부족으로 실링(Sealing) 압착력 미달. 공정 중 리크 및 파티클(Particle) 오염 위험.',
+        check: '버니어 캘리퍼스로 두께 3곳 이상 측정. 규격 이탈 시 해당 로트 전량 반품.',
+        result: '리크 / 파티클 오염 / 수율 저하', action: '전량 반품 / 납품 중단 조치.',
+        vendor: 'HTC', occDate: '2025-03-20', inspDate: '2025-03-21', photos: []
+      },
+      {
+        id: 6, model: 'ETCH-500', cat: '전장부품', part: '센서 브래킷 (Sensor Bracket)', type: '형상불일치', grade: 'B', status: 'Open',
+        title: '브래킷 홀 위치 1.5mm 편차',
+        detail: '센서 취부 홀(Hole) 위치가 1.5mm 편차 발생. 억지 조립 시 센서 정밀도 저하 및 브래킷 변형 우려.',
+        check: '홀 위치 도면과 대조. 볼트가 자연스럽게 체결되지 않으면 즉시 조립 중단.',
+        result: '센서 정밀도 저하 / 브래킷 변형', action: '재가공 후 재납품 진행 중.',
+        vendor: 'SE&T', occDate: '2025-04-01', inspDate: '2025-04-02', photos: []
+      },
+      {
+        id: 7, model: 'CVD-3000', cat: '배관류', part: 'O-ring Ø50 NBR', type: '표면불량', grade: 'A', status: 'Close',
+        title: 'O-ring 표면 크랙 및 변형',
+        detail: 'O-ring 표면에 미세 크랙(Crack) 및 타원 변형 확인. 실링 기능 상실로 리크 직결.',
+        check: '강한 조명 아래 O-ring 전체 표면 육안 검사. 크랙, 변형, 이물질 확인. 의심 시 전량 교체.',
+        result: '실링 불량 / 리크 직결', action: '해당 로트 전량 교체 완료. Close 처리.',
+        vendor: '나우', occDate: '2025-04-10', inspDate: '2025-04-11', photos: []
+      }
+    ];
+    var nextId = 8;
+    var editPhotos = [];
+    var checkState = {};
+    var currentDetailId = null;
+
+    /* ======= 뱃지 ======= */
+    function gb(g) {
+      return g === 'A' ? '<span class="tag tag-a">A등급</span>' :
+        g === 'B' ? '<span class="tag tag-b">B등급</span>' : '<span class="tag tag-c">C등급</span>';
+    }
+    function sb(s) {
+      return s === 'Open' ? '<span class="tag tag-open">Open</span>' : '<span class="tag tag-close">Close</span>';
+    }
+
+    /* ======= 탭 ======= */
+    function switchTab(t) {
+      var tabs = ['search', 'cl', 'admin'];
+      document.querySelectorAll('.tab').forEach(function (b, i) { b.classList.toggle('on', tabs[i] === t); });
+      tabs.forEach(function (n) {
+        var el = document.getElementById('sec-' + n);
+        if (el) el.classList.toggle('on', n === t);
+      });
+      if (t === 'admin') drawAdminList();
+    }
+
+    /* ======= 통계 ======= */
+    function drawStats(f) {
+      var a = f.filter(function (d) { return d.grade === 'A'; }).length;
+      var op = f.filter(function (d) { return d.status === 'Open'; }).length;
+      var cl = f.filter(function (d) { return d.status === 'Close'; }).length;
+      document.getElementById('stat-row').innerHTML =
+        '<div class="stat-card"><div class="stat-num">' + f.length + '</div><div class="stat-label">검색 결과</div></div>' +
+        '<div class="stat-card"><div class="stat-num" style="color:var(--red-txt)">' + a + '</div><div class="stat-label">A등급 고위험</div></div>' +
+        '<div class="stat-card"><div class="stat-num" style="color:#185fa5">' + op + '</div><div class="stat-label">Open 관리 중</div></div>' +
+        '<div class="stat-card"><div class="stat-num" style="color:#888">' + cl + '</div><div class="stat-label">Close 이력</div></div>';
+      document.getElementById('db-count').textContent = '총 ' + DB.length + '건';
+    }
+
+    /* ======= 카드 ======= */
+    function drawCards() {
+      var kw = document.getElementById('kw').value.toLowerCase();
+      var m = document.getElementById('fm').value;
+      var c = document.getElementById('fcat').value;
+      var t = document.getElementById('ft').value;
+      var g = document.getElementById('fg').value;
+      var s = document.getElementById('fs').value;
+      var f = DB.filter(function (d) {
+        if (m && d.model !== m) return false;
+        if (c && d.cat !== c) return false;
+        if (t && d.type !== t) return false;
+        if (g && d.grade !== g) return false;
+        if (s && d.status !== s) return false;
+        if (kw && !(d.title + d.part + d.detail + d.type).toLowerCase().includes(kw)) return false;
+        return true;
+      });
+      drawStats(f);
+      document.getElementById('result-info').textContent = f.length + '건 표시 중';
+      var el = document.getElementById('card-grid');
+      if (!f.length) { el.innerHTML = '<div class="empty">조건에 맞는 사례가 없습니다.</div>'; return; }
+      el.innerHTML = f.map(function (d) {
+        var thumb = d.photos && d.photos.length > 0 ?
+          '<img src="' + d.photos[0] + '" alt="사진">' :
+          '<div style="font-size:22px;opacity:.25">&#128247;</div><span>사진 미등록</span>';
+        return '<div class="card' + (d.status === 'Close' ? ' closed' : '') + '" onclick="openDetail(' + d.id + ')">' +
+          '<div class="card-img">' + thumb + '</div>' +
+          '<div class="tags">' + gb(d.grade) + sb(d.status) + '<span class="tag tag-n">' + d.cat + '</span></div>' +
+          '<div class="card-title">' + d.title + '</div>' +
+          '<div class="card-sub">' + d.model + ' · ' + d.part + '</div>' +
+          '<div class="card-meta">' + d.vendor + ' · ' + d.occDate + '</div>' +
+          '</div>';
+      }).join('');
+    }
+
+    /* ======= 상세 모달 ======= */
+    function openDetail(id) {
+      var d = DB.find(function (x) { return x.id === id; });
+      if (!d) return;
+      currentDetailId = id;
+      document.getElementById('mh-info').innerHTML =
+        '<div class="tags" style="margin-bottom:6px">' + gb(d.grade) + sb(d.status) + '<span class="tag tag-n">' + d.type + '</span><span class="tag tag-n">' + d.cat + '</span></div>' +
+        '<div class="modal-head-title">' + d.title + '</div>' +
+        '<div class="modal-head-sub">' + d.model + ' · ' + d.part + '</div>';
+      var pHTML = '';
+      if (d.photos && d.photos.length > 0) {
+        pHTML = '<div class="photo-count">' + d.photos.length + '장 — 스크롤하여 확인</div>' +
+          '<div class="photo-scroll">' + d.photos.map(function (s, i) {
+            return '<img class="photo-item" src="' + s + '" alt="사진' + (i + 1) + '">';
+          }).join('') + '</div>';
+      } else {
+        pHTML = '<div class="photo-scroll"><div class="photo-empty"><div style="font-size:28px;opacity:.2">&#128247;</div>등록된 사진 없음</div></div>';
+      }
+      var adminHTML = '<div class="admin-ctrl' + (isAdmin ? ' show' : '') + '" id="det-admin">' +
+        '<div class="admin-ctrl-title">관리자 — 상태 / 편집</div>' +
+        '<div class="ctrl-row">' +
+        '<button class="btn-open" onclick="setStatus(' + id + ',\'Open\')">Open</button>' +
+        '<button class="btn-close-st" onclick="setStatus(' + id + ',\'Close\')">Close</button>' +
+        '<button class="btn-edit" onclick="startEdit(' + id + ')">수정</button>' +
+        '<button class="btn-del" onclick="deleteRecord(' + id + ')">삭제</button>' +
+        '</div></div>';
+      document.getElementById('mb').innerHTML =
+        pHTML +
+        '<div class="kv"><span class="k">불량 내용</span><span class="v">' + d.detail + '</span></div><div class="sep"></div>' +
+        '<div class="kv"><span class="k">확인 방법</span><span class="v v-green">' + d.check + '</span></div><div class="sep"></div>' +
+        '<div class="kv"><span class="k">발생 결과</span><span class="v">' + d.result + '</span></div>' +
+        '<div class="kv"><span class="k">당시 조치</span><span class="v">' + d.action + '</span></div><div class="sep"></div>' +
+        '<div class="kv"><span class="k">발생 협력사</span><span class="v">' + d.vendor + '</span></div>' +
+        '<div class="kv"><span class="k">발생일</span><span class="v">' + d.occDate + '</span></div>' +
+        '<div class="kv"><span class="k">검사 시작일</span><span class="v">' + d.inspDate + '</span></div>' +
+        adminHTML;
+      document.getElementById('detail-bg').classList.add('on');
+    }
+    function closeDetail() { document.getElementById('detail-bg').classList.remove('on'); currentDetailId = null; }
+
+    /* ======= 상태 변경 ======= */
+    function setStatus(id, s) {
+      var d = DB.find(function (x) { return x.id === id; });
+      if (!d) return;
+      if (!confirm('[' + d.title + ']\n상태를 "' + s + '"으로 변경하시겠습니까?')) return;
+      d.status = s; closeDetail(); drawCards(); drawCL();
+    }
+
+    /* ======= 삭제 ======= */
+    function deleteRecord(id) {
+      var d = DB.find(function (x) { return x.id === id; });
+      if (!d) return;
+      if (!confirm('[' + d.title + ']\n이 사례를 삭제하시겠습니까?\n삭제 후 파일 저장을 통해 반영하세요.')) return;
+      DB = DB.filter(function (x) { return x.id !== id; });
+      closeDetail(); drawCards(); drawAdminList(); drawCL();
+    }
+
+    /* ======= 사진 업로드 ======= */
+    function handlePhotoUpload(e) {
+      var files = Array.from(e.target.files);
+      files.forEach(function (file) {
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+          editPhotos.push(ev.target.result);
+          renderPhotoPreview();
+        };
+        reader.readAsDataURL(file);
+      });
+      e.target.value = '';
+    }
+    function renderPhotoPreview() {
+      var el = document.getElementById('photo-preview');
+      el.innerHTML = editPhotos.map(function (src, i) {
+        return '<div class="preview-item">' +
+          '<img src="' + src + '">' +
+          '<button class="preview-del" onclick="removePhoto(' + i + ')" title="삭제">✕</button>' +
+          '</div>';
+      }).join('');
+    }
+    function removePhoto(i) {
+      editPhotos.splice(i, 1);
+      renderPhotoPreview();
+    }
+
+    /* ======= 폼 저장 ======= */
+    function saveRecord() {
+      var fv = function (id) { return document.getElementById(id).value.trim(); };
+      var model = fv('f-model'), cat = fv('f-cat'), part = fv('f-part'), type = fv('f-type'),
+        grade = fv('f-grade'), status = fv('f-status'), vendor = fv('f-vendor'),
+        occDate = fv('f-occdate'), inspDate = fv('f-inspdate'), title = fv('f-title'),
+        detail = fv('f-detail'), check = fv('f-check'), result = fv('f-result'), action = fv('f-action');
+      if (!model || !cat || !part || !type || !grade || !vendor || !occDate || !title || !detail || !check) {
+        alert('필수 항목(*)을 모두 입력해 주세요.'); return;
+      }
+      var eid = document.getElementById('edit-id').value;
+      if (eid) {
+        var d = DB.find(function (x) { return x.id === parseInt(eid); });
+        if (d) {
+          d.model = model; d.cat = cat; d.part = part; d.type = type; d.grade = grade; d.status = status;
+          d.vendor = vendor; d.occDate = occDate; d.inspDate = inspDate; d.title = title;
+          d.detail = detail; d.check = check; d.result = result; d.action = action;
+          if (editPhotos.length > 0) d.photos = editPhotos;
+        }
+        alert('수정되었습니다.');
+      } else {
+        DB.push({
+          id: nextId++, model: model, cat: cat, part: part, type: type, grade: grade, status: status,
+          title: title, detail: detail, check: check, result: result, action: action,
+          vendor: vendor, occDate: occDate, inspDate: inspDate, photos: editPhotos.slice()
+        });
+        alert('등록되었습니다.');
+      }
+      resetForm(); drawCards(); drawAdminList(); drawCL();
+    }
+
+    /* ======= 수정 시작 ======= */
+    function startEdit(id) {
+      var d = DB.find(function (x) { return x.id === id; });
+      if (!d) return;
+      closeDetail();
+      switchTab('admin');
+      var sv = function (eid, val) { document.getElementById(eid).value = val; };
+      sv('edit-id', d.id);
+      sv('f-model', d.model); sv('f-cat', d.cat); sv('f-part', d.part); sv('f-type', d.type);
+      sv('f-grade', d.grade); sv('f-status', d.status); sv('f-vendor', d.vendor);
+      sv('f-occdate', d.occDate); sv('f-inspdate', d.inspDate); sv('f-title', d.title);
+      sv('f-detail', d.detail); sv('f-check', d.check); sv('f-result', d.result); sv('f-action', d.action);
+      editPhotos = d.photos ? d.photos.slice() : [];
+      renderPhotoPreview();
+      document.getElementById('form-title').textContent = '사례 수정 — ' + d.title;
+      document.getElementById('form-wrap').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* ======= 폼 초기화 ======= */
+    function resetForm() {
+      ['f-model', 'f-cat', 'f-part', 'f-type', 'f-grade', 'f-vendor', 'f-occdate', 'f-inspdate', 'f-title', 'f-detail', 'f-check', 'f-result', 'f-action']
+        .forEach(function (id) { document.getElementById(id).value = ''; });
+      document.getElementById('f-status').value = 'Open';
+      document.getElementById('edit-id').value = '';
+      editPhotos = [];
+      renderPhotoPreview();
+      document.getElementById('form-title').textContent = '신규 사례 등록';
+    }
+
+    /* ======= 관리자 목록 ======= */
+    function drawAdminList() {
+      document.getElementById('admin-list-count').textContent = '— 총 ' + DB.length + '건';
+      var el = document.getElementById('admin-list');
+      if (!DB.length) { el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">등록된 사례가 없습니다.</div>'; return; }
+      el.innerHTML = '<div class="admin-list-head"><span>No</span><span>제목</span><span>모델</span><span>협력사</span><span>등급</span><span>상태</span></div>' +
+        DB.map(function (d) {
+          return '<div class="admin-list-row" onclick="startEdit(' + d.id + ')">' +
+            '<span class="meta">' + d.id + '</span>' +
+            '<span class="title">' + d.title + '</span>' +
+            '<span class="meta">' + d.model + '</span>' +
+            '<span class="meta">' + d.vendor + '</span>' +
+            '<span>' + gb(d.grade) + '</span>' +
+            '<span>' + sb(d.status) + '</span>' +
+            '</div>';
+        }).join('');
+    }
+
+    /* ======= 체크리스트 ======= */
+    function drawCL() {
+      var m = document.getElementById('cl-model').value;
+      var c = document.getElementById('cl-cat').value;
+      var pw = document.getElementById('cl-prog-wrap');
+      var sign = document.getElementById('cl-sign');
+      var list = document.getElementById('cl-list');
+      if (!m || !c) {
+        list.innerHTML = '<div class="empty">모델과 카테고리를 선택하면<br>해당 주의 항목이 표시됩니다.</div>';
+        pw.style.display = 'none'; sign.style.display = 'none'; return;
+      }
+      var items = DB.filter(function (d) { return d.model === m && d.cat === c && d.status === 'Open'; });
+      if (!items.length) {
+        list.innerHTML = '<div class="empty">해당 조합의 Open 불량 사례가 없습니다.<br><span style="font-size:12px;color:var(--green)">안전하게 조립을 진행하세요.</span></div>';
+        pw.style.display = 'none'; sign.style.display = 'none'; return;
+      }
+      pw.style.display = 'block';
+      list.innerHTML = items.map(function (d) {
+        var done = !!checkState[d.id];
+        return '<div class="ci' + (done ? ' done' : '') + '" id="ci-' + d.id + '" onclick="togCL(' + d.id + ')">' +
+          '<input type="checkbox"' + (done ? ' checked' : '') + ' onclick="event.stopPropagation();togCL(' + d.id + ')">' +
+          '<div class="ci-body">' +
+          '<div class="ci-top">' + gb(d.grade) + '<span class="ci-title">' + d.title + '</span></div>' +
+          '<div class="ci-check">확인: ' + d.check + '</div>' +
+          '</div>' +
+          '<button class="btn-detail" onclick="event.stopPropagation();openDetail(' + d.id + ')">상세보기</button>' +
+          '</div>';
+      }).join('');
+      updProg(items);
+    }
+    function togCL(id) {
+      checkState[id] = !checkState[id];
+      var m = document.getElementById('cl-model').value;
+      var c = document.getElementById('cl-cat').value;
+      var items = DB.filter(function (d) { return d.model === m && d.cat === c && d.status === 'Open'; });
+      var el = document.getElementById('ci-' + id);
+      if (el) { el.classList.toggle('done', !!checkState[id]); el.querySelector('input').checked = !!checkState[id]; }
+      updProg(items);
+    }
+    function updProg(items) {
+      var done = items.filter(function (d) { return checkState[d.id]; }).length;
+      var total = items.length;
+      document.getElementById('prog-txt').textContent = done + ' / ' + total;
+      document.getElementById('pfill').style.width = Math.round(done / total * 100) + '%';
+      document.getElementById('cl-sign').style.display = (done === total && total > 0) ? 'block' : 'none';
+    }
+    function resetCL() {
+      Object.keys(checkState).forEach(function (k) { delete checkState[k]; });
+      drawCL();
+    }
+    function submitSign() {
+      var name = document.getElementById('sign-name').value.trim();
+      if (!name) { alert('작업자 이름을 입력해 주세요.'); return; }
+      var now = new Date();
+      var ts = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') +
+        ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+      alert('[ 확인 완료 ]\n작업자: ' + name + '\n시각: ' + ts + '\n\n조립을 착수해 주세요.');
+    }
+
+    /* ======= 파일로 저장 ======= */
+    function saveAsFile() {
+      var dbJSON = JSON.stringify(DB, null, 2);
+      var html = document.documentElement.outerHTML;
+      var marker = 'var DB=[';
+      var start = html.indexOf(marker);
+      if (start === -1) { alert('저장 오류: DB 위치를 찾을 수 없습니다.'); return; }
+      var depth = 0, end = start + marker.length - 1;
+      for (var i = start + marker.length - 1; i < html.length; i++) {
+        if (html[i] === '[') depth++;
+        else if (html[i] === ']') { depth--; if (depth === 0) { end = i; break; } }
+      }
+      var newHtml = html.substring(0, start) + 'var DB=' + dbJSON + html.substring(end + 1);
+      var blob = new Blob([newHtml], { type: 'text/html;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      var today = new Date();
+      var ds = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+      a.download = ds + '_외관불량_실패DB_v3.html';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    /* ======= 공통 ======= */
+    function bgClick(e, id) {
+      if (e.target === document.getElementById(id)) {
+        if (id === 'detail-bg') closeDetail();
+        else if (id === 'login-bg') closeLogin();
+      }
+    }
+
+    /* ======= 이벤트 바인딩 ======= */
+    ['kw', 'fm', 'fcat', 'ft', 'fg', 'fs'].forEach(function (id) {
+      document.getElementById(id).addEventListener(id === 'kw' ? 'input' : 'change', drawCards);
+    });
+    ['cl-model', 'cl-cat'].forEach(function (id) {
+      document.getElementById(id).addEventListener('change', function () {
+        Object.keys(checkState).forEach(function (k) { delete checkState[k]; });
+        drawCL();
+      });
+    });
+
+    /* ======= 초기화 ======= */
+    drawCards(); drawCL();
+  </script>
 </body>
+
 </html>
