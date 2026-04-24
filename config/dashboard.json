@@ -1,0 +1,38 @@
+{
+  "title": "AQI System",
+  "subtitle": "PSK Holdings — 제조부문",
+  "menus": [
+    {
+      "id": "defect",
+      "icon": "🔍",
+      "label": "실패 사례",
+      "desc": "불량 사례 DB 조회 및 체크리스트",
+      "color": "#C0392B",
+      "enabled": true
+    },
+    {
+      "id": "standard",
+      "icon": "📋",
+      "label": "작업표준서 확인",
+      "desc": "Critical Defect 공정 표준서",
+      "color": "#2980B9",
+      "enabled": true
+    },
+    {
+      "id": "torque",
+      "icon": "🔧",
+      "label": "Torque Check",
+      "desc": "토크 체결값 측정 및 기록",
+      "color": "#1A3A5C",
+      "enabled": true
+    },
+    {
+      "id": "leak",
+      "icon": "💨",
+      "label": "Leak Check",
+      "desc": "Leak Check 값 측정 및 기록",
+      "color": "#1E8C45",
+      "enabled": true
+    }
+  ]
+}
