@@ -1742,20 +1742,31 @@
     /* ======= 관리자 목록 (필터 + 정렬) ======= */
     var adminFilter = { no:'', cat:'', model:'', title:'', vendor:'', grade:'', status:'' };
     var adminSort   = { key:'id', asc: true };
+    var _filterTimer = null;
 
-    // 디바운스 - 입력 멈춘 후 300ms 뒤 필터 실행 (타이핑 중 끊김 방지)
-    var _debounceTimer = null;
-    function debounceFilter(field, value) {
-      adminFilter[field] = value;
-      clearTimeout(_debounceTimer);
-      _debounceTimer = setTimeout(function() {
-        drawAdminList(true); // true = 포커스 유지 모드
-      }, 300);
+    // 정렬 화살표 표시
+    function arr(key) {
+      if (adminSort.key !== key) return '<span class="sort-arrow">⇅</span>';
+      return '<span class="sort-arrow">' + (adminSort.asc ? '↑' : '↓') + '</span>';
     }
 
-    function drawAdminList(keepFocus) {
-      // 필터 적용
-      var filtered = DB.filter(function(d) {
+    // 헤더 클릭 시 정렬
+    function sortBy(key) {
+      if (adminSort.key === key) adminSort.asc = !adminSort.asc;
+      else { adminSort.key = key; adminSort.asc = true; }
+      drawAdminList();
+    }
+
+    // 필터 입력 시 300ms 디바운스 후 데이터 행만 갱신
+    function onFilterInput(field, value) {
+      adminFilter[field] = value;
+      clearTimeout(_filterTimer);
+      _filterTimer = setTimeout(renderDataRows, 300);
+    }
+
+    // 필터+정렬 적용된 배열 반환
+    function getFiltered() {
+      var f = DB.filter(function(d) {
         return (!adminFilter.no     || String(d.id).includes(adminFilter.no)) &&
                (!adminFilter.cat    || (d.cat||'').toLowerCase().includes(adminFilter.cat.toLowerCase())) &&
                (!adminFilter.model  || (d.model||'').toLowerCase().includes(adminFilter.model.toLowerCase())) &&
@@ -1764,91 +1775,61 @@
                (!adminFilter.grade  || (d.grade||'').toLowerCase().includes(adminFilter.grade.toLowerCase())) &&
                (!adminFilter.status || (d.status||'').toLowerCase().includes(adminFilter.status.toLowerCase()));
       });
-
-      // 정렬 적용
-      filtered.sort(function(a, b) {
+      f.sort(function(a, b) {
         var va = a[adminSort.key] || '', vb = b[adminSort.key] || '';
-        if (va < vb) return adminSort.asc ? -1 : 1;
-        if (va > vb) return adminSort.asc ? 1 : -1;
-        return 0;
+        return (va < vb ? -1 : va > vb ? 1 : 0) * (adminSort.asc ? 1 : -1);
       });
+      return f;
+    }
 
+    // 데이터 행만 업데이트 (필터 input 포커스 유지)
+    function renderDataRows() {
+      var filtered = getFiltered();
       document.getElementById('admin-list-count').textContent =
-        '— 총 ' + DB.length + '건' + (filtered.length < DB.length ? ' (필터: ' + filtered.length + '건)' : '');
+        '— 씽 ' + DB.length + '건' + (filtered.length < DB.length ? ' (필터: ' + filtered.length + '건)' : '');
+      var body = document.getElementById('admin-list-body');
+      if (!body) { drawAdminList(); return; }
+      body.innerHTML = filtered.length ? filtered.map(function(d) {
+        return '<div class="admin-list-row" onclick="startEdit(' + d.id + ')">' +
+          '<span class="meta">' + d.id + '</span>' +
+          '<span class="meta">' + (d.cat||'-') + '</span>' +
+          '<span class="meta">' + (d.model||'-') + '</span>' +
+          '<span class="title">' + (d.title||'-') + '</span>' +
+          '<span class="meta">' + (d.vendor||'-') + '</span>' +
+          '<span>' + gb(d.grade) + '</span>' +
+          '<span>' + sb(d.status) + '</span>' +
+        '</div>';
+      }).join('') : '<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">필터 조건에 맞는 항목이 없습니다.</div>';
+    }
 
+    // 전체 목록 그리기 (헤더 + 필터행 + 데이터행)
+    function drawAdminList() {
       var el = document.getElementById('admin-list');
       if (!DB.length) {
         el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">등록된 사례가 없습니다.</div>';
         return;
       }
-
-      // 정렬 화살표
-      function arr(key) {
-        if (adminSort.key !== key) return '<span class="sort-arrow">⇅</span>';
-        return '<span class="sort-arrow">' + (adminSort.asc ? '↑' : '↓') + '</span>';
-      }
-      function sortBy(key) {
-        if (adminSort.key === key) adminSort.asc = !adminSort.asc;
-        else { adminSort.key = key; adminSort.asc = true; }
-        drawAdminList();
-      }
-
-      // keepFocus 모드: 헤더+필터 행은 유지, 데이터 행만 업데이트
-      var headerHTML =
-        // 헤더 (클릭 시 정렬)
+      el.innerHTML =
         '<div class="admin-list-head">' +
-          '<span onclick="sortBy(\'id\')">No' + arr('id') + '</span>' +
-          '<span onclick="sortBy(\'cat\')">Category' + arr('cat') + '</span>' +
-          '<span onclick="sortBy(\'model\')">Model' + arr('model') + '</span>' +
-          '<span onclick="sortBy(\'title\')">Title' + arr('title') + '</span>' +
-          '<span onclick="sortBy(\'vendor\')">발생 협력사' + arr('vendor') + '</span>' +
-          '<span onclick="sortBy(\'grade\')">등급' + arr('grade') + '</span>' +
-          '<span onclick="sortBy(\'status\')">상태' + arr('status') + '</span>' +
+          '<span onclick="sortBy('id')">' + 'No' + arr('id') + '</span>' +
+          '<span onclick="sortBy('cat')">' + 'Category' + arr('cat') + '</span>' +
+          '<span onclick="sortBy('model')">' + 'Model' + arr('model') + '</span>' +
+          '<span onclick="sortBy('title')">' + 'Title' + arr('title') + '</span>' +
+          '<span onclick="sortBy('vendor')">' + '발생 협력사' + arr('vendor') + '</span>' +
+          '<span onclick="sortBy('grade')">' + '등급' + arr('grade') + '</span>' +
+          '<span onclick="sortBy('status')">' + '상태' + arr('status') + '</span>' +
         '</div>' +
-        // 필터 입력행
-        '<div class="admin-filter-row" id="admin-filter-row">' +
-          '<input type="text" id="af-no"     placeholder="No"     value="' + adminFilter.no     + '" oninput="debounceFilter(\'no\',this.value)">' +
-          '<input type="text" id="af-cat"    placeholder="Category" value="' + adminFilter.cat  + '" oninput="debounceFilter(\'cat\',this.value)">' +
-          '<input type="text" id="af-model"  placeholder="Model"  value="' + adminFilter.model  + '" oninput="debounceFilter(\'model\',this.value)">' +
-          '<input type="text" id="af-title"  placeholder="Title"  value="' + adminFilter.title  + '" oninput="debounceFilter(\'title\',this.value)">' +
-          '<input type="text" id="af-vendor" placeholder="협력사" value="' + adminFilter.vendor + '" oninput="debounceFilter(\'vendor\',this.value)">' +
-          '<input type="text" id="af-grade"  placeholder="등급"  value="' + adminFilter.grade   + '" oninput="debounceFilter(\'grade\',this.value)">' +
-          '<input type="text" id="af-status" placeholder="상태"  value="' + adminFilter.status  + '" oninput="debounceFilter(\'status\',this.value)">' +
+        '<div class="admin-filter-row">' +
+          '<input type="text" id="af-no"     placeholder="No"       value="' + adminFilter.no     + '" oninput="onFilterInput('no',this.value)">' +
+          '<input type="text" id="af-cat"    placeholder="Category" value="' + adminFilter.cat    + '" oninput="onFilterInput('cat',this.value)">' +
+          '<input type="text" id="af-model"  placeholder="Model"    value="' + adminFilter.model  + '" oninput="onFilterInput('model',this.value)">' +
+          '<input type="text" id="af-title"  placeholder="Title"    value="' + adminFilter.title  + '" oninput="onFilterInput('title',this.value)">' +
+          '<input type="text" id="af-vendor" placeholder="협력사"  value="' + adminFilter.vendor + '" oninput="onFilterInput('vendor',this.value)">' +
+          '<input type="text" id="af-grade"  placeholder="등급"    value="' + adminFilter.grade  + '" oninput="onFilterInput('grade',this.value)">' +
+          '<input type="text" id="af-status" placeholder="상태"    value="' + adminFilter.status + '" oninput="onFilterInput('status',this.value)">' +
         '</div>' +
-      ; // headerHTML 끝
-
-      // 데이터 행 HTML
-      var dataHTML = (filtered.length ? filtered.map(function(d) {
-          return '<div class="admin-list-row" onclick="startEdit(' + d.id + ')">' +
-            '<span class="meta">' + d.id + '</span>' +
-            '<span class="meta">' + (d.cat||'-') + '</span>' +
-            '<span class="meta">' + (d.model||'-') + '</span>' +
-            '<span class="title">' + (d.title||'-') + '</span>' +
-            '<span class="meta">' + (d.vendor||'-') + '</span>' +
-            '<span>' + gb(d.grade) + '</span>' +
-            '<span>' + sb(d.status) + '</span>' +
-          '</div>';
-      }).join('') :
-        '<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">필터 조건에 맞는 항목이 없습니다.</div>');
-
-      if (keepFocus) {
-        // 포커스 유지 모드: 기존 필터 행 input 값 보존하고 데이터 행만 교체
-        // 헤더 + 필터 행 다시 렌더링 후 데이터만 교체
-        el.innerHTML = headerHTML + dataHTML;
-        // 필터 값 복원
-        var fields = ['no','cat','model','title','vendor','grade','status'];
-        fields.forEach(function(f) {
-          var inp = document.getElementById('af-' + f);
-          if (inp) {
-            inp.value = adminFilter[f];
-            // 커서를 끝으로 이동
-            var len = inp.value.length;
-            inp.setSelectionRange(len, len);
-          }
-        });
-      } else {
-        el.innerHTML = headerHTML + dataHTML;
-      }
+        '<div id="admin-list-body"></div>';
+      renderDataRows();
     }
 
     // 필터 초기화
