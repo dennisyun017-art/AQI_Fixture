@@ -5,8 +5,8 @@
     {
       "id": "defect",
       "icon": "🔍",
-      "label": "실패 사례",
-      "desc": "불량 사례 DB 조회 및 체크리스트",
+      "label": "Issue DB",
+      "desc": "Issue DB 조회 및 체크리스트",
       "color": "#C0392B",
       "enabled": true
     },

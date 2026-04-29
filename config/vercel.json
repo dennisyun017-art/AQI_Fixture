@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/config/:path*",    "destination": "/config/:path*" },
+    { "source": "/",                 "destination": "/app/dashboard.html" },
+    { "source": "/:path*",           "destination": "/app/:path*" }
+  ]
+}
