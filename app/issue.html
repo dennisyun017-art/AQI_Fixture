@@ -9,52 +9,78 @@
     * {
       box-sizing: border-box;
       margin: 0;
-      padding: 0
+      padding: 0;
     }
 
     :root {
-      --bg: #fff;
-      --bg2: #f5f5f5;
-      --bg3: #ebebeb;
-      --text: #111;
-      --text2: #555;
-      --text3: #999;
-      --border: #e0e0e0;
-      --border2: #ccc;
-      --green: #0f6e56;
-      --green-bg: #e1f5ee;
-      --red-bg: #fcebeb;
-      --red-txt: #a32d2d;
-      --amber-bg: #faeeda;
-      --amber-txt: #854f0b;
-      --teal-bg: #e1f5ee;
-      --teal-txt: #0f6e56;
-      --blue-bg: #e6f1fb;
-      --blue-txt: #185fa5;
-      --r: 8px;
-      --rl: 12px;
+      --primary: #102A43;
+      --primary2: #1A3A5C;
+      --accent: #C9951A;
+      --accent2: #E8A020;
+      --bg: #F5F7FA;
+      --surface: #FFFFFF;
+      --surface2: #F8FAFC;
+      --surface3: #EEF2F6;
+      --text: #1F2933;
+      --text2: #52616F;
+      --text3: #8A97A6;
+      --border: #DDE5EE;
+      --border2: #C9D3DF;
+      --red-bg: #FDECEC;
+      --red-txt: #B42318;
+      --amber-bg: #FFF4D6;
+      --amber-txt: #9A6700;
+      --green: #0F8A5F;
+      --green-bg: #E5F7EF;
+      --blue-bg: #E8F1FC;
+      --blue-txt: #185FA5;
+      --purple-bg: #F4F0FF;
+      --purple-txt: #5B3DB6;
+      --purple-border: #D8CCFF;
+      --shadow: 0 2px 10px rgba(16, 42, 67, .05);
+      --shadow2: 0 10px 28px rgba(16, 42, 67, .10);
+      --r: 10px;
+      --rl: 16px;
     }
 
     body {
       font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
-      background: #f0f0f0;
+      background: var(--bg);
       color: var(--text);
-      font-size: 14px
+      font-size: 14px;
+      min-width: 1100px;
     }
 
-    /* 헤더 */
+    button,
+    input,
+    select,
+    textarea {
+      font-family: inherit;
+    }
+
     .hdr {
-      background: #1a1a1a;
+      background: linear-gradient(90deg, #0B1F33 0%, #102A43 65%, #123A5A 100%);
       color: #fff;
-      padding: 14px 24px;
+      padding: 16px 28px;
       display: flex;
       align-items: center;
-      gap: 12px
+      gap: 12px;
+      box-shadow: 0 4px 16px rgba(16, 42, 67, .18);
+    }
+
+    .hdr small {
+      color: var(--accent2);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .5px;
+      display: block;
+      margin-bottom: 2px;
     }
 
     .hdr h1 {
-      font-size: 16px;
-      font-weight: 600
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -.3px;
     }
 
     .hdr-right {
@@ -62,179 +88,260 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 12px
+      font-size: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     .badge {
       font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 4px
+      padding: 4px 10px;
+      border-radius: 999px;
     }
 
     .badge-gray {
-      background: #333;
-      color: #ccc
+      background: rgba(255, 255, 255, .12);
+      color: rgba(255, 255, 255, .9);
+      border: 1px solid rgba(255, 255, 255, .16);
     }
 
     .badge-green {
-      background: #2d4a2d;
-      color: #7ec87e;
-      display: none
+      background: rgba(15, 138, 95, .18);
+      color: #A8F0D1;
+      border: 1px solid rgba(168, 240, 209, .24);
+      display: none;
     }
 
     .btn-sm {
       font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 4px;
+      padding: 6px 12px;
+      border-radius: 999px;
       cursor: pointer;
-      font-family: inherit
-    }
-
-    .btn-login {
-      border: 1px solid #555;
       background: none;
-      color: #aaa
+      color: rgba(255, 255, 255, .82);
+      border: 1px solid rgba(255, 255, 255, .24);
     }
 
-    .btn-login:hover {
-      border-color: #999;
-      color: #fff
+    .btn-sm:hover {
+      border-color: var(--accent2);
+      color: #fff;
     }
 
-    .btn-logout {
-      border: 1px solid #4a6a4a;
-      background: none;
-      color: #7ec87e;
-      display: none
-    }
-
-    .btn-logout:hover {
-      color: #9ee09e
-    }
-
+    .btn-logout,
     .btn-save-file {
-      border: 1px solid #4a6a8a;
-      background: none;
-      color: #7ab0de;
-      display: none
+      display: none;
     }
 
-    .btn-save-file:hover {
-      color: #9ecaee
-    }
-
-    /* 탭 */
     .tab-wrap {
       background: #fff;
       border-bottom: 1px solid var(--border);
-      padding: 0 24px
+      box-shadow: var(--shadow);
+      padding: 0 28px;
+      overflow-x: auto;
     }
 
     .tab-bar {
-      display: flex
+      display: flex;
+      max-width: 1360px;
+      margin: 0 auto;
     }
 
     .tab {
-      padding: 12px 20px;
+      padding: 15px 24px;
       font-size: 13px;
       cursor: pointer;
       border: none;
-      border-bottom: 2px solid transparent;
+      border-bottom: 3px solid transparent;
       color: var(--text2);
       background: none;
-      font-family: inherit;
-      font-weight: 500
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .tab:hover {
+      color: var(--primary);
+      background: #FAFBFC;
     }
 
     .tab.on {
-      color: #1a1a1a;
-      border-bottom-color: #1a1a1a
+      color: var(--primary);
+      border-bottom-color: var(--accent);
+      font-weight: 800;
     }
 
     .tab-admin {
-      display: none
+      display: none;
     }
 
-    /* 컨텐츠 */
     .content {
-      padding: 20px 24px;
-      max-width: 1280px;
-      margin: 0 auto
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 24px 28px 40px;
     }
 
     .sec {
-      display: none
+      display: none !important;
     }
 
     .sec.on {
-      display: block
+      display: block !important;
     }
 
-    /* 필터 */
-    .filter-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-      align-items: center
-    }
-
-    .filter-row input,
-    .filter-row select {
-      font-size: 13px;
-      padding: 7px 10px;
-      border-radius: var(--r);
-      border: 1px solid var(--border2);
-      background: #fff;
-      color: var(--text);
-      font-family: inherit;
-      outline: none
-    }
-
-    .filter-row input:focus,
-    .filter-row select:focus {
-      border-color: #555
-    }
-
-    .filter-row input {
-      flex: 1;
-      min-width: 150px
-    }
-
-    /* 통계 */
     .stat-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 16px;
-      flex-wrap: wrap
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
     }
 
     .stat-card {
       background: #fff;
       border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 10px 16px;
-      flex: 1;
-      min-width: 90px
+      border-radius: var(--rl);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
     }
 
     .stat-num {
-      font-size: 22px;
-      font-weight: 700;
-      line-height: 1
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
     }
 
     .stat-label {
-      font-size: 11px;
-      color: var(--text2);
-      margin-top: 4px
+      font-size: 11.5px;
+      color: #64748B;
+      font-weight: 700;
+      margin-top: 6px;
     }
 
-    /* 카드 그리드 */
+    .filter-toolbar {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--rl);
+      padding: 13px 14px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .filter-title {
+      font-size: 14px;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1.2;
+    }
+
+    .filter-sub {
+      font-size: 12px;
+      color: #64748B;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .btn-filter-toggle {
+      border: 1px solid var(--border2);
+      background: #fff;
+      color: var(--text2);
+      border-radius: 999px;
+      padding: 8px 14px;
+      min-height: 36px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .btn-filter-toggle:hover {
+      border-color: var(--accent);
+      color: var(--primary);
+      background: #F8FAFC;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: 1.3fr repeat(6, minmax(120px, .7fr)) 1fr 1fr auto;
+      gap: 8px;
+      align-items: center;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--rl);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    .filter-row.is-collapsed {
+      display: none !important;
+    }
+
+    .filter-row input,
+    .filter-row select,
+    .field input,
+    .field select,
+    .field textarea,
+    .login-field input,
+    .sign-input {
+      font-size: 13px;
+      padding: 8px 10px;
+      border-radius: var(--r);
+      border: 1px solid var(--border2);
+      background: #fff;
+      color: var(--text);
+      outline: none;
+      width: 100%;
+      min-height: 38px;
+    }
+
+    .filter-row input:focus,
+    .filter-row select:focus,
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus,
+    .login-field input:focus,
+    .sign-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(201, 149, 26, .14);
+    }
+
+    .btn-reset,
+    .btn-detail,
+    .btn-close,
+    .btn-secondary {
+      font-size: 12px;
+      padding: 8px 14px;
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      background: #fff;
+      color: var(--text2);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-reset:hover,
+    .btn-detail:hover,
+    .btn-close:hover,
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--primary);
+      background: #F8FAFC;
+    }
+
+    .result-info {
+      color: var(--text2);
+      font-size: 13px;
+      font-weight: 800;
+      margin: 18px 0 12px;
+    }
+
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-      gap: 12px
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
     }
 
     .card {
@@ -243,24 +350,26 @@
       border-radius: var(--rl);
       padding: 14px;
       cursor: pointer;
-      transition: box-shadow .15s, border-color .15s;
-      position: relative
+      box-shadow: var(--shadow);
+      transition: transform .16s, box-shadow .16s, border-color .16s;
     }
 
     .card:hover {
-      border-color: #999;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, .08)
+      transform: translateY(-3px);
+      border-color: rgba(201, 149, 26, .48);
+      box-shadow: var(--shadow2);
     }
 
     .card.closed {
-      opacity: .5
+      opacity: .72;
     }
 
     .card-img {
       width: 100%;
-      height: 110px;
-      background: var(--bg2);
-      border-radius: var(--r);
+      height: 120px;
+      background: #F1F5F9;
+      border: 1px dashed var(--border2);
+      border-radius: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -268,78 +377,100 @@
       margin-bottom: 10px;
       color: var(--text3);
       font-size: 11px;
-      border: 1px dashed var(--border2);
       gap: 4px;
-      overflow: hidden
+      overflow: hidden;
     }
 
     .card-img img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: var(--r)
+      border-radius: 12px;
     }
 
     .tags {
       display: flex;
       gap: 5px;
       flex-wrap: wrap;
-      margin-bottom: 8px
+      margin-bottom: 8px;
     }
 
     .tag {
       font-size: 11px;
-      padding: 2px 7px;
-      border-radius: 4px;
-      font-weight: 600
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-weight: 800;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .tag-a {
       background: var(--red-bg);
-      color: var(--red-txt)
+      color: var(--red-txt);
+      border-color: #F5B5B0;
     }
 
     .tag-b {
       background: var(--amber-bg);
-      color: var(--amber-txt)
+      color: var(--amber-txt);
+      border-color: #F5D47A;
     }
 
     .tag-c {
-      background: var(--teal-bg);
-      color: var(--teal-txt)
+      background: var(--green-bg);
+      color: #087443;
+      border-color: #A9E8C8;
     }
 
     .tag-n {
-      background: var(--bg2);
-      color: var(--text2)
+      background: #EEF2F6;
+      color: var(--text2);
+      border-color: var(--border);
     }
 
     .tag-open {
       background: var(--blue-bg);
-      color: var(--blue-txt)
+      color: var(--blue-txt);
+      border-color: #BBD5F5;
     }
 
     .tag-close {
-      background: #f1efe8;
-      color: #5f5e5a
+      background: #ECEFF3;
+      color: #5F6B7A;
+      border-color: #D5DBE3;
+    }
+
+    .tag-source {
+      background: var(--purple-bg);
+      color: var(--purple-txt);
+      border-color: var(--purple-border);
     }
 
     .card-title {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 4px;
-      line-height: 1.4
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 5px;
+      line-height: 1.4;
     }
 
     .card-sub {
-      font-size: 12px;
       color: var(--text2);
-      margin-bottom: 6px
+      font-size: 12px;
+      line-height: 1.45;
+      margin-bottom: 6px;
     }
 
     .card-meta {
-      font-size: 11px;
-      color: var(--text3)
+      color: var(--text3);
+      font-size: 11.5px;
+      padding-top: 8px;
+      border-top: 1px solid #E2E8F0;
     }
 
     .empty {
@@ -349,22 +480,24 @@
       font-size: 13px;
       background: #fff;
       border-radius: var(--rl);
-      border: 1px solid var(--border)
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
     }
 
-    .result-info {
-      font-size: 12px;
-      color: #888;
-      margin-bottom: 10px
-    }
-
-    /* 체크리스트 */
-    .cl-prog {
+    .cl-prog,
+    .ci,
+    .sign-box,
+    .admin-wrap,
+    .admin-list {
       background: #fff;
       border: 1px solid var(--border);
       border-radius: var(--rl);
+      box-shadow: var(--shadow);
+    }
+
+    .cl-prog {
       padding: 14px 16px;
-      margin-bottom: 12px
+      margin-bottom: 12px;
     }
 
     .prog-row {
@@ -372,21 +505,21 @@
       justify-content: space-between;
       font-size: 12px;
       color: var(--text2);
-      margin-bottom: 6px
+      margin-bottom: 6px;
     }
 
     .pbar {
       height: 8px;
-      background: var(--bg3);
+      background: #E2E8F0;
       border-radius: 4px;
-      overflow: hidden
+      overflow: hidden;
     }
 
     .pfill {
       height: 100%;
-      background: var(--green);
+      background: linear-gradient(90deg, #0F8A5F, #21B27E);
       border-radius: 4px;
-      transition: width .3s
+      transition: width .3s;
     }
 
     .ci {
@@ -394,20 +527,18 @@
       align-items: flex-start;
       gap: 10px;
       padding: 12px 14px;
-      border-radius: var(--r);
-      border: 1px solid var(--border);
       margin-bottom: 8px;
-      background: #fff;
-      cursor: pointer
+      cursor: pointer;
     }
 
     .ci:hover {
-      background: var(--bg2)
+      background: #FAFBFC;
+      border-color: rgba(201, 149, 26, .45);
     }
 
     .ci.done {
-      opacity: .55;
-      background: var(--bg2)
+      opacity: .6;
+      background: #F1F5F9;
     }
 
     .ci input[type=checkbox] {
@@ -416,12 +547,12 @@
       margin-top: 2px;
       flex-shrink: 0;
       cursor: pointer;
-      accent-color: var(--green)
+      accent-color: var(--green);
     }
 
     .ci-body {
       flex: 1;
-      min-width: 0
+      min-width: 0;
     }
 
     .ci-top {
@@ -429,412 +560,119 @@
       gap: 6px;
       align-items: center;
       margin-bottom: 4px;
-      flex-wrap: wrap
+      flex-wrap: wrap;
     }
 
     .ci-title {
       font-size: 13px;
-      font-weight: 600
+      font-weight: 800;
     }
 
     .ci-check {
       font-size: 12px;
       color: var(--text2);
-      line-height: 1.5
-    }
-
-    .btn-detail {
-      font-size: 11px;
-      padding: 4px 10px;
-      border: 1px solid var(--border2);
-      border-radius: var(--r);
-      background: #fff;
-      color: var(--text2);
-      cursor: pointer;
-      font-family: inherit;
-      flex-shrink: 0
-    }
-
-    .btn-detail:hover {
-      background: var(--bg2)
+      line-height: 1.5;
     }
 
     .sign-box {
-      background: #fff;
-      border: 1px dashed var(--border2);
-      border-radius: var(--rl);
+      border-style: dashed;
       padding: 20px;
       text-align: center;
-      margin-top: 16px
+      margin-top: 16px;
     }
 
     .sign-label {
       font-size: 12px;
       color: var(--green);
-      font-weight: 600;
+      font-weight: 800;
       margin-bottom: 10px;
-      display: block
+      display: block;
     }
 
     .sign-box p {
       font-size: 13px;
       color: var(--text2);
-      margin-bottom: 12px
+      margin-bottom: 12px;
     }
 
     .sign-input {
-      font-size: 13px;
-      padding: 7px 12px;
-      border-radius: var(--r);
-      border: 1px solid var(--border2);
-      font-family: inherit;
-      width: 200px;
+      max-width: 240px;
       margin-bottom: 10px;
-      outline: none
     }
 
-    .btn-submit {
-      background: #1a1a1a;
+    .btn-submit,
+    .btn-primary,
+    .btn-login-ok {
+      background: var(--primary);
       color: #fff;
       border: none;
       border-radius: var(--r);
       padding: 9px 22px;
       font-size: 13px;
       cursor: pointer;
-      font-family: inherit;
-      font-weight: 600
+      font-weight: 800;
     }
 
-    .btn-submit:hover {
-      background: #333
+    .btn-submit:hover,
+    .btn-primary:hover,
+    .btn-login-ok:hover {
+      background: var(--primary2);
     }
 
-    .btn-reset {
-      font-size: 12px;
-      padding: 7px 14px;
-      border: 1px solid var(--border2);
-      border-radius: var(--r);
-      background: #fff;
-      color: var(--text2);
-      cursor: pointer;
-      font-family: inherit
-    }
-
-    .btn-reset:hover {
-      background: var(--bg2)
-    }
-
-    /* 모달 공통 */
-    .modal-bg {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, .55);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-      padding: 20px
-    }
-
-    .modal-bg.on {
-      display: flex
-    }
-
-    /* 상세 모달 */
-    .modal {
-      background: #fff;
-      border-radius: var(--rl);
-      width: 100%;
-      max-width: 560px;
-      max-height: 90vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column
-    }
-
-    .modal-head {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      flex-shrink: 0
-    }
-
-    .modal-head-info {
-      flex: 1
-    }
-
-    .modal-head-title {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 5px
-    }
-
-    .modal-head-sub {
-      font-size: 12px;
-      color: var(--text2)
-    }
-
-    .btn-close {
-      background: none;
-      border: 1px solid var(--border2);
-      border-radius: var(--r);
-      padding: 5px 12px;
-      cursor: pointer;
-      font-size: 12px;
-      color: var(--text2);
-      font-family: inherit;
-      flex-shrink: 0
-    }
-
-    .btn-close:hover {
-      background: var(--bg2)
-    }
-
-    .modal-body {
-      padding: 16px 20px;
-      overflow-y: auto;
-      flex: 1
-    }
-
-    .photo-scroll {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      max-height: 260px;
-      overflow-y: auto;
-      background: var(--bg2);
-      border-radius: var(--r);
-      padding: 8px;
-      margin-bottom: 14px;
-      border: 1px solid var(--border)
-    }
-
-    .photo-scroll::-webkit-scrollbar {
-      width: 4px
-    }
-
-    .photo-scroll::-webkit-scrollbar-thumb {
-      background: var(--border2);
-      border-radius: 2px
-    }
-
-    .photo-item {
-      width: 100%;
-      border-radius: 6px;
-      object-fit: contain;
-      background: #fff;
-      display: block
-    }
-
-    .photo-empty {
-      height: 130px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: var(--text3);
-      font-size: 12px;
-      gap: 6px
-    }
-
-    .photo-count {
-      font-size: 11px;
-      color: var(--text3);
-      margin-bottom: 4px;
-      text-align: right
-    }
-
-    .kv {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 10px;
-      font-size: 13px;
-      align-items: flex-start
-    }
-
-    .kv .k {
-      color: var(--text2);
-      min-width: 82px;
-      flex-shrink: 0;
-      font-weight: 500
-    }
-
-    .kv .v {
-      color: var(--text);
-      line-height: 1.5;
-      flex: 1
-    }
-
-    .kv .v-green {
-      color: var(--green);
-      font-weight: 600;
-      line-height: 1.5;
-      flex: 1
-    }
-
-    .sep {
-      height: 1px;
-      background: var(--border);
-      margin: 10px 0
-    }
-
-    .admin-ctrl {
-      background: #f8f8f6;
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 12px 14px;
-      margin-top: 14px;
-      display: none
-    }
-
-    .admin-ctrl.show {
-      display: block
-    }
-
-    .admin-ctrl-title {
-      font-size: 11px;
-      color: var(--text3);
-      margin-bottom: 8px;
-      font-weight: 600;
-      letter-spacing: .5px
-    }
-
-    .ctrl-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap
-    }
-
-    .btn-open {
-      font-size: 12px;
-      padding: 6px 14px;
-      border-radius: var(--r);
-      border: 1px solid #185fa5;
-      background: var(--blue-bg);
-      color: #185fa5;
-      cursor: pointer;
-      font-family: inherit;
-      font-weight: 600
-    }
-
-    .btn-open:hover {
-      background: #d0e5f7
-    }
-
-    .btn-close-st {
-      font-size: 12px;
-      padding: 6px 14px;
-      border-radius: var(--r);
-      border: 1px solid var(--border2);
-      background: var(--bg2);
-      color: var(--text2);
-      cursor: pointer;
-      font-family: inherit;
-      font-weight: 600
-    }
-
-    .btn-close-st:hover {
-      background: var(--bg3)
-    }
-
-    .btn-edit {
-      font-size: 12px;
-      padding: 6px 14px;
-      border-radius: var(--r);
-      border: 1px solid #854f0b;
-      background: var(--amber-bg);
-      color: #854f0b;
-      cursor: pointer;
-      font-family: inherit;
-      font-weight: 600
-    }
-
-    .btn-edit:hover {
-      background: #f5dfc0
-    }
-
-    .btn-del {
-      font-size: 12px;
-      padding: 6px 14px;
-      border-radius: var(--r);
-      border: 1px solid var(--red-txt);
-      background: var(--red-bg);
-      color: var(--red-txt);
-      cursor: pointer;
-      font-family: inherit;
-      font-weight: 600
-    }
-
-    .btn-del:hover {
-      background: #f7d0d0
-    }
-
-    /* 관리자 입력 폼 */
     .admin-wrap {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: var(--rl);
       padding: 20px;
-      margin-bottom: 16px
+      margin-bottom: 18px;
+      overflow: hidden;
     }
 
     .admin-wrap h2 {
       font-size: 14px;
-      font-weight: 700;
+      font-weight: 900;
       margin-bottom: 16px;
       padding-bottom: 10px;
-      border-bottom: 1px solid var(--border)
+      border-bottom: 1px solid var(--border);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .admin-wrap h2::before {
+      content: '';
+      width: 4px;
+      height: 16px;
+      border-radius: 999px;
+      background: var(--accent);
+      display: inline-block;
     }
 
     .form-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 12px
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 12px;
     }
 
     .form-grid.full {
-      grid-template-columns: 1fr
+      grid-template-columns: 1fr;
     }
 
     .field {
       display: flex;
       flex-direction: column;
-      gap: 5px
+      gap: 5px;
     }
 
     .field label {
       font-size: 12px;
       color: var(--text2);
-      font-weight: 500
-    }
-
-    .field input,
-    .field select,
-    .field textarea {
-      font-size: 13px;
-      padding: 8px 10px;
-      border-radius: var(--r);
-      border: 1px solid var(--border2);
-      background: #fff;
-      color: var(--text);
-      font-family: inherit;
-      outline: none;
-      width: 100%
-    }
-
-    .field input:focus,
-    .field select:focus,
-    .field textarea:focus {
-      border-color: #555
+      font-weight: 800;
     }
 
     .field textarea {
+      min-height: 78px;
+      line-height: 1.5;
       resize: vertical;
-      min-height: 70px;
-      line-height: 1.5
     }
 
     .photo-upload-area {
@@ -844,29 +682,26 @@
       text-align: center;
       cursor: pointer;
       transition: border-color .15s;
-      margin-top: 4px
+      margin-top: 4px;
+      background: #FAFBFC;
     }
 
     .photo-upload-area:hover {
-      border-color: #888
-    }
-
-    .photo-upload-area input[type=file] {
-      display: none
+      border-color: var(--accent);
     }
 
     .upload-label {
       font-size: 12px;
       color: var(--text2);
       cursor: pointer;
-      display: block
+      display: block;
     }
 
     .photo-preview {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-top: 10px
+      margin-top: 10px;
     }
 
     .preview-item {
@@ -875,13 +710,13 @@
       height: 80px;
       border-radius: 6px;
       overflow: hidden;
-      border: 1px solid var(--border)
+      border: 1px solid var(--border);
     }
 
     .preview-item img {
       width: 100%;
       height: 100%;
-      object-fit: cover
+      object-fit: cover;
     }
 
     .preview-del {
@@ -899,7 +734,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      line-height: 1
     }
 
     .form-btn-row {
@@ -908,79 +742,51 @@
       justify-content: flex-end;
       margin-top: 16px;
       padding-top: 14px;
-      border-top: 1px solid var(--border)
+      border-top: 1px solid var(--border);
     }
 
-    .btn-primary {
-      background: #1a1a1a;
-      color: #fff;
-      border: none;
-      border-radius: var(--r);
-      padding: 9px 22px;
-      font-size: 13px;
-      cursor: pointer;
-      font-family: inherit;
-      font-weight: 600
-    }
-
-    .btn-primary:hover {
-      background: #333
-    }
-
-    .btn-secondary {
-      background: #fff;
-      color: var(--text2);
-      border: 1px solid var(--border2);
-      border-radius: var(--r);
-      padding: 9px 18px;
-      font-size: 13px;
-      cursor: pointer;
-      font-family: inherit
-    }
-
-    .btn-secondary:hover {
-      background: var(--bg2)
-    }
-
-    /* 관리자 목록 */
     .admin-list {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: var(--rl);
-      overflow: hidden
+      overflow: hidden;
     }
 
-    /* 관리자 목록 필터 행 */
-    .admin-filter-row {
+    .admin-list-head,
+    .admin-filter-row,
+    .admin-list-row {
       display: grid;
-      grid-template-columns: 40px 100px 100px 1fr 90px 70px 80px;
+      grid-template-columns: 40px 95px 110px 1fr 100px 120px 70px 80px;
       gap: 6px;
+      align-items: center;
+    }
+
+    .admin-list-head {
+      padding: 10px 14px;
+      background: #F1F5F9;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--primary);
+      font-weight: 800;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .admin-filter-row {
       padding: 8px 14px;
-      background: #f8f8f8;
+      background: #FAFBFC;
       border-bottom: 1px solid var(--border);
     }
 
     .admin-filter-row input {
       width: 100%;
       border: 1px solid var(--border2);
-      border-radius: 4px;
-      padding: 3px 6px;
+      border-radius: 6px;
+      padding: 4px 6px;
       font-size: 11px;
-      color: var(--text);
-      background: #fff;
-    }
-
-    .admin-filter-row input:focus {
-      outline: none;
-      border-color: var(--green);
     }
 
     .admin-filter-clear {
       font-size: 11px;
       color: var(--text3);
       cursor: pointer;
-      text-align: center;
-      padding: 4px 0;
       text-decoration: underline;
     }
 
@@ -988,22 +794,35 @@
       color: var(--red-txt);
     }
 
-    .admin-list-head {
-      display: grid;
-      grid-template-columns: 40px 100px 100px 1fr 90px 70px 80px;
-      gap: 6px;
+    .admin-list-row {
       padding: 10px 14px;
-      background: var(--bg2);
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid #E2E8F0;
       font-size: 12px;
-      color: var(--text2);
-      font-weight: 600;
       cursor: pointer;
-      user-select: none;
     }
 
-    .admin-list-head span:hover {
+    .admin-list-row:last-child {
+      border-bottom: none;
+    }
+
+    .admin-list-row:hover {
+      background: #FAFBFC;
+    }
+
+    .admin-list-row .title,
+    .admin-list-row .meta {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .admin-list-row .title {
+      font-weight: 800;
       color: var(--text);
+    }
+
+    .admin-list-row .meta {
+      color: var(--text2);
     }
 
     .sort-arrow {
@@ -1011,1195 +830,67 @@
       margin-left: 2px;
     }
 
-    .admin-list-row {
-      display: grid;
-      grid-template-columns: 40px 100px 100px 1fr 90px 70px 80px;
-      gap: 6px;
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-      font-size: 12px;
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(16, 42, 67, .55);
+      backdrop-filter: blur(3px);
+      z-index: 200;
       align-items: center;
-      cursor: pointer;
-      transition: background .1s
+      justify-content: center;
+      padding: 20px;
     }
 
-    .admin-list-row:last-child {
-      border-bottom: none
-    }
-
-    .admin-list-row:hover {
-      background: var(--bg2)
-    }
-
-    .admin-list-row .title {
-      font-weight: 500;
-      color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis
-    }
-
-    .admin-list-row .meta {
-      color: var(--text2)
-    }
-
-    .admin-list-row .act {
+    .modal-bg.on {
       display: flex;
-      gap: 6px
     }
 
-    /* 로그인 모달 */
-    .login-modal {
+    .modal {
       background: #fff;
-      border-radius: var(--rl);
-      padding: 28px 32px;
-      width: 300px;
-      text-align: center
-    }
-
-    .login-title {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 6px
-    }
-
-    .login-sub {
-      font-size: 12px;
-      color: var(--text2);
-      margin-bottom: 20px
-    }
-
-    .login-field {
+      border-radius: 18px;
+      width: min(860px, calc(100vw - 40px));
+      max-height: 88vh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-bottom: 14px
+      box-shadow: 0 18px 48px rgba(16, 42, 67, .24);
     }
 
-    .login-field input {
-      font-size: 13px;
-      padding: 8px 12px;
-      border-radius: var(--r);
-      border: 1px solid var(--border2);
-      font-family: inherit;
-      outline: none
+    .modal-head {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      background: #F8FAFC;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      flex-shrink: 0;
     }
 
-    .login-field input:focus {
-      border-color: #555
+    .modal-head-info {
+      flex: 1;
     }
 
-    .btn-login-ok {
-      width: 100%;
-      background: #1a1a1a;
-      color: #fff;
-      border: none;
-      border-radius: var(--r);
-      padding: 10px;
-      font-size: 13px;
-      cursor: pointer;
-      font-family: inherit;
-      font-weight: 600;
-      margin-bottom: 8px
+    .modal-head-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 5px;
+      line-height: 1.35;
     }
 
-    .btn-login-ok:hover {
-      background: #333
-    }
-
-    .btn-login-cancel {
-      width: 100%;
-      background: none;
+    .modal-head-sub {
+      font-size: 12.5px;
       color: var(--text2);
-      border: 1px solid var(--border2);
-      border-radius: var(--r);
-      padding: 8px;
-      font-size: 12px;
-      cursor: pointer;
-      font-family: inherit
-    }
-
-    .login-err {
-      font-size: 12px;
-      color: var(--red-txt);
-      margin-bottom: 10px;
-      display: none
-    }
-
-    @media(max-width:700px) {
-      .content {
-        padding: 14px 12px
-      }
-
-      .grid {
-        grid-template-columns: 1fr 1fr
-      }
-
-      .form-grid {
-        grid-template-columns: 1fr
-      }
-
-      .admin-list-head,
-      .admin-filter-row,
-      .admin-list-row {
-        grid-template-columns: 30px 1fr 70px 60px
-      }
-
-      .admin-list-head span:nth-child(n+6),
-      .admin-filter-row input:nth-child(n+6),
-      .admin-list-row>*:nth-child(n+6) {
-        display: none
-      }
-    }
-
-    @media(max-width:400px) {
-      .grid {
-        grid-template-columns: 1fr
-      }
-    }
-
-    /* =========================================================
-   AQI Issue DB Theme Override
-   Theme: Light Industrial / White + Gold Point
-   Applied: Step 9-1
-   ========================================================= */
-
-    /* ===== AQI 공통 색상 재정의 ===== */
-    :root {
-      --aqi-primary: #102A43;
-      --aqi-primary-2: #1A3A5C;
-      --aqi-accent: #C9951A;
-      --aqi-accent-2: #E8A020;
-
-      --aqi-bg: #F5F7FA;
-      --aqi-surface: #FFFFFF;
-      --aqi-surface-2: #F8FAFC;
-      --aqi-surface-3: #EEF2F6;
-
-      --aqi-text: #1F2933;
-      --aqi-text-2: #52616F;
-      --aqi-text-3: #8A97A6;
-
-      --aqi-border: #DDE5EE;
-      --aqi-border-2: #C9D3DF;
-
-      --aqi-shadow: 0 8px 24px rgba(16, 42, 67, 0.08);
-      --aqi-shadow-soft: 0 2px 10px rgba(16, 42, 67, 0.06);
-
-      --bg: var(--aqi-surface);
-      --bg2: var(--aqi-surface-2);
-      --bg3: var(--aqi-surface-3);
-      --text: var(--aqi-text);
-      --text2: var(--aqi-text-2);
-      --text3: var(--aqi-text-3);
-      --border: var(--aqi-border);
-      --border2: var(--aqi-border-2);
-
-      --green: #0F8A5F;
-      --green-bg: #E5F7EF;
-
-      --red-bg: #FDECEC;
-      --red-txt: #B42318;
-
-      --amber-bg: #FFF4D6;
-      --amber-txt: #9A6700;
-
-      --teal-bg: #E4F7F5;
-      --teal-txt: #0F766E;
-
-      --blue-bg: #E8F1FC;
-      --blue-txt: #185FA5;
-    }
-
-    /* ===== 전체 배경 ===== */
-    body {
-      background:
-        linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
-      color: var(--aqi-text);
-    }
-
-    /* ===== 상단 헤더 ===== */
-    .hdr {
-      background: linear-gradient(90deg, #0B1F33 0%, #102A43 55%, #123A5A 100%);
-      color: #fff;
-      padding: 16px 28px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 4px 16px rgba(16, 42, 67, 0.18);
-    }
-
-    .hdr h1 {
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.3px;
-    }
-
-    .hdr>div:first-child>div {
-      color: var(--aqi-accent-2) !important;
-      font-weight: 700;
-      letter-spacing: 0.8px;
-    }
-
-    .hdr-right {
-      color: rgba(255, 255, 255, 0.82);
-    }
-
-    .badge-gray {
-      background: rgba(255, 255, 255, 0.12);
-      color: rgba(255, 255, 255, 0.86);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-    }
-
-    .badge-green {
-      background: rgba(15, 138, 95, 0.18);
-      color: #A8F0D1;
-      border: 1px solid rgba(168, 240, 209, 0.24);
-    }
-
-    /* ===== 상단 버튼 ===== */
-    .btn-login,
-    .btn-logout,
-    .btn-save-file {
-      border-color: rgba(255, 255, 255, 0.22);
-      color: rgba(255, 255, 255, 0.78);
-    }
-
-    .btn-login:hover,
-    .btn-logout:hover,
-    .btn-save-file:hover {
-      border-color: var(--aqi-accent-2);
-      color: #fff;
-    }
-
-    /* ===== 탭 영역 ===== */
-    .tab-wrap {
-      background: var(--aqi-surface);
-      border-bottom: 1px solid var(--aqi-border);
-      box-shadow: var(--aqi-shadow-soft);
-    }
-
-    .tab {
-      padding: 14px 22px;
-      color: var(--aqi-text-2);
-      border-bottom: 3px solid transparent;
-    }
-
-    .tab:hover {
-      color: var(--aqi-primary);
-      background: #FAFBFC;
-    }
-
-    .tab.on {
-      color: var(--aqi-primary);
-      border-bottom-color: var(--aqi-accent);
-      font-weight: 800;
-    }
-
-    /* ===== 컨텐츠 영역 ===== */
-    .content {
-      max-width: 1360px;
-      padding: 24px 28px 36px;
-    }
-
-    /* ===== 필터 영역 ===== */
-    .filter-row {
-      background: var(--aqi-surface);
-      border: 1px solid var(--aqi-border);
-      border-radius: 14px;
-      padding: 14px;
-      box-shadow: var(--aqi-shadow-soft);
-    }
-
-    .filter-row input,
-    .filter-row select {
-      background: #fff;
-      border: 1px solid var(--aqi-border-2);
-      color: var(--aqi-text);
-      min-height: 38px;
-    }
-
-    .filter-row input::placeholder {
-      color: var(--aqi-text-3);
-    }
-
-    .filter-row input:focus,
-    .filter-row select:focus {
-      border-color: var(--aqi-accent);
-      box-shadow: 0 0 0 3px rgba(201, 149, 26, 0.14);
-    }
-
-    /* ===== 통계 카드 ===== */
-    .stat-row {
-      margin-top: 18px;
-    }
-
-    .stat-card {
-      border: 1px solid var(--aqi-border);
-      border-radius: 14px;
-      background: var(--aqi-surface);
-      box-shadow: var(--aqi-shadow-soft);
-      padding: 16px 18px;
-      transition: transform .15s ease, box-shadow .15s ease;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--aqi-shadow);
-    }
-
-    .stat-num {
-      color: var(--aqi-primary);
-      font-size: 26px;
-    }
-
-    .stat-label {
-      color: var(--aqi-text-2);
-      font-weight: 600;
-    }
-
-    /* ===== 검색 결과 문구 ===== */
-    .result-info {
-      color: var(--aqi-text-2);
-      font-weight: 700;
-      margin: 16px 0 12px;
-    }
-
-    /* ===== 카드 그리드 ===== */
-    .grid {
-      gap: 16px;
-    }
-
-    .card {
-      border: 1px solid var(--aqi-border);
-      border-radius: 16px;
-      background: var(--aqi-surface);
-      box-shadow: var(--aqi-shadow-soft);
-      padding: 14px;
-      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-3px);
-      border-color: rgba(201, 149, 26, 0.45);
-      box-shadow: var(--aqi-shadow);
-    }
-
-    .card.closed {
-      opacity: 0.72;
-    }
-
-    .card-img {
-      background: #F1F5F9;
-      border: 1px dashed var(--aqi-border-2);
-      border-radius: 12px;
-      color: var(--aqi-text-3);
-    }
-
-    .card-title {
-      color: var(--aqi-text);
-      font-size: 14px;
-      font-weight: 800;
-    }
-
-    .card-sub {
-      color: var(--aqi-text-2);
-    }
-
-    .card-meta {
-      color: var(--aqi-text-3);
-      padding-top: 8px;
-      border-top: 1px solid var(--aqi-border);
-    }
-
-    /* ===== 등급 / 상태 태그 ===== */
-    .tag {
-      border-radius: 999px;
-      padding: 3px 8px;
-      font-weight: 800;
-      border: 1px solid transparent;
-    }
-
-    .tag-a {
-      background: #FDECEC;
-      color: #B42318;
-      border-color: #F5B5B0;
-    }
-
-    .tag-b {
-      background: #FFF4D6;
-      color: #9A6700;
-      border-color: #F5D47A;
-    }
-
-    .tag-c {
-      background: #E5F7EF;
-      color: #087443;
-      border-color: #A9E8C8;
-    }
-
-    .tag-n {
-      background: #EEF2F6;
-      color: var(--aqi-text-2);
-      border-color: #DDE5EE;
-    }
-
-    .tag-open {
-      background: #E8F1FC;
-      color: #185FA5;
-      border-color: #BBD5F5;
-    }
-
-    .tag-close {
-      background: #ECEFF3;
-      color: #5F6B7A;
-      border-color: #D5DBE3;
-    }
-
-    /* ===== 체크리스트 영역 ===== */
-    .cl-prog,
-    .ci,
-    .sign-box {
-      background: var(--aqi-surface);
-      border: 1px solid var(--aqi-border);
-      border-radius: 14px;
-      box-shadow: var(--aqi-shadow-soft);
-    }
-
-    .ci:hover {
-      background: #FAFBFC;
-      border-color: rgba(201, 149, 26, 0.4);
-    }
-
-    .ci.done {
-      background: #F1F5F9;
-    }
-
-    .pfill {
-      background: linear-gradient(90deg, #0F8A5F, #21B27E);
-    }
-
-    /* ===== 관리자 화면 ===== */
-    .admin-wrap,
-    .admin-list {
-      background: var(--aqi-surface);
-      border: 1px solid var(--aqi-border);
-      border-radius: 16px;
-      box-shadow: var(--aqi-shadow-soft);
-    }
-
-    .admin-wrap h2 {
-      color: var(--aqi-primary);
-    }
-
-    .field label {
-      color: var(--aqi-text-2);
-      font-weight: 700;
-    }
-
-    .field input,
-    .field select,
-    .field textarea {
-      border-color: var(--aqi-border-2);
-      background: #fff;
-    }
-
-    .field input:focus,
-    .field select:focus,
-    .field textarea:focus {
-      border-color: var(--aqi-accent);
-      box-shadow: 0 0 0 3px rgba(201, 149, 26, 0.14);
-    }
-
-    .photo-upload-area {
-      background: #FAFBFC;
-      border-color: var(--aqi-border-2);
-    }
-
-    .photo-upload-area:hover {
-      border-color: var(--aqi-accent);
-    }
-
-    /* ===== 관리자 목록 ===== */
-    .admin-list-head {
-      background: #F1F5F9;
-      color: var(--aqi-primary);
-      border-bottom: 1px solid var(--aqi-border);
-    }
-
-    .admin-filter-row {
-      background: #FAFBFC;
-      border-bottom: 1px solid var(--aqi-border);
-    }
-
-    .admin-list-row {
-      border-bottom: 1px solid var(--aqi-border);
-    }
-
-    .admin-list-row:hover {
-      background: #FAFBFC;
-    }
-
-    .admin-list-row .title {
-      color: var(--aqi-text);
-      font-weight: 700;
-    }
-
-    /* ===== 버튼 스타일 ===== */
-    .btn-submit,
-    .btn-primary {
-      background: var(--aqi-primary);
-      color: #fff;
-    }
-
-    .btn-submit:hover,
-    .btn-primary:hover {
-      background: var(--aqi-primary-2);
-    }
-
-    .btn-secondary,
-    .btn-reset,
-    .btn-detail,
-    .btn-close {
-      background: #fff;
-      color: var(--aqi-text-2);
-      border-color: var(--aqi-border-2);
-    }
-
-    .btn-secondary:hover,
-    .btn-reset:hover,
-    .btn-detail:hover,
-    .btn-close:hover {
-      background: #F8FAFC;
-      border-color: var(--aqi-accent);
-      color: var(--aqi-primary);
-    }
-
-    .btn-open {
-      background: var(--blue-bg);
-      color: var(--blue-txt);
-      border-color: #BBD5F5;
-    }
-
-    .btn-close-st {
-      background: #ECEFF3;
-      color: #5F6B7A;
-      border-color: #D5DBE3;
-    }
-
-    .btn-edit {
-      background: var(--amber-bg);
-      color: var(--amber-txt);
-      border-color: #F5D47A;
-    }
-
-    .btn-del {
-      background: var(--red-bg);
-      color: var(--red-txt);
-      border-color: #F5B5B0;
-    }
-
-    /* ===== 모달 ===== */
-    .modal-bg {
-      background: rgba(16, 42, 67, 0.55);
-      backdrop-filter: blur(3px);
-    }
-
-    .modal,
-    .login-modal {
-      border-radius: 18px;
-      box-shadow: 0 18px 48px rgba(16, 42, 67, 0.24);
-    }
-
-    .modal-head {
-      background: #F8FAFC;
-    }
-
-    .modal-head-title {
-      color: var(--aqi-primary);
-    }
-
-    .modal-head-sub {
-      color: var(--aqi-text-2);
     }
 
     .modal-body {
+      padding: 18px 22px 22px;
+      overflow-y: auto;
+      flex: 1;
       background: #fff;
     }
 
-    .photo-scroll {
-      background: #F1F5F9;
-      border-color: var(--aqi-border);
-    }
-
-    /* ===== 로그인 모달 ===== */
-    .login-title {
-      color: var(--aqi-primary);
-    }
-
-    .login-sub {
-      color: var(--aqi-text-2);
-    }
-
-    /* ===== 빈 상태 ===== */
-    .empty {
-      background: var(--aqi-surface);
-      border: 1px solid var(--aqi-border);
-      border-radius: 16px;
-      color: var(--aqi-text-3);
-      box-shadow: var(--aqi-shadow-soft);
-    }
-
-    /* ===== 모바일 보정 ===== */
-    @media(max-width:700px) {
-      .hdr {
-        padding: 14px 16px;
-      }
-
-      .content {
-        padding: 16px 12px 28px;
-      }
-
-      .filter-row {
-        padding: 12px;
-      }
-    }
-
-    /* =========================================================
-   Step 10. AQI Issue DB Light Theme Refinement
-   Theme: White + Gold Point
-   ========================================================= */
-
-    /* ===== 전체 화면 정리 ===== */
-    body {
-      background: #F5F7FA !important;
-      color: #1F2933 !important;
-      min-width: 1100px;
-    }
-
-    /* ===== 상단 헤더 ===== */
-    .hdr {
-      background: linear-gradient(90deg, #0B1F33 0%, #102A43 65%, #123A5A 100%) !important;
-      padding: 16px 28px !important;
-      box-shadow: 0 4px 16px rgba(16, 42, 67, 0.18);
-    }
-
-    .hdr h1 {
-      font-size: 20px !important;
-      font-weight: 800 !important;
-      letter-spacing: -0.3px;
-    }
-
-    .hdr>div:first-child>div {
-      color: #E8A020 !important;
-      font-weight: 800 !important;
-      letter-spacing: 0.5px;
-    }
-
-    .hdr-right {
-      color: rgba(255, 255, 255, 0.85) !important;
-    }
-
-    .badge-gray {
-      background: rgba(255, 255, 255, 0.12) !important;
-      color: rgba(255, 255, 255, 0.9) !important;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      border-radius: 999px !important;
-      padding: 4px 10px !important;
-    }
-
-    .badge-green {
-      background: rgba(15, 138, 95, 0.18) !important;
-      color: #A8F0D1 !important;
-      border: 1px solid rgba(168, 240, 209, 0.24);
-      border-radius: 999px !important;
-    }
-
-    /* ===== 헤더 버튼 ===== */
-    .btn-login,
-    .btn-logout,
-    .btn-save-file {
-      border-color: rgba(255, 255, 255, 0.24) !important;
-      color: rgba(255, 255, 255, 0.82) !important;
-      border-radius: 999px !important;
-    }
-
-    .btn-login:hover,
-    .btn-logout:hover,
-    .btn-save-file:hover {
-      border-color: #E8A020 !important;
-      color: #fff !important;
-    }
-
-    /* ===== 탭 영역 ===== */
-    .tab-wrap {
-      background: #FFFFFF !important;
-      border-bottom: 1px solid #DDE5EE !important;
-      box-shadow: 0 2px 10px rgba(16, 42, 67, 0.05);
-      padding: 0 28px !important;
-    }
-
-    .tab-bar {
-      max-width: 1360px;
-      margin: 0 auto;
-    }
-
-    .tab {
-      padding: 15px 24px !important;
-      color: #52616F !important;
-      border-bottom: 3px solid transparent !important;
-      font-weight: 700 !important;
-    }
-
-    .tab:hover {
-      color: #102A43 !important;
-      background: #FAFBFC !important;
-    }
-
-    .tab.on {
-      color: #102A43 !important;
-      border-bottom-color: #C9951A !important;
-      font-weight: 800 !important;
-    }
-
-    /* ===== 컨텐츠 폭/여백 ===== */
-    .content {
-      max-width: 1360px !important;
-      padding: 24px 28px 40px !important;
-    }
-
-    /* ===== 필터 영역 ===== */
-    .filter-row {
-      background: #FFFFFF !important;
-      border: 1px solid #DDE5EE !important;
-      border-radius: 16px !important;
-      padding: 14px !important;
-      box-shadow: 0 2px 10px rgba(16, 42, 67, 0.05);
-      margin-bottom: 16px !important;
-    }
-
-    .filter-row input,
-    .filter-row select {
-      min-height: 38px;
-      background: #FFFFFF !important;
-      border: 1px solid #C9D3DF !important;
-      color: #1F2933 !important;
-      border-radius: 10px !important;
-    }
-
-    .filter-row input::placeholder {
-      color: #94A3B8 !important;
-    }
-
-    .filter-row input:focus,
-    .filter-row select:focus {
-      border-color: #C9951A !important;
-      box-shadow: 0 0 0 3px rgba(201, 149, 26, 0.14);
-    }
-
-    /* ===== 통계 카드 ===== */
-    .stat-row {
-      gap: 14px !important;
-      margin-bottom: 18px !important;
-    }
-
-    .stat-card {
-      background: #FFFFFF !important;
-      border: 1px solid #DDE5EE !important;
-      border-radius: 16px !important;
-      padding: 16px 18px !important;
-      box-shadow: 0 2px 10px rgba(16, 42, 67, 0.05);
-      transition: transform .15s ease, box-shadow .15s ease;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 28px rgba(16, 42, 67, 0.10);
-    }
-
-    .stat-num {
-      color: #102A43 !important;
-      font-size: 26px !important;
-      font-weight: 800 !important;
-    }
-
-    .stat-label {
-      color: #64748B !important;
-      font-weight: 700 !important;
-    }
-
-    /* ===== 결과 정보 ===== */
-    .result-info {
-      color: #52616F !important;
-      font-size: 13px !important;
-      font-weight: 800 !important;
-      margin: 18px 0 12px !important;
-    }
-
-    /* ===== 카드뷰 ===== */
-    .grid {
-      gap: 16px !important;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
-    }
-
-    .card {
-      background: #FFFFFF !important;
-      border: 1px solid #DDE5EE !important;
-      border-radius: 16px !important;
-      padding: 14px !important;
-      box-shadow: 0 2px 10px rgba(16, 42, 67, 0.05);
-      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-3px);
-      border-color: rgba(201, 149, 26, 0.48) !important;
-      box-shadow: 0 12px 30px rgba(16, 42, 67, 0.11) !important;
-    }
-
-    .card.closed {
-      opacity: 0.72 !important;
-    }
-
-    .card-img {
-      height: 120px !important;
-      background: #F1F5F9 !important;
-      border: 1px dashed #C9D3DF !important;
-      border-radius: 12px !important;
-      color: #94A3B8 !important;
-    }
-
-    .card-img img {
-      border-radius: 12px !important;
-    }
-
-    .card-title {
-      color: #1F2933 !important;
-      font-size: 14px !important;
-      font-weight: 800 !important;
-      margin-bottom: 5px !important;
-    }
-
-    .card-sub {
-      color: #52616F !important;
-      font-size: 12px !important;
-      line-height: 1.45 !important;
-    }
-
-    .card-meta {
-      color: #8A97A6 !important;
-      font-size: 11.5px !important;
-      padding-top: 8px;
-      border-top: 1px solid #E2E8F0;
-    }
-
-    /* ===== 태그 ===== */
-    .tag {
-      border-radius: 999px !important;
-      padding: 3px 8px !important;
-      font-weight: 800 !important;
-      border: 1px solid transparent;
-    }
-
-    .tag-a {
-      background: #FDECEC !important;
-      color: #B42318 !important;
-      border-color: #F5B5B0 !important;
-    }
-
-    .tag-b {
-      background: #FFF4D6 !important;
-      color: #9A6700 !important;
-      border-color: #F5D47A !important;
-    }
-
-    .tag-c {
-      background: #E5F7EF !important;
-      color: #087443 !important;
-      border-color: #A9E8C8 !important;
-    }
-
-    .tag-n {
-      background: #EEF2F6 !important;
-      color: #52616F !important;
-      border-color: #DDE5EE !important;
-    }
-
-    .tag-open {
-      background: #E8F1FC !important;
-      color: #185FA5 !important;
-      border-color: #BBD5F5 !important;
-    }
-
-    .tag-close {
-      background: #ECEFF3 !important;
-      color: #5F6B7A !important;
-      border-color: #D5DBE3 !important;
-    }
-
-    /* ===== 체크리스트 ===== */
-    .cl-prog,
-    .ci,
-    .sign-box {
-      background: #FFFFFF !important;
-      border: 1px solid #DDE5EE !important;
-      border-radius: 16px !important;
-      box-shadow: 0 2px 10px rgba(16, 42, 67, 0.05);
-    }
-
-    .ci:hover {
-      background: #FAFBFC !important;
-      border-color: rgba(201, 149, 26, 0.45) !important;
-    }
-
-    .ci.done {
-      background: #F1F5F9 !important;
-    }
-
-    .pbar {
-      background: #E2E8F0 !important;
-    }
-
-    .pfill {
-      background: linear-gradient(90deg, #0F8A5F, #21B27E) !important;
-    }
-
-    .sign-label {
-      color: #0F8A5F !important;
-    }
-
-    /* ===== 관리자 영역 ===== */
-    .admin-wrap,
-    .admin-list {
-      background: #FFFFFF !important;
-      border: 1px solid #DDE5EE !important;
-      border-radius: 16px !important;
-      box-shadow: 0 2px 10px rgba(16, 42, 67, 0.05);
-    }
-
-    .admin-wrap h2 {
-      color: #102A43 !important;
-      font-weight: 800 !important;
-    }
-
-    .field label {
-      color: #52616F !important;
-      font-weight: 800 !important;
-    }
-
-    .field input,
-    .field select,
-    .field textarea {
-      border: 1px solid #C9D3DF !important;
-      background: #FFFFFF !important;
-      color: #1F2933 !important;
-      border-radius: 10px !important;
-    }
-
-    .field input:focus,
-    .field select:focus,
-    .field textarea:focus {
-      border-color: #C9951A !important;
-      box-shadow: 0 0 0 3px rgba(201, 149, 26, 0.14);
-    }
-
-    .photo-upload-area {
-      background: #FAFBFC !important;
-      border-color: #C9D3DF !important;
-    }
-
-    .photo-upload-area:hover {
-      border-color: #C9951A !important;
-    }
-
-    /* ===== 관리자 목록 ===== */
-    .admin-list-head {
-      background: #F1F5F9 !important;
-      color: #102A43 !important;
-      border-bottom: 1px solid #DDE5EE !important;
-    }
-
-    .admin-filter-row {
-      background: #FAFBFC !important;
-      border-bottom: 1px solid #DDE5EE !important;
-    }
-
-    .admin-list-row {
-      border-bottom: 1px solid #E2E8F0 !important;
-    }
-
-    .admin-list-row:hover {
-      background: #FAFBFC !important;
-    }
-
-    .admin-list-row .title {
-      color: #1F2933 !important;
-      font-weight: 800 !important;
-    }
-
-    /* ===== 버튼 ===== */
-    .btn-submit,
-    .btn-primary {
-      background: #102A43 !important;
-      color: #FFFFFF !important;
-      border-radius: 10px !important;
-    }
-
-    .btn-submit:hover,
-    .btn-primary:hover {
-      background: #1A3A5C !important;
-    }
-
-    .btn-secondary,
-    .btn-reset,
-    .btn-detail,
-    .btn-close {
-      background: #FFFFFF !important;
-      color: #52616F !important;
-      border-color: #C9D3DF !important;
-      border-radius: 10px !important;
-    }
-
-    .btn-secondary:hover,
-    .btn-reset:hover,
-    .btn-detail:hover,
-    .btn-close:hover {
-      background: #F8FAFC !important;
-      border-color: #C9951A !important;
-      color: #102A43 !important;
-    }
-
-    .btn-open {
-      background: #E8F1FC !important;
-      color: #185FA5 !important;
-      border-color: #BBD5F5 !important;
-    }
-
-    .btn-close-st {
-      background: #ECEFF3 !important;
-      color: #5F6B7A !important;
-      border-color: #D5DBE3 !important;
-    }
-
-    .btn-edit {
-      background: #FFF4D6 !important;
-      color: #9A6700 !important;
-      border-color: #F5D47A !important;
-    }
-
-    .btn-del {
-      background: #FDECEC !important;
-      color: #B42318 !important;
-      border-color: #F5B5B0 !important;
-    }
-
-    /* ===== 모달 ===== */
-    .modal-bg {
-      background: rgba(16, 42, 67, 0.55) !important;
-      backdrop-filter: blur(3px);
-    }
-
-    .modal,
-    .login-modal {
-      border-radius: 18px !important;
-      box-shadow: 0 18px 48px rgba(16, 42, 67, 0.24);
-    }
-
-    .modal-head {
-      background: #F8FAFC !important;
-    }
-
-    .modal-head-title {
-      color: #102A43 !important;
-      font-weight: 800 !important;
-    }
-
-    .modal-head-sub {
-      color: #52616F !important;
-    }
-
-    .modal-body {
-      background: #FFFFFF !important;
-    }
-
-    .photo-scroll {
-      background: #F1F5F9 !important;
-      border-color: #DDE5EE !important;
-    }
-
-    /* ===== 로그인 ===== */
-    .login-title {
-      color: #102A43 !important;
-      font-weight: 800 !important;
-    }
-
-    .login-sub {
-      color: #52616F !important;
-    }
-
-    /* ===== 빈 상태 ===== */
-    .empty {
-      background: #FFFFFF !important;
-      border: 1px solid #DDE5EE !important;
-      border-radius: 16px !important;
-      color: #8A97A6 !important;
-      box-shadow: 0 2px 10px rgba(16, 42, 67, 0.05);
-    }
-
-    /* ===== 모바일 보정 ===== */
-    @media(max-width:700px) {
-      body {
-        min-width: auto;
-      }
-
-      .hdr {
-        padding: 14px 16px !important;
-      }
-
-      .content {
-        padding: 16px 12px 28px !important;
-      }
-
-      .filter-row {
-        padding: 12px !important;
-      }
-    }
-
-    /* =========================================================
-   Step 12. Issue Detail Modal Refinement
-   ========================================================= */
-
-    /* 상세 모달 크기 확대 */
-    .modal {
-      max-width: 860px !important;
-      width: min(860px, calc(100vw - 40px)) !important;
-      max-height: 88vh !important;
-    }
-
-    /* 상세 모달 헤더 */
-    .modal-head {
-      padding: 18px 22px !important;
-      background: #F8FAFC !important;
-      border-bottom: 1px solid #DDE5EE !important;
-    }
-
-    .modal-head-title {
-      font-size: 18px !important;
-      font-weight: 800 !important;
-      color: #102A43 !important;
-      line-height: 1.35 !important;
-    }
-
-    .modal-head-sub {
-      font-size: 12.5px !important;
-      color: #52616F !important;
-    }
-
-    /* 상세 본문 */
-    .modal-body {
-      padding: 18px 22px 22px !important;
-      background: #FFFFFF !important;
-    }
-
-    /* 상세 화면 2단 구성 */
     .issue-detail-layout {
       display: grid;
       grid-template-columns: 320px 1fr;
@@ -2207,15 +898,14 @@
       align-items: start;
     }
 
-    /* 사진 영역 */
     .issue-photo-panel {
       background: #F1F5F9;
-      border: 1px solid #DDE5EE;
-      border-radius: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--rl);
       padding: 10px;
     }
 
-    .issue-photo-panel .photo-count {
+    .photo-count {
       font-size: 11.5px;
       color: #64748B;
       margin-bottom: 8px;
@@ -2223,29 +913,41 @@
       text-align: left;
     }
 
-    .issue-photo-panel .photo-scroll {
-      max-height: 420px !important;
-      margin-bottom: 0 !important;
-      background: transparent !important;
-      border: none !important;
-      padding: 0 !important;
+    .photo-scroll {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 420px;
+      overflow-y: auto;
+      background: transparent;
+      border-radius: var(--r);
+      padding: 0;
+      margin-bottom: 0;
     }
 
-    .issue-photo-panel .photo-item {
-      border: 1px solid #DDE5EE;
+    .photo-item {
+      width: 100%;
+      border: 1px solid var(--border);
       border-radius: 12px;
-      background: #FFFFFF;
-      margin-bottom: 8px;
+      object-fit: contain;
+      background: #fff;
+      display: block;
     }
 
-    .issue-photo-panel .photo-empty {
-      height: 260px !important;
-      background: #FFFFFF;
-      border: 1px dashed #C9D3DF;
+    .photo-empty {
+      height: 260px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text3);
+      font-size: 12px;
+      gap: 6px;
+      background: #fff;
+      border: 1px dashed var(--border2);
       border-radius: 12px;
     }
 
-    /* 상세 정보 영역 */
     .issue-info-panel {
       display: flex;
       flex-direction: column;
@@ -2253,37 +955,35 @@
     }
 
     .issue-section {
-      background: #FFFFFF;
-      border: 1px solid #DDE5EE;
+      background: #fff;
+      border: 1px solid var(--border);
       border-radius: 14px;
       padding: 13px 14px;
-      box-shadow: 0 2px 10px rgba(16, 42, 67, 0.04);
+      box-shadow: 0 2px 10px rgba(16, 42, 67, .04);
     }
 
     .issue-section-title {
       font-size: 11px;
       font-weight: 900;
-      color: #102A43;
-      letter-spacing: 0.6px;
+      color: var(--primary);
+      letter-spacing: .6px;
       margin-bottom: 8px;
-      text-transform: uppercase;
     }
 
     .issue-section-body {
       font-size: 13px;
-      color: #1F2933;
+      color: var(--text);
       line-height: 1.65;
       white-space: pre-wrap;
     }
 
-    /* 확인 방법 강조 */
     .issue-section.check {
       border-color: #A9E8C8;
       background: #F4FBF8;
     }
 
     .issue-section.check .issue-section-title {
-      color: #0F8A5F;
+      color: var(--green);
     }
 
     .issue-section.check .issue-section-body {
@@ -2291,7 +991,6 @@
       font-weight: 700;
     }
 
-    /* 기본 정보 그리드 */
     .issue-meta-grid {
       display: grid;
       grid-template-columns: 90px 1fr;
@@ -2299,500 +998,178 @@
       font-size: 12.5px;
     }
 
-    .issue-meta-grid .meta-k {
+    .meta-k {
       color: #64748B;
       font-weight: 800;
     }
 
-    .issue-meta-grid .meta-v {
-      color: #1F2933;
+    .meta-v {
+      color: var(--text);
       font-weight: 700;
     }
 
-    /* 기존 kv 스타일 보정 */
-    .kv {
-      display: none !important;
-    }
-
-    .sep {
-      display: none !important;
-    }
-
-    /* 관리자 컨트롤 */
     .admin-ctrl {
-      margin-top: 0 !important;
-      border-radius: 14px !important;
-      background: #F8FAFC !important;
-      border: 1px solid #DDE5EE !important;
+      display: none;
+      margin-top: 0;
+      border-radius: 14px;
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+    }
+
+    .admin-ctrl.show {
+      display: block;
     }
 
     .admin-ctrl-title {
-      color: #64748B !important;
-      font-weight: 900 !important;
+      color: #64748B;
+      font-size: 11px;
+      font-weight: 900;
+      margin-bottom: 8px;
     }
 
     .ctrl-row {
-      gap: 8px !important;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    /* 모바일 대응 */
-    @media(max-width:900px) {
-      .issue-detail-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .issue-photo-panel .photo-scroll {
-        max-height: 280px !important;
-      }
+    .btn-open,
+    .btn-close-st,
+    .btn-edit,
+    .btn-del {
+      font-size: 12px;
+      padding: 6px 14px;
+      border-radius: var(--r);
+      cursor: pointer;
+      font-weight: 800;
     }
 
-    /* =========================================================
-   Step 12-R. Responsive Layout for Tablet / Mobile
-   ========================================================= */
+    .btn-open {
+      background: var(--blue-bg);
+      color: var(--blue-txt);
+      border: 1px solid #BBD5F5;
+    }
 
-    /* 태블릿: 1024px 이하 */
-    @media (max-width: 1024px) {
+    .btn-close-st {
+      background: #ECEFF3;
+      color: #5F6B7A;
+      border: 1px solid #D5DBE3;
+    }
+
+    .btn-edit {
+      background: var(--amber-bg);
+      color: var(--amber-txt);
+      border: 1px solid #F5D47A;
+    }
+
+    .btn-del {
+      background: var(--red-bg);
+      color: var(--red-txt);
+      border: 1px solid #F5B5B0;
+    }
+
+    .login-modal {
+      background: #fff;
+      border-radius: 18px;
+      padding: 28px 32px;
+      width: 300px;
+      text-align: center;
+      box-shadow: 0 18px 48px rgba(16, 42, 67, .24);
+    }
+
+    .login-title {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .login-sub {
+      font-size: 12px;
+      color: var(--text2);
+      margin-bottom: 20px;
+    }
+
+    .login-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .btn-login-ok {
+      width: 100%;
+      margin-bottom: 8px;
+    }
+
+    .btn-login-cancel {
+      width: 100%;
+      background: #fff;
+      color: var(--text2);
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      padding: 8px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .login-err {
+      font-size: 12px;
+      color: var(--red-txt);
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    @media (max-width:1024px) {
       body {
-        min-width: auto !important;
-      }
-
-      .content {
-        max-width: 100% !important;
-        padding: 18px 16px 32px !important;
+        min-width: auto;
       }
 
       .hdr {
-        padding: 14px 18px !important;
+        padding: 14px 18px;
         flex-wrap: wrap;
-      }
-
-      .hdr h1 {
-        font-size: 19px !important;
       }
 
       .hdr-right {
         width: 100%;
-        margin-left: 0 !important;
+        margin-left: 0;
         justify-content: flex-start;
-        flex-wrap: wrap;
+      }
+
+      .content {
+        max-width: 100%;
+        padding: 18px 16px 32px;
       }
 
       .tab-wrap {
-        padding: 0 16px !important;
-        overflow-x: auto;
-      }
-
-      .tab-bar {
-        min-width: max-content;
-      }
-
-      .tab {
-        white-space: nowrap;
-        padding: 14px 18px !important;
+        padding: 0 16px;
       }
 
       .filter-row {
-        display: grid !important;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 10px !important;
-      }
-
-      .filter-row input,
-      .filter-row select,
-      .filter-row button {
-        width: 100%;
-        min-width: 0 !important;
       }
 
       .stat-row {
-        display: grid !important;
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-      }
-
-      .modal {
-        width: calc(100vw - 28px) !important;
-        max-width: none !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .issue-detail-layout {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: 1fr;
       }
 
-      .issue-photo-panel .photo-scroll {
-        max-height: 320px !important;
-      }
-    }
-
-    /* 모바일: 640px 이하 */
-    @media (max-width: 640px) {
-      body {
-        font-size: 13px;
-      }
-
-      .hdr {
-        gap: 8px !important;
-      }
-
-      .hdr>div:first-child {
-        width: 100%;
-      }
-
-      .hdr h1 {
-        font-size: 18px !important;
-      }
-
-      .badge-gray {
-        display: inline-block;
-        margin-top: 4px;
-      }
-
-      .hdr-right {
-        font-size: 11px !important;
-        gap: 6px !important;
-      }
-
-      .btn-sm {
-        min-height: 34px;
-        padding: 6px 10px !important;
-      }
-
-      .content {
-        padding: 14px 10px 28px !important;
-      }
-
-      .filter-row {
-        grid-template-columns: 1fr !important;
-        padding: 12px !important;
-      }
-
-      .filter-row input,
-      .filter-row select,
-      .filter-row button {
-        min-height: 42px;
-        font-size: 13px !important;
-      }
-
-      .stat-row {
-        grid-template-columns: 1fr 1fr !important;
-        gap: 8px !important;
-      }
-
-      .stat-card {
-        padding: 12px 12px !important;
-      }
-
-      .stat-num {
-        font-size: 22px !important;
-      }
-
-      .grid {
-        grid-template-columns: 1fr !important;
-        gap: 12px !important;
-      }
-
-      .card {
-        padding: 12px !important;
-      }
-
-      .card-img {
-        height: 150px !important;
-      }
-
-      .modal-bg {
-        padding: 0 !important;
-        align-items: stretch !important;
-      }
-
-      .modal {
-        width: 100vw !important;
-        height: 100vh !important;
-        max-height: none !important;
-        border-radius: 0 !important;
-      }
-
-      .modal-head {
-        padding: 14px 14px !important;
-      }
-
-      .modal-head-title {
-        font-size: 16px !important;
-      }
-
-      .modal-body {
-        padding: 14px !important;
-      }
-
-      .issue-photo-panel {
-        padding: 8px !important;
-      }
-
-      .issue-photo-panel .photo-scroll {
-        max-height: 260px !important;
-      }
-
-      .issue-section {
-        padding: 12px !important;
-      }
-
-      .issue-meta-grid {
-        grid-template-columns: 80px 1fr !important;
-        font-size: 12px !important;
-      }
-
-      .ctrl-row {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .ctrl-row button {
-        min-height: 38px;
-      }
-
-      .form-grid {
-        grid-template-columns: 1fr !important;
+      .photo-scroll {
+        max-height: 320px;
       }
 
       .admin-list-head,
       .admin-filter-row,
       .admin-list-row {
-        grid-template-columns: 36px 1fr 72px 70px !important;
-      }
-    }
-
-    /* 아주 작은 모바일: 420px 이하 */
-    @media (max-width: 420px) {
-      .stat-row {
-        grid-template-columns: 1fr !important;
-      }
-
-      .tab {
-        padding: 12px 14px !important;
-        font-size: 12px !important;
-      }
-
-      .card-img {
-        height: 130px !important;
-      }
-
-      .issue-meta-grid {
-        grid-template-columns: 1fr !important;
-        gap: 3px 0 !important;
-      }
-
-      .issue-meta-grid .meta-k {
-        margin-top: 6px;
-      }
-    }
-
-    /* =========================================================
-   Step 13. Search Filter Toggle / Responsive Filter Panel
-   ========================================================= */
-
-    /* 필터 상단 툴바 */
-    .filter-toolbar {
-      background: #FFFFFF;
-      border: 1px solid #DDE5EE;
-      border-radius: 16px;
-      padding: 13px 14px;
-      margin-bottom: 10px;
-      box-shadow: 0 2px 10px rgba(16, 42, 67, 0.05);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .filter-title {
-      font-size: 14px;
-      font-weight: 900;
-      color: #102A43;
-      line-height: 1.2;
-    }
-
-    .filter-sub {
-      font-size: 12px;
-      color: #64748B;
-      margin-top: 4px;
-      font-weight: 600;
-    }
-
-    .btn-filter-toggle {
-      border: 1px solid #C9D3DF;
-      background: #FFFFFF;
-      color: #52616F;
-      border-radius: 999px;
-      padding: 8px 14px;
-      min-height: 36px;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 12px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    .btn-filter-toggle:hover {
-      border-color: #C9951A;
-      color: #102A43;
-      background: #F8FAFC;
-    }
-
-    /* 필터 접힘 상태 */
-    .filter-row.is-collapsed {
-      display: none !important;
-    }
-
-    /* 필터 패널 내부 버튼 높이 통일 */
-    .filter-row .btn-reset {
-      min-height: 38px;
-      white-space: nowrap;
-    }
-
-    /* 모바일/태블릿 필터 사용성 개선 */
-    @media(max-width:1024px) {
-      .filter-toolbar {
-        margin-bottom: 8px;
-      }
-
-      .filter-row {
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-      }
-    }
-
-    @media(max-width:640px) {
-      .filter-toolbar {
-        padding: 12px;
-        border-radius: 14px;
-      }
-
-      .filter-title {
-        font-size: 13px;
-      }
-
-      .filter-sub {
-        font-size: 11.5px;
-      }
-
-      .btn-filter-toggle {
-        min-height: 38px;
-        padding: 8px 12px;
-      }
-
-      .filter-row {
-        grid-template-columns: 1fr !important;
-      }
-    }
-
-    /* =========================================================
-   Step 14. Admin Form / Part No. Responsive Refinement
-   ========================================================= */
-
-    .admin-wrap {
-      overflow: hidden;
-    }
-
-    .form-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-      gap: 14px !important;
-    }
-
-    .field input,
-    .field select,
-    .field textarea {
-      min-height: 40px;
-    }
-
-    .field textarea {
-      min-height: 78px !important;
-    }
-
-    /* 입력 폼 구분감을 조금 더 명확하게 */
-    .admin-wrap h2 {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .admin-wrap h2::before {
-      content: '';
-      width: 4px;
-      height: 16px;
-      border-radius: 999px;
-      background: #C9951A;
-      display: inline-block;
-    }
-
-    /* 모바일/태블릿 대응 */
-    @media(max-width:900px) {
-      .form-grid {
-        grid-template-columns: 1fr !important;
-      }
-
-      .form-btn-row {
-        flex-direction: column-reverse;
-      }
-
-      .form-btn-row button {
-        width: 100%;
-        min-height: 42px;
-      }
-    }
-
-    /* =========================================================
-   Step 15. Issue Source / Meeting Field
-   ========================================================= */
-
-    .tag-source {
-      background: #F4F0FF !important;
-      color: #5B3DB6 !important;
-      border-color: #D8CCFF !important;
-    }
-
-    /* 제기 경로 필터/입력 필드가 모바일에서도 잘 보이도록 보정 */
-    @media(max-width:640px) {
-
-      #fsource,
-      #f-source,
-      #f-source-detail {
-        width: 100%;
-      }
-    }
-
-    /* Issue 제기 경로 태그 길이 보정 */
-    .tag-source {
-      max-width: 160px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    /* =========================================================
-   Step 16. Admin List Source Column
-   ========================================================= */
-
-    .admin-list-head,
-    .admin-filter-row,
-    .admin-list-row {
-      grid-template-columns: 40px 95px 110px 1fr 100px 120px 70px 80px !important;
-    }
-
-    /* 제기 경로가 길 경우 줄임표 처리 */
-    .admin-list-row .meta {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* 태블릿 이하에서는 핵심 컬럼만 표시 */
-    @media(max-width:900px) {
-
-      .admin-list-head,
-      .admin-filter-row,
-      .admin-list-row {
-        grid-template-columns: 36px 1fr 90px 80px !important;
+        grid-template-columns: 36px 1fr 90px 80px;
       }
 
       .admin-list-head span:nth-child(2),
@@ -2807,54 +1184,107 @@
       .admin-list-row>*:nth-child(3),
       .admin-list-row>*:nth-child(5),
       .admin-list-row>*:nth-child(6) {
-        display: none !important;
+        display: none;
       }
     }
 
-    /* =========================================================
-   Fix. Tab Section Display Stability
-   ========================================================= */
+    @media (max-width:640px) {
+      body {
+        font-size: 13px;
+      }
 
-    .sec {
-      display: none !important;
+      .content {
+        padding: 14px 10px 28px;
+      }
+
+      .hdr h1 {
+        font-size: 18px;
+      }
+
+      .badge-gray {
+        margin-top: 4px;
+      }
+
+      .filter-row {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-row input,
+      .filter-row select,
+      .filter-row button {
+        min-height: 42px;
+      }
+
+      .stat-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .card-img {
+        height: 150px;
+      }
+
+      .modal-bg {
+        padding: 0;
+        align-items: stretch;
+      }
+
+      .modal {
+        width: 100vw;
+        height: 100vh;
+        max-height: none;
+        border-radius: 0;
+      }
+
+      .modal-head,
+      .modal-body {
+        padding: 14px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-btn-row {
+        flex-direction: column-reverse;
+      }
+
+      .form-btn-row button {
+        width: 100%;
+        min-height: 42px;
+      }
+
+      .ctrl-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
     }
 
-    .sec.on {
-      display: block !important;
-    }
+    @media (max-width:420px) {
+      .stat-row {
+        grid-template-columns: 1fr;
+      }
 
-    /* =========================================================
-   Fix. Admin Layout Visibility
-   ========================================================= */
+      .issue-meta-grid {
+        grid-template-columns: 1fr;
+        gap: 3px 0;
+      }
 
-    #sec-admin {
-      max-width: 1360px;
-      margin: 0 auto;
-    }
-
-    #sec-admin.on {
-      display: block !important;
-    }
-
-    #sec-search.on,
-    #sec-cl.on,
-    #sec-admin.on {
-      min-height: 300px;
-    }
-
-    .admin-wrap {
-      margin-top: 0 !important;
-      margin-bottom: 18px !important;
+      .card-img {
+        height: 130px;
+      }
     }
   </style>
 </head>
 
 <body>
-
-  <!-- 헤더 -->
   <div class="hdr">
-    <div>
-      <div style="font-size:11px;color:#888;margin-bottom:2px">AQI System — PSK Holdings 제조부문</div>
+    <div><small>AQI System — PSK Holdings 제조부문</small>
       <h1>Issue DB</h1>
     </div>
     <span class="badge badge-gray">Issue 사례 관리</span>
@@ -2867,7 +1297,6 @@
     </div>
   </div>
 
-  <!-- 탭 -->
   <div class="tab-wrap">
     <div class="tab-bar">
       <button class="tab on" onclick="switchTab('search')">검색 / 카드뷰</button>
@@ -2877,8 +1306,6 @@
   </div>
 
   <div class="content">
-
-    <!-- 검색/카드뷰 -->
     <div id="sec-search" class="sec on">
       <div class="stat-row" id="stat-row"></div>
       <div class="filter-toolbar">
@@ -2935,14 +1362,12 @@
         <input id="fsource" type="text" placeholder="제기 경로 검색">
         <input id="fdateFrom" type="date" title="발생일 From">
         <input id="fdateTo" type="date" title="발생일 To">
-
         <button class="btn-reset" onclick="resetSearchFilters()">필터 초기화</button>
       </div>
       <div class="result-info" id="result-info"></div>
       <div id="card-grid" class="grid"></div>
     </div>
 
-    <!-- 체크리스트 -->
     <div id="sec-cl" class="sec">
       <div class="filter-row" style="margin-bottom:12px">
         <select id="cl-model">
@@ -2977,60 +1402,46 @@
       </div>
     </div>
 
-    <!-- 관리자 DB 관리 -->
     <div id="sec-admin" class="sec">
-
-      <!-- 신규 등록 / 수정 폼 -->
       <div class="admin-wrap" id="form-wrap">
         <h2 id="form-title">신규 사례 등록</h2>
         <input type="hidden" id="edit-id" value="">
         <div class="form-grid">
-          <div class="field"><label>모델명 *</label>
-            <select id="f-model">
+          <div class="field"><label>모델명 *</label><select id="f-model">
               <option value="">선택</option>
               <option>GENEVA STP300xp</option>
               <option>ECOLITE3000</option>
               <option>CVD-3000</option>
               <option>ALD-200</option>
               <option>ETCH-500</option>
-            </select>
-          </div>
-          <div class="field"><label>카테고리 *</label>
-            <select id="f-cat">
+            </select></div>
+          <div class="field"><label>카테고리 *</label><select id="f-cat">
               <option value="">선택</option>
               <option>배관류</option>
               <option>가공품</option>
               <option>체결부품</option>
               <option>전장부품</option>
-            </select>
-          </div>
+            </select></div>
           <div class="field"><label>부품명 *</label><input type="text" id="f-part" placeholder="예: SUS 배관 Ø25"></div>
           <div class="field"><label>Part No.</label><input type="text" id="f-partno" placeholder="예: 1234-56789"></div>
-          <div class="field"><label>불량 유형 *</label>
-            <select id="f-type">
+          <div class="field"><label>불량 유형 *</label><select id="f-type">
               <option value="">선택</option>
               <option>치수오차</option>
               <option>형상불일치</option>
               <option>센터링</option>
               <option>표면불량</option>
-            </select>
-          </div>
-          <div class="field"><label>등급 *</label>
-            <select id="f-grade">
+            </select></div>
+          <div class="field"><label>등급 *</label><select id="f-grade">
               <option value="">선택</option>
               <option value="A">A — 고위험 (기능/안전 직결)</option>
               <option value="B">B — 중위험</option>
               <option value="C">C — 저위험</option>
-            </select>
-          </div>
-          <div class="field"><label>상태</label>
-            <select id="f-status">
+            </select></div>
+          <div class="field"><label>상태</label><select id="f-status">
               <option value="Open">Open (관리 중)</option>
               <option value="Close">Close (이력)</option>
-            </select>
-          </div>
-          <div class="field"><label>발생 협력사 *</label>
-            <select id="f-vendor">
+            </select></div>
+          <div class="field"><label>발생 협력사 *</label><select id="f-vendor">
               <option value="">선택</option>
               <option>나우</option>
               <option>이지스</option>
@@ -3038,19 +1449,11 @@
               <option>SE&amp;T</option>
               <option>SAM</option>
               <option>HTC</option>
-            </select>
-          </div>
-          <div class="field"><label>Issue 제기 경로</label>
-            <input type="text" id="f-source" placeholder="예: 주간 품질회의 / 제조팀 제기 / 고객 VOC / 현장 확인">
-          </div>
-
-          <div class="field"><label>제기 경로 상세</label>
-            <input type="text" id="f-source-detail" placeholder="예: 2026-04-29 주간 품질회의 / 제조2팀 김OO / 고객사 요청">
-          </div>
-
-          <div class="field"><label>제기 경로 상세</label>
-            <input type="text" id="f-source-detail" placeholder="예: 홍길동 / 주간 품질회의 / 고객 VOC">
-          </div>
+            </select></div>
+          <div class="field"><label>Issue 제기 경로</label><input type="text" id="f-source"
+              placeholder="예: 주간 품질회의 / 제조팀 제기 / 고객 VOC / 현장 확인"></div>
+          <div class="field"><label>제기 경로 상세</label><input type="text" id="f-source-detail"
+              placeholder="예: 2026-04-29 주간 품질회의 / 제조2팀 김OO / 고객사 요청"></div>
           <div class="field"><label>발생일 *</label><input type="date" id="f-occdate"></div>
           <div class="field"><label>검사 시작일</label><input type="date" id="f-inspdate"></div>
           <div class="field"><label>불량 제목 *</label><input type="text" id="f-title" placeholder="카드에 표시되는 요약 제목"></div>
@@ -3060,86 +1463,108 @@
               placeholder="납품된 부품의 불량 내용을 구체적으로 기술"></textarea></div>
           <div class="field"><label>확인 방법 (작업자용) *</label><textarea id="f-check"
               placeholder="작업자가 조립 전 확인해야 할 방법을 기술 — 체크리스트에 표시됨"></textarea></div>
-          <div class="field"><label>발생 결과</label><textarea id="f-result" placeholder="불량으로 인한 발생 결과 (예: 리크 발생 우려)"
-              style="min-height:50px"></textarea></div>
-          <div class="field"><label>당시 조치 사항</label><textarea id="f-action" placeholder="취한 조치 내용 기술"
-              style="min-height:50px"></textarea></div>
+          <div class="field"><label>발생 결과</label><textarea id="f-result"
+              placeholder="불량으로 인한 발생 결과 (예: 리크 발생 우려)"></textarea></div>
+          <div class="field"><label>당시 조치 사항</label><textarea id="f-action" placeholder="취한 조치 내용 기술"></textarea></div>
         </div>
-
-        <!-- 사진 업로드 - 붙여넣기 방식 -->
         <div class="field">
           <label>사진 첨부 — 캡처 후 아래 영역에 Ctrl+V 로 붙여넣기</label>
           <div class="photo-upload-area" id="paste-area" tabindex="0" style="outline:none; user-select:none;">
             <label class="upload-label">
-              <div style="font-size:22px;opacity:.3;margin-bottom:4px">📋</div>
-              <span id="paste-hint">이 영역을 클릭 후 <strong>Ctrl+V</strong> 로 이미지를 붙여넣으세요</span><br>
-              <span style="font-size:11px;color:#aaa;margin-top:4px;display:block">
-                캡처 도구(Win+Shift+S) → 캡처 → Ctrl+V
-              </span>
+              <div style="font-size:22px;opacity:.3;margin-bottom:4px">📋</div><span id="paste-hint">이 영역을 클릭 후
+                <strong>Ctrl+V</strong> 로 이미지를 붙여넣으세요</span><br><span
+                style="font-size:11px;color:#aaa;margin-top:4px;display:block">캡처 도구(Win+Shift+S) → 캡처 → Ctrl+V</span>
             </label>
           </div>
           <div class="photo-preview" id="photo-preview"></div>
         </div>
-
-        <div class="form-btn-row">
-          <button class="btn-secondary" onclick="resetForm()">초기화</button>
-          <button class="btn-primary" onclick="saveRecord()">저장</button>
-        </div>
+        <div class="form-btn-row"><button class="btn-secondary" onclick="resetForm()">초기화</button><button
+            class="btn-primary" onclick="saveRecord()">저장</button></div>
       </div>
-
-      <!-- 등록된 목록 -->
       <div class="admin-wrap">
         <div
           style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
           <h2>등록된 사례 목록 <span style="font-size:12px;color:var(--text2);font-weight:400" id="admin-list-count"></span>
-          </h2>
-          <span class="admin-filter-clear" onclick="clearAdminFilter()">🔄 필터 초기화</span>
+          </h2><span class="admin-filter-clear" onclick="clearAdminFilter()">🔄 필터 초기화</span>
         </div>
         <div class="admin-list" id="admin-list"></div>
       </div>
-
     </div>
   </div>
 
-  <!-- 상세 모달 -->
   <div class="modal-bg" id="detail-bg" onclick="bgClick(event,'detail-bg')">
     <div class="modal">
       <div class="modal-head">
-        <div class="modal-head-info" id="mh-info"></div>
-        <button class="btn-close" onclick="closeDetail()">닫기</button>
+        <div class="modal-head-info" id="mh-info"></div><button class="btn-close" onclick="closeDetail()">닫기</button>
       </div>
       <div class="modal-body" id="mb"></div>
     </div>
   </div>
-
-  <!-- 로그인 모달 -->
   <div class="modal-bg" id="login-bg" onclick="bgClick(event,'login-bg')">
     <div class="login-modal">
       <div class="login-title">관리자 로그인</div>
       <div class="login-sub">AQI 관리자 전용</div>
-      <div class="login-field">
-        <input type="text" id="lid" placeholder="아이디" onkeydown="if(event.key==='Enter')doLogin()">
-        <input type="password" id="lpw" placeholder="비밀번호" onkeydown="if(event.key==='Enter')doLogin()">
-      </div>
-      <div class="login-err" id="lerr">아이디 또는 비밀번호가 올바르지 않습니다.</div>
-      <button class="btn-login-ok" onclick="doLogin()">로그인</button>
-      <button class="btn-login-cancel" onclick="closeLogin()">취소</button>
+      <div class="login-field"><input type="text" id="lid" placeholder="아이디"
+          onkeydown="if(event.key==='Enter')doLogin()"><input type="password" id="lpw" placeholder="비밀번호"
+          onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="login-err" id="lerr">아이디 또는 비밀번호가 올바르지 않습니다.</div><button class="btn-login-ok"
+        onclick="doLogin()">로그인</button><button class="btn-login-cancel" onclick="closeLogin()">취소</button>
     </div>
   </div>
 
   <script>
-    /* ======= 인증 ======= */
     var AID = 'admin', APW = 'psk1234', isAdmin = false;
-    function showLogin() {
-      document.getElementById('lid').value = '';
-      document.getElementById('lpw').value = '';
-      document.getElementById('lerr').style.display = 'none';
-      document.getElementById('login-bg').classList.add('on');
-      setTimeout(function () { document.getElementById('lid').focus(); }, 100);
+    var DB_FALLBACK = [
+      { id: 1, model: 'GENEVA STP300xp', cat: '배관류', part: 'Exhaust Box', partNo: 'SAMPLE-001', type: '치수오차', grade: 'A', status: 'Open', source: '주간 품질회의', sourceDetail: '주간 품질회의', title: '배관 외경 +3mm 초과 납품', detail: '납품된 배관 OD(외경)가 설계 도면 대비 약 3mm 크게 제작됨. 조립 시 센터링 흔들림 발생하여 리크(Leak) 우려. 실제 조립 후 리크 테스트에서 불량 판정.', check: '배관 삽입 후 손으로 좌우 흔들어 유격 확인. 흔들림 감지 시 즉시 조립 중단 후 담당자(당사 MFG)에게 사진과 함께 보고.', result: '리크 발생 우려', action: '전량 반품 후 재제작 완료. 협력사 치수 관리 기준 재교육 실시.', vendor: '나우', occDate: '2025-01-08', inspDate: '2025-01-10', photos: [] },
+      { id: 2, model: 'CVD-3000', cat: '배관류', part: 'SUS 배관 Ø25', partNo: 'SAMPLE-002', type: '치수오차', grade: 'A', status: 'Open', source: '제조팀 제기', sourceDetail: '제조팀 작업자 제기', title: '배관 외경 +3mm 초과 납품', detail: '납품된 배관 OD(외경)가 설계 도면 대비 약 3mm 크게 제작됨. 조립 시 센터링 흔들림 발생하여 리크(Leak) 우려. 실제 조립 후 리크 테스트에서 불량 판정.', check: '배관 삽입 후 손으로 좌우 흔들어 유격 확인. 흔들림 감지 시 즉시 조립 중단 후 담당자(당사 QC)에게 사진과 함께 보고.', result: '리크 발생 우려', action: '전량 반품 후 재제작 완료. 협력사 치수 관리 기준 재교육 실시.', vendor: '나우', occDate: '2025-01-08', inspDate: '2025-01-10', photos: [] },
+      { id: 3, model: 'CVD-3000', cat: '가공품', part: '플랜지 A타입', partNo: 'SAMPLE-003', type: '형상불일치', grade: 'A', status: 'Open', source: '품질회의', sourceDetail: '주간 품질회의', title: '플랜지 라운드 형상 상이', detail: '기존 도면 대비 라운드 R값이 다르게 가공되어 납품. 조립 후 체결부 간섭 발생 가능하며 실링 불량으로 이어질 수 있음.', check: '기준품 사진과 라운드 부분 육안 비교. 형상이 다르거나 의심스러우면 조립 중단 후 담당자에게 보고.', result: '체결부 간섭 / 실링 불량', action: '불량품 반품. 도면 R값 명기 후 재발주. 기준품 사진 협력사 배포.', vendor: '이지스', occDate: '2025-02-14', inspDate: '2025-02-15', photos: [] },
+      { id: 4, model: 'ALD-200', cat: '배관류', part: '가스 공급 라인 Ø12', partNo: 'SAMPLE-004', type: '센터링', grade: 'A', status: 'Open', source: '현장 확인', sourceDetail: '작업 전 점검', title: '가스 라인 센터링 불량', detail: '배관 고정 클램프 위치 오차로 센터링이 틀어진 상태로 납품됨. 진동 환경 장기 운용 시 피로 파단(Fatigue Fracture) 우려.', check: '조립 완료 후 배관 좌우 균형 육안 확인. 틀어짐 감지 시 클램프 위치 재조정.', result: '피로 파단 위험 / 가스 누출', action: '클램프 재조정 후 재납품. 조립 SOP에 센터링 확인 항목 추가.', vendor: '아셈', occDate: '2025-02-28', inspDate: '2025-03-02', photos: [] },
+      { id: 5, model: 'ALD-200', cat: '체결부품', part: '볼트 M8×25 SUS', partNo: 'SAMPLE-005', type: '표면불량', grade: 'B', status: 'Close', source: '입고검사', sourceDetail: '입고검사 중 발견', title: '볼트 나사산 눌림 불량', detail: '나사산 일부가 눌려 체결 토크(Torque) 부족 우려. 진동 환경에서 볼트 풀림 발생 가능.', check: '손으로 돌려보아 뻑뻑하거나 헛도는 볼트 선별 후 전량 교체.', result: '볼트 풀림 / 토크 부족', action: '해당 로트 전수 검사 후 불량품 교체 완료.', vendor: 'SAM', occDate: '2025-03-05', inspDate: '2025-03-06', photos: [] },
+      { id: 6, model: 'ETCH-500', cat: '가공품', part: '챔버 링 (Chamber Ring)', partNo: 'SAMPLE-006', type: '치수오차', grade: 'A', status: 'Open', source: '고객 VOC', sourceDetail: '고객사 요청', title: '챔버 링 두께 -0.5mm 미달', detail: '링 두께 부족으로 실링(Sealing) 압착력 미달. 공정 중 리크 및 파티클(Particle) 오염 위험.', check: '버니어 캘리퍼스로 두께 3곳 이상 측정. 규격 이탈 시 해당 로트 전량 반품.', result: '리크 / 파티클 오염 / 수율 저하', action: '전량 반품 / 납품 중단 조치.', vendor: 'HTC', occDate: '2025-03-20', inspDate: '2025-03-21', photos: [] },
+      { id: 7, model: 'ETCH-500', cat: '전장부품', part: '센서 브래킷 (Sensor Bracket)', partNo: 'SAMPLE-007', type: '형상불일치', grade: 'B', status: 'Open', source: '제조팀 제기', sourceDetail: '조립 중 발견', title: '브래킷 홀 위치 1.5mm 편차', detail: '센서 취부 홀(Hole) 위치가 1.5mm 편차 발생. 억지 조립 시 센서 정밀도 저하 및 브래킷 변형 우려.', check: '홀 위치 도면과 대조. 볼트가 자연스럽게 체결되지 않으면 즉시 조립 중단.', result: '센서 정밀도 저하 / 브래킷 변형', action: '재가공 후 재납품 진행 중.', vendor: 'SE&T', occDate: '2025-04-01', inspDate: '2025-04-02', photos: [] },
+      { id: 8, model: 'CVD-3000', cat: '배관류', part: 'O-ring Ø50 NBR', partNo: 'SAMPLE-008', type: '표면불량', grade: 'A', status: 'Close', source: '입고검사', sourceDetail: '입고검사 중 발견', title: 'O-ring 표면 크랙 및 변형', detail: 'O-ring 표면에 미세 크랙(Crack) 및 타원 변형 확인. 실링 기능 상실로 리크 직결.', check: '강한 조명 아래 O-ring 전체 표면 육안 검사. 크랙, 변형, 이물질 확인. 의심 시 전량 교체.', result: '실링 불량 / 리크 직결', action: '해당 로트 전량 교체 완료. Close 처리.', vendor: '나우', occDate: '2025-04-10', inspDate: '2025-04-11', photos: [] }
+    ];
+    var DB = [], nextId = 1, editPhotos = [], checkState = {}, currentDetailId = null;
+    var adminFilter = { no: '', cat: '', model: '', title: '', vendor: '', source: '', grade: '', status: '' };
+    var adminSort = { key: 'id', asc: true }, _filterTimer = null;
+
+    function normalizeIssueData(list) {
+      if (!Array.isArray(list)) return [];
+      return list.map(function (d, i) {
+        d = d || {};
+        return {
+          id: Number(d.id) || (i + 1), model: d.model || '', cat: d.cat || '', part: d.part || '', partNo: d.partNo || '', type: d.type || '',
+          grade: d.grade || 'C', status: d.status || 'Open', source: d.source || '', sourceDetail: d.sourceDetail || '', title: d.title || '', detail: d.detail || '', check: d.check || '',
+          result: d.result || '', action: d.action || '', vendor: d.vendor || '', occDate: d.occDate || '', inspDate: d.inspDate || '', photos: Array.isArray(d.photos) ? d.photos : []
+        };
+      }).map(function (d, i) { d.id = i + 1; return d; });
     }
+    async function loadIssueData() {
+      try {
+        var res = await fetch('../data/sample_issues.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error('sample_issues.json 로드 실패: ' + res.status);
+        var data = await res.json();
+        if (!Array.isArray(data) || data.length === 0) throw new Error('sample_issues.json 데이터 없음');
+        DB = normalizeIssueData(data);
+        console.log('[AQI] sample_issues.json 로드 완료:', DB.length + '건');
+      } catch (err) {
+        console.warn('[AQI] 외부 JSON 로드 실패. 내장 샘플 DB 사용:', err);
+        DB = normalizeIssueData(DB_FALLBACK);
+      }
+      nextId = DB.reduce(function (max, d) { return Math.max(max, Number(d.id) || 0); }, 0) + 1;
+    }
+
+    function gb(g) { return g === 'A' ? '<span class="tag tag-a">A등급</span>' : g === 'B' ? '<span class="tag tag-b">B등급</span>' : '<span class="tag tag-c">C등급</span>'; }
+    function sb(s) { return s === 'Open' ? '<span class="tag tag-open">Open</span>' : '<span class="tag tag-close">Close</span>'; }
+    function esc(v) { return String(v == null ? '' : v).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function shortText(text, maxLen) { text = text || ''; return text.length > maxLen ? text.substring(0, maxLen) + '...' : text; }
+    function fv(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+    function sv(id, val) { var el = document.getElementById(id); if (el) el.value = val || ''; }
+
+    function showLogin() { sv('lid', ''); sv('lpw', ''); document.getElementById('lerr').style.display = 'none'; document.getElementById('login-bg').classList.add('on'); setTimeout(function () { document.getElementById('lid').focus(); }, 100); }
     function closeLogin() { document.getElementById('login-bg').classList.remove('on'); }
     function doLogin() {
-      if (document.getElementById('lid').value.trim() === AID && document.getElementById('lpw').value === APW) {
+      if (fv('lid') === AID && document.getElementById('lpw').value === APW) {
         isAdmin = true; closeLogin();
         document.getElementById('admin-badge').style.display = 'inline-block';
         document.getElementById('btn-login').style.display = 'none';
@@ -3147,9 +1572,7 @@
         document.getElementById('btn-save-file').style.display = 'inline-block';
         document.getElementById('tab-admin').style.display = 'inline-block';
         drawCards(); drawAdminList();
-      } else {
-        document.getElementById('lerr').style.display = 'block';
-      }
+      } else document.getElementById('lerr').style.display = 'block';
     }
     function doLogout() {
       isAdmin = false;
@@ -3161,763 +1584,97 @@
       closeDetail(); switchTab('search'); drawCards();
     }
 
-    /* ======= DB ======= */
-    var DB = [
-      {
-        id: 1, model: 'GENEVA STP300xp', cat: '배관류', part: 'Exhaust Box', partNo: 'SAMPLE-001', type: '치수오차', grade: 'A', status: 'Open',
-        source: 'Meeting', sourceDetail: '주간 품질회의',
-        title: '배관 외경 +3mm 초과 납품',
-        detail: '납품된 배관 OD(외경)가 설계 도면 대비 약 3mm 크게 제작됨. 조립 시 센터링 흔들림 발생하여 리크(Leak) 우려. 실제 조립 후 리크 테스트에서 불량 판정.',
-        check: '배관 삽입 후 손으로 좌우 흔들어 유격 확인. 흔들림 감지 시 즉시 조립 중단 후 담당자(당사 MFG)에게 사진과 함께 보고.',
-        result: '리크 발생 우려', action: '전량 반품 후 재제작 완료. 협력사 치수 관리 기준 재교육 실시.',
-        vendor: '나우', occDate: '2025-01-08', inspDate: '2025-01-10', photos: []
-      },
-      {
-        id: 1, model: 'CVD-3000', cat: '배관류', part: 'SUS 배관 Ø25', type: '치수오차', grade: 'A', status: 'Open',
-        title: '배관 외경 +3mm 초과 납품',
-        detail: '납품된 배관 OD(외경)가 설계 도면 대비 약 3mm 크게 제작됨. 조립 시 센터링 흔들림 발생하여 리크(Leak) 우려. 실제 조립 후 리크 테스트에서 불량 판정.',
-        check: '배관 삽입 후 손으로 좌우 흔들어 유격 확인. 흔들림 감지 시 즉시 조립 중단 후 담당자(당사 QC)에게 사진과 함께 보고.',
-        result: '리크 발생 우려', action: '전량 반품 후 재제작 완료. 협력사 치수 관리 기준 재교육 실시.',
-        vendor: '나우', occDate: '2025-01-08', inspDate: '2025-01-10', photos: []
-      },
-      {
-        id: 2, model: 'CVD-3000', cat: '가공품', part: '플랜지 A타입', type: '형상불일치', grade: 'A', status: 'Open',
-        title: '플랜지 라운드 형상 상이',
-        detail: '기존 도면 대비 라운드 R값이 다르게 가공되어 납품. 조립 후 체결부 간섭 발생 가능하며 실링 불량으로 이어질 수 있음.',
-        check: '기준품 사진과 라운드 부분 육안 비교. 형상이 다르거나 의심스러우면 조립 중단 후 담당자에게 보고.',
-        result: '체결부 간섭 / 실링 불량', action: '불량품 반품. 도면 R값 명기 후 재발주. 기준품 사진 협력사 배포.',
-        vendor: '이지스', occDate: '2025-02-14', inspDate: '2025-02-15', photos: []
-      },
-      {
-        id: 3, model: 'ALD-200', cat: '배관류', part: '가스 공급 라인 Ø12', type: '센터링', grade: 'A', status: 'Open',
-        title: '가스 라인 센터링 불량',
-        detail: '배관 고정 클램프 위치 오차로 센터링이 틀어진 상태로 납품됨. 진동 환경 장기 운용 시 피로 파단(Fatigue Fracture) 우려.',
-        check: '조립 완료 후 배관 좌우 균형 육안 확인. 틀어짐 감지 시 클램프 위치 재조정.',
-        result: '피로 파단 위험 / 가스 누출', action: '클램프 재조정 후 재납품. 조립 SOP에 센터링 확인 항목 추가.',
-        vendor: '아셈', occDate: '2025-02-28', inspDate: '2025-03-02', photos: []
-      },
-      {
-        id: 4, model: 'ALD-200', cat: '체결부품', part: '볼트 M8×25 SUS', type: '표면불량', grade: 'B', status: 'Close',
-        title: '볼트 나사산 눌림 불량',
-        detail: '나사산 일부가 눌려 체결 토크(Torque) 부족 우려. 진동 환경에서 볼트 풀림 발생 가능.',
-        check: '손으로 돌려보아 뻑뻑하거나 헛도는 볼트 선별 후 전량 교체.',
-        result: '볼트 풀림 / 토크 부족', action: '해당 로트 전수 검사 후 불량품 교체 완료.',
-        vendor: 'SAM', occDate: '2025-03-05', inspDate: '2025-03-06', photos: []
-      },
-      {
-        id: 5, model: 'ETCH-500', cat: '가공품', part: '챔버 링 (Chamber Ring)', type: '치수오차', grade: 'A', status: 'Open',
-        title: '챔버 링 두께 -0.5mm 미달',
-        detail: '링 두께 부족으로 실링(Sealing) 압착력 미달. 공정 중 리크 및 파티클(Particle) 오염 위험.',
-        check: '버니어 캘리퍼스로 두께 3곳 이상 측정. 규격 이탈 시 해당 로트 전량 반품.',
-        result: '리크 / 파티클 오염 / 수율 저하', action: '전량 반품 / 납품 중단 조치.',
-        vendor: 'HTC', occDate: '2025-03-20', inspDate: '2025-03-21', photos: []
-      },
-      {
-        id: 6, model: 'ETCH-500', cat: '전장부품', part: '센서 브래킷 (Sensor Bracket)', type: '형상불일치', grade: 'B', status: 'Open',
-        title: '브래킷 홀 위치 1.5mm 편차',
-        detail: '센서 취부 홀(Hole) 위치가 1.5mm 편차 발생. 억지 조립 시 센서 정밀도 저하 및 브래킷 변형 우려.',
-        check: '홀 위치 도면과 대조. 볼트가 자연스럽게 체결되지 않으면 즉시 조립 중단.',
-        result: '센서 정밀도 저하 / 브래킷 변형', action: '재가공 후 재납품 진행 중.',
-        vendor: 'SE&T', occDate: '2025-04-01', inspDate: '2025-04-02', photos: []
-      },
-      {
-        id: 7, model: 'CVD-3000', cat: '배관류', part: 'O-ring Ø50 NBR', type: '표면불량', grade: 'A', status: 'Close',
-        title: 'O-ring 표면 크랙 및 변형',
-        detail: 'O-ring 표면에 미세 크랙(Crack) 및 타원 변형 확인. 실링 기능 상실로 리크 직결.',
-        check: '강한 조명 아래 O-ring 전체 표면 육안 검사. 크랙, 변형, 이물질 확인. 의심 시 전량 교체.',
-        result: '실링 불량 / 리크 직결', action: '해당 로트 전량 교체 완료. Close 처리.',
-        vendor: '나우', occDate: '2025-04-10', inspDate: '2025-04-11', photos: []
-      }
-    ];
-    /* 샘플 DB 보정: ID 중복 방지 및 신규 필드 기본값 보정 */
-    DB.forEach(function (d, i) {
-      d.id = i + 1;
-      d.partNo = d.partNo || '';
-      d.source = d.source || '';
-      d.sourceDetail = d.sourceDetail || '';
-    });
-
-    var nextId = DB.length + 1;
-    var editPhotos = [];
-    var checkState = {};
-    var currentDetailId = null;
-
-    /* ======= 뱃지 ======= */
-    function gb(g) {
-      return g === 'A' ? '<span class="tag tag-a">A등급</span>' :
-        g === 'B' ? '<span class="tag tag-b">B등급</span>' : '<span class="tag tag-c">C등급</span>';
-    }
-    function sb(s) {
-      return s === 'Open' ? '<span class="tag tag-open">Open</span>' : '<span class="tag tag-close">Close</span>';
-    }
-
-    /* ======= 탭 ======= */
     function switchTab(t) {
       var tabs = ['search', 'cl', 'admin'];
-
-      document.querySelectorAll('.tab').forEach(function (b) {
-        b.classList.remove('on');
-      });
-
-      if (t === 'search') {
-        document.querySelectorAll('.tab')[0].classList.add('on');
-      } else if (t === 'cl') {
-        document.querySelectorAll('.tab')[1].classList.add('on');
-      } else if (t === 'admin') {
-        document.querySelectorAll('.tab')[2].classList.add('on');
-      }
-
-      tabs.forEach(function (n) {
-        var el = document.getElementById('sec-' + n);
-        if (el) el.classList.toggle('on', n === t);
-      });
-
-      if (t === 'admin') {
-        drawAdminList();
-      }
+      document.querySelectorAll('.tab').forEach(function (b) { b.classList.remove('on'); });
+      var idx = tabs.indexOf(t); if (idx >= 0 && document.querySelectorAll('.tab')[idx]) document.querySelectorAll('.tab')[idx].classList.add('on');
+      tabs.forEach(function (n) { var el = document.getElementById('sec-' + n); if (el) el.classList.toggle('on', n === t); });
+      if (t === 'admin') drawAdminList();
     }
-
-    /* ======= 통계 ======= */
     function drawStats(f) {
       var a = f.filter(function (d) { return d.grade === 'A'; }).length;
       var op = f.filter(function (d) { return d.status === 'Open'; }).length;
       var cl = f.filter(function (d) { return d.status === 'Close'; }).length;
-      document.getElementById('stat-row').innerHTML =
-        '<div class="stat-card"><div class="stat-num">' + f.length + '</div><div class="stat-label">검색 결과</div></div>' +
-        '<div class="stat-card"><div class="stat-num" style="color:var(--red-txt)">' + a + '</div><div class="stat-label">A등급 고위험</div></div>' +
-        '<div class="stat-card"><div class="stat-num" style="color:#185fa5">' + op + '</div><div class="stat-label">Open 관리 중</div></div>' +
-        '<div class="stat-card"><div class="stat-num" style="color:#888">' + cl + '</div><div class="stat-label">Close 이력</div></div>';
+      document.getElementById('stat-row').innerHTML = '<div class="stat-card"><div class="stat-num">' + f.length + '</div><div class="stat-label">검색 결과</div></div>' + '<div class="stat-card"><div class="stat-num" style="color:var(--red-txt)">' + a + '</div><div class="stat-label">A등급 고위험</div></div>' + '<div class="stat-card"><div class="stat-num" style="color:#185fa5">' + op + '</div><div class="stat-label">Open 관리 중</div></div>' + '<div class="stat-card"><div class="stat-num" style="color:#888">' + cl + '</div><div class="stat-label">Close 이력</div></div>';
       document.getElementById('db-count').textContent = '총 ' + DB.length + '건';
     }
-
-    /* ======= 카드 ======= */
     function drawCards() {
-      var kw = document.getElementById('kw').value.toLowerCase();
-      var m = document.getElementById('fm').value;
-      var c = document.getElementById('fcat').value;
-      var t = document.getElementById('ft').value;
-      var g = document.getElementById('fg').value;
-      var s = document.getElementById('fs').value;
-      var vendor = document.getElementById('fvendor').value;
-      var source = document.getElementById('fsource').value;
-      var dateFrom = document.getElementById('fdateFrom').value;
-      var dateTo = document.getElementById('fdateTo').value;
-
+      var kw = fv('kw').toLowerCase(), m = fv('fm'), c = fv('fcat'), t = fv('ft'), g = fv('fg'), s = fv('fs'), vendor = fv('fvendor'), source = fv('fsource').toLowerCase(), dateFrom = fv('fdateFrom'), dateTo = fv('fdateTo');
       var f = DB.filter(function (d) {
-        if (m && d.model !== m) return false;
-        if (c && d.cat !== c) return false;
-        if (t && d.type !== t) return false;
-        if (g && d.grade !== g) return false;
-        if (s && d.status !== s) return false;
-        if (vendor && d.vendor !== vendor) return false;
-        if (source && !(d.source || '').toLowerCase().includes(source.toLowerCase())) return false;
-        if (dateFrom && d.occDate < dateFrom) return false;
-        if (dateTo && d.occDate > dateTo) return false;
-
-        if (
-          kw &&
-          !(d.title + d.part + (d.partNo || '') + d.detail + d.type + d.vendor + d.model + (d.source || '') + (d.sourceDetail || ''))
-            .toLowerCase()
-            .includes(kw)
-        ) return false;
-
+        if (m && d.model !== m) return false; if (c && d.cat !== c) return false; if (t && d.type !== t) return false; if (g && d.grade !== g) return false; if (s && d.status !== s) return false; if (vendor && d.vendor !== vendor) return false;
+        if (source && !((d.source || '') + ' ' + (d.sourceDetail || '')).toLowerCase().includes(source)) return false;
+        if (dateFrom && d.occDate < dateFrom) return false; if (dateTo && d.occDate > dateTo) return false;
+        if (kw && !((d.title || '') + (d.part || '') + (d.partNo || '') + (d.detail || '') + (d.type || '') + (d.vendor || '') + (d.model || '') + (d.source || '') + (d.sourceDetail || '')).toLowerCase().includes(kw)) return false;
         return true;
       });
-
-      drawStats(f);
-      document.getElementById('result-info').textContent = f.length + '건 표시 중';
-      updateFilterSummary(f.length);
-
+      drawStats(f); document.getElementById('result-info').textContent = f.length + '건 표시 중'; updateFilterSummary(f.length);
       var el = document.getElementById('card-grid');
-
-      if (!f.length) {
-        el.innerHTML = '<div class="empty">조건에 맞는 사례가 없습니다.</div>';
-        return;
-      }
-
+      if (!f.length) { el.innerHTML = '<div class="empty">조건에 맞는 사례가 없습니다.</div>'; return; }
       el.innerHTML = f.map(function (d) {
-        var thumb = d.photos && d.photos.length > 0
-          ? '<img src="' + d.photos[0] + '" alt="사진">'
-          : '<div style="font-size:22px;opacity:.25">&#128247;</div><span>사진 미등록</span>';
-
-        return '<div class="card' + (d.status === 'Close' ? ' closed' : '') + '" onclick="openDetail(' + d.id + ')">' +
-          '<div class="card-img">' + thumb + '</div>' +
-          '<div class="tags">' +
-          gb(d.grade) +
-          sb(d.status) +
-          '<span class="tag tag-n">' + d.cat + '</span>' +
-          (d.source ? '<span class="tag tag-source">' + d.source + '</span>' : '') +
-          '</div>' +
-          '<div class="card-title">' + d.title + '</div>' +
-          '<div class="card-sub">' + d.model + ' · ' + d.part + (d.partNo ? ' · ' + d.partNo : '') + '</div>' +
-          '<div class="card-meta">' + d.vendor + ' · ' + d.occDate + '</div>' +
-          '</div>';
+        var thumb = d.photos && d.photos.length > 0 ? '<img src="' + esc(d.photos[0]) + '" alt="사진">' : '<div style="font-size:22px;opacity:.25">&#128247;</div><span>사진 미등록</span>';
+        return '<div class="card' + (d.status === 'Close' ? ' closed' : '') + '" onclick="openDetail(' + d.id + ')">' + '<div class="card-img">' + thumb + '</div>' + '<div class="tags">' + gb(d.grade) + sb(d.status) + '<span class="tag tag-n">' + esc(d.cat) + '</span>' + (d.source ? '<span class="tag tag-source" title="' + esc(d.source) + '">' + esc(shortText(d.source, 14)) + '</span>' : '') + '</div>' + '<div class="card-title">' + esc(d.title) + '</div>' + '<div class="card-sub">' + esc(d.model) + ' · ' + esc(d.part) + (d.partNo ? ' · ' + esc(d.partNo) : '') + '</div>' + '<div class="card-meta">' + esc(d.vendor) + ' · ' + esc(d.occDate) + '</div></div>';
       }).join('');
     }
-    function resetSearchFilters() {
-      document.getElementById('kw').value = '';
-      document.getElementById('fm').value = '';
-      document.getElementById('fcat').value = '';
-      document.getElementById('ft').value = '';
-      document.getElementById('fg').value = '';
-      document.getElementById('fs').value = '';
-      document.getElementById('fvendor').value = '';
-      document.getElementById('fsource').value = '';
-      document.getElementById('fdateFrom').value = '';
-      document.getElementById('fdateTo').value = '';
-      function shortText(text, maxLen) {
-        text = text || '';
-        return text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
-      }
-      drawCards();
-      updateFilterSummary(DB.length);
-    }
-    function getActiveFilterCount() {
-      var ids = ['kw', 'fm', 'fcat', 'ft', 'fg', 'fs', 'fvendor', 'fsource', 'fdateFrom', 'fdateTo'];
-      var count = 0;
+    function resetSearchFilters() { ['kw', 'fm', 'fcat', 'ft', 'fg', 'fs', 'fvendor', 'fsource', 'fdateFrom', 'fdateTo'].forEach(function (id) { sv(id, ''); }); drawCards(); updateFilterSummary(DB.length); }
+    function getActiveFilterCount() { var ids = ['kw', 'fm', 'fcat', 'ft', 'fg', 'fs', 'fvendor', 'fsource', 'fdateFrom', 'fdateTo'], count = 0; ids.forEach(function (id) { if (fv(id)) count++; }); return count; }
+    function updateFilterSummary(resultCount) { var summary = document.getElementById('filterSummary'); if (!summary) return; var activeCount = getActiveFilterCount(); summary.textContent = activeCount === 0 ? '전체 Issue 표시 중 · ' + resultCount + '건' : '필터 ' + activeCount + '개 적용 중 · ' + resultCount + '건 표시'; }
+    function toggleFilters() { var panel = document.getElementById('searchFilterPanel'), btn = document.getElementById('btnFilterToggle'); if (!panel || !btn) return; var collapsed = panel.classList.toggle('is-collapsed'); btn.textContent = collapsed ? '필터 열기' : '필터 접기'; }
+    function setInitialFilterState() { var panel = document.getElementById('searchFilterPanel'), btn = document.getElementById('btnFilterToggle'); if (!panel || !btn) return; if (window.innerWidth <= 640) { panel.classList.add('is-collapsed'); btn.textContent = '필터 열기'; } else { panel.classList.remove('is-collapsed'); btn.textContent = '필터 접기'; } }
 
-      ids.forEach(function (id) {
-        var el = document.getElementById(id);
-        if (el && el.value && el.value.trim() !== '') count++;
-      });
-
-      return count;
-    }
-
-    function updateFilterSummary(resultCount) {
-      var summary = document.getElementById('filterSummary');
-      if (!summary) return;
-
-      var activeCount = getActiveFilterCount();
-
-      if (activeCount === 0) {
-        summary.textContent = '전체 Issue 표시 중' + (typeof resultCount === 'number' ? ' · ' + resultCount + '건' : '');
-      } else {
-        summary.textContent = '필터 ' + activeCount + '개 적용 중' + (typeof resultCount === 'number' ? ' · ' + resultCount + '건 표시' : '');
-      }
-    }
-
-    function toggleFilters() {
-      var panel = document.getElementById('searchFilterPanel');
-      var btn = document.getElementById('btnFilterToggle');
-      if (!panel || !btn) return;
-
-      var collapsed = panel.classList.toggle('is-collapsed');
-      btn.textContent = collapsed ? '필터 열기' : '필터 접기';
-    }
-
-    function setInitialFilterState() {
-      var panel = document.getElementById('searchFilterPanel');
-      var btn = document.getElementById('btnFilterToggle');
-      if (!panel || !btn) return;
-
-      // 모바일은 기본 접힘, 태블릿/PC는 기본 펼침
-      if (window.innerWidth <= 640) {
-        panel.classList.add('is-collapsed');
-        btn.textContent = '필터 열기';
-      } else {
-        panel.classList.remove('is-collapsed');
-        btn.textContent = '필터 접기';
-      }
-    }
-    /* ======= 상세 모달 ======= */
     function openDetail(id) {
-      var d = DB.find(function (x) { return x.id === id; });
-      if (!d) return;
-      currentDetailId = id;
-      document.getElementById('mh-info').innerHTML =
-        '<div class="tags" style="margin-bottom:6px">' + gb(d.grade) + sb(d.status) + '<span class="tag tag-n">' + d.type + '</span><span class="tag tag-n">' + d.cat + '</span></div>' +
-        '<div class="modal-head-title">' + d.title + '</div>' +
-        '<div class="modal-head-sub">' + d.model + ' · ' + d.part + (d.partNo ? ' · ' + d.partNo : '') + '</div>';
-      var pHTML = '';
-      if (d.photos && d.photos.length > 0) {
-        pHTML = '<div class="photo-count">' + d.photos.length + '장 — 스크롤하여 확인</div>' +
-          '<div class="photo-scroll">' + d.photos.map(function (s, i) {
-            return '<img class="photo-item" src="' + s + '" alt="사진' + (i + 1) + '">';
-          }).join('') + '</div>';
-      } else {
-        pHTML = '<div class="photo-scroll"><div class="photo-empty"><div style="font-size:28px;opacity:.2">&#128247;</div>등록된 사진 없음</div></div>';
-      }
-      var adminHTML = '<div class="admin-ctrl' + (isAdmin ? ' show' : '') + '" id="det-admin">' +
-        '<div class="admin-ctrl-title">관리자 — 상태 / 편집</div>' +
-        '<div class="ctrl-row">' +
-        '<button class="btn-open" onclick="setStatus(' + id + ',\'Open\')">Open</button>' +
-        '<button class="btn-close-st" onclick="setStatus(' + id + ',\'Close\')">Close</button>' +
-        '<button class="btn-edit" onclick="startEdit(' + id + ')">수정</button>' +
-        '<button class="btn-del" onclick="deleteRecord(' + id + ')">삭제</button>' +
-        '</div></div>';
-      document.getElementById('mb').innerHTML =
-        '<div class="issue-detail-layout">' +
-
-        '<div class="issue-photo-panel">' +
-        pHTML +
-        '</div>' +
-
-        '<div class="issue-info-panel">' +
-
-        '<div class="issue-section">' +
-        '<div class="issue-section-title">불량 내용</div>' +
-        '<div class="issue-section-body">' + (d.detail || '-') + '</div>' +
-        '</div>' +
-
-        '<div class="issue-section check">' +
-        '<div class="issue-section-title">작업 전 확인 방법</div>' +
-        '<div class="issue-section-body">' + (d.check || '-') + '</div>' +
-        '</div>' +
-
-        '<div class="issue-section">' +
-        '<div class="issue-section-title">발생 결과 / 당시 조치</div>' +
-        '<div class="issue-section-body">' +
-        '<strong>발생 결과</strong><br>' + (d.result || '-') +
-        '<br><br><strong>당시 조치</strong><br>' + (d.action || '-') +
-        '</div>' +
-        '</div>' +
-
-        '<div class="issue-section">' +
-        '<div class="issue-section-title">기본 정보</div>' +
-        '<div class="issue-meta-grid">' +
-        '<div class="meta-k">모델</div><div class="meta-v">' + (d.model || '-') + '</div>' +
-        '<div class="meta-k">카테고리</div><div class="meta-v">' + (d.cat || '-') + '</div>' +
-        '<div class="meta-k">부품명</div><div class="meta-v">' + (d.part || '-') + '</div>' +
-        '<div class="meta-k">Part No.</div><div class="meta-v">' + (d.partNo || '-') + '</div>' +
-        '<div class="meta-k">불량 유형</div><div class="meta-v">' + (d.type || '-') + '</div>' +
-        '<div class="meta-k">협력사</div><div class="meta-v">' + (d.vendor || '-') + '</div>' +
-        '<div class="meta-k">제기 경로</div><div class="meta-v">' + (d.source || '-') + '</div>' +
-        '<div class="meta-k">경로 상세</div><div class="meta-v">' + (d.sourceDetail || '-') + '</div>' +
-        '<div class="meta-k">발생일</div><div class="meta-v">' + (d.occDate || '-') + '</div>' +
-        '<div class="meta-k">검사 시작일</div><div class="meta-v">' + (d.inspDate || '-') + '</div>' +
-        '</div>' +
-        '</div>' +
-
-        adminHTML +
-
-        '</div>' +
-
-        '</div>';
+      var d = DB.find(function (x) { return x.id === id; }); if (!d) return; currentDetailId = id;
+      document.getElementById('mh-info').innerHTML = '<div class="tags" style="margin-bottom:6px">' + gb(d.grade) + sb(d.status) + '<span class="tag tag-n">' + esc(d.type) + '</span><span class="tag tag-n">' + esc(d.cat) + '</span></div><div class="modal-head-title">' + esc(d.title) + '</div><div class="modal-head-sub">' + esc(d.model) + ' · ' + esc(d.part) + (d.partNo ? ' · ' + esc(d.partNo) : '') + '</div>';
+      var pHTML = d.photos && d.photos.length > 0 ? '<div class="photo-count">' + d.photos.length + '장 — 스크롤하여 확인</div><div class="photo-scroll">' + d.photos.map(function (s, i) { return '<img class="photo-item" src="' + esc(s) + '" alt="사진' + (i + 1) + '">'; }).join('') + '</div>' : '<div class="photo-scroll"><div class="photo-empty"><div style="font-size:28px;opacity:.2">&#128247;</div>등록된 사진 없음</div></div>';
+      var adminHTML = '<div class="admin-ctrl' + (isAdmin ? ' show' : '') + '" id="det-admin"><div class="admin-ctrl-title">관리자 — 상태 / 편집</div><div class="ctrl-row"><button class="btn-open" onclick="setStatus(' + id + ',\'Open\')">Open</button><button class="btn-close-st" onclick="setStatus(' + id + ',\'Close\')">Close</button><button class="btn-edit" onclick="startEdit(' + id + ')">수정</button><button class="btn-del" onclick="deleteRecord(' + id + ')">삭제</button></div></div>';
+      document.getElementById('mb').innerHTML = '<div class="issue-detail-layout"><div class="issue-photo-panel">' + pHTML + '</div><div class="issue-info-panel"><div class="issue-section"><div class="issue-section-title">불량 내용</div><div class="issue-section-body">' + esc(d.detail || '-') + '</div></div><div class="issue-section check"><div class="issue-section-title">작업 전 확인 방법</div><div class="issue-section-body">' + esc(d.check || '-') + '</div></div><div class="issue-section"><div class="issue-section-title">발생 결과 / 당시 조치</div><div class="issue-section-body"><strong>발생 결과</strong><br>' + esc(d.result || '-') + '<br><br><strong>당시 조치</strong><br>' + esc(d.action || '-') + '</div></div><div class="issue-section"><div class="issue-section-title">기본 정보</div><div class="issue-meta-grid"><div class="meta-k">모델</div><div class="meta-v">' + esc(d.model || '-') + '</div><div class="meta-k">카테고리</div><div class="meta-v">' + esc(d.cat || '-') + '</div><div class="meta-k">부품명</div><div class="meta-v">' + esc(d.part || '-') + '</div><div class="meta-k">Part No.</div><div class="meta-v">' + esc(d.partNo || '-') + '</div><div class="meta-k">불량 유형</div><div class="meta-v">' + esc(d.type || '-') + '</div><div class="meta-k">협력사</div><div class="meta-v">' + esc(d.vendor || '-') + '</div><div class="meta-k">제기 경로</div><div class="meta-v">' + esc(d.source || '-') + '</div><div class="meta-k">경로 상세</div><div class="meta-v">' + esc(d.sourceDetail || '-') + '</div><div class="meta-k">발생일</div><div class="meta-v">' + esc(d.occDate || '-') + '</div><div class="meta-k">검사 시작일</div><div class="meta-v">' + esc(d.inspDate || '-') + '</div></div></div>' + adminHTML + '</div></div>';
       document.getElementById('detail-bg').classList.add('on');
     }
     function closeDetail() { document.getElementById('detail-bg').classList.remove('on'); currentDetailId = null; }
+    function setStatus(id, s) { var d = DB.find(function (x) { return x.id === id; }); if (!d) return; if (!confirm('[' + d.title + ']\n상태를 "' + s + '"으로 변경하시겠습니까?')) return; d.status = s; closeDetail(); drawCards(); drawAdminList(); drawCL(); }
+    function deleteRecord(id) { var d = DB.find(function (x) { return x.id === id; }); if (!d) return; if (!confirm('[' + d.title + ']\n이 사례를 삭제하시겠습니까?\n삭제 후 파일 저장을 통해 반영하세요.')) return; DB = DB.filter(function (x) { return x.id !== id; }); closeDetail(); drawCards(); drawAdminList(); drawCL(); }
 
-    /* ======= 상태 변경 ======= */
-    function setStatus(id, s) {
-      var d = DB.find(function (x) { return x.id === id; });
-      if (!d) return;
-      if (!confirm('[' + d.title + ']\n상태를 "' + s + '"으로 변경하시겠습니까?')) return;
-      d.status = s; closeDetail(); drawCards(); drawCL();
-    }
-
-    /* ======= 삭제 ======= */
-    function deleteRecord(id) {
-      var d = DB.find(function (x) { return x.id === id; });
-      if (!d) return;
-      if (!confirm('[' + d.title + ']\n이 사례를 삭제하시겠습니까?\n삭제 후 파일 저장을 통해 반영하세요.')) return;
-      DB = DB.filter(function (x) { return x.id !== id; });
-      closeDetail(); drawCards(); drawAdminList(); drawCL();
-    }
-
-    /* ======= 사진 붙여넣기 (Ctrl+V) ======= */
-    // 페이지 전체에서 붙여넣기 이벤트 감지
     document.addEventListener('paste', function (e) {
-      // 붙여넣기 영역이 활성화(포커스)되어 있거나, 폼이 열려있을 때만 동작
-      var pasteArea = document.getElementById('paste-area');
-      if (!pasteArea) return;
-
-      var items = e.clipboardData && e.clipboardData.items;
-      if (!items) return;
-
+      var pasteArea = document.getElementById('paste-area'); if (!pasteArea) return;
+      var adminOn = document.getElementById('sec-admin').classList.contains('on'); if (!adminOn) return;
+      var items = e.clipboardData && e.clipboardData.items; if (!items) return;
       var hasImage = false;
-      for (var i = 0; i < items.length; i++) {
-        if (items[i].type.indexOf('image') !== -1) {
-          hasImage = true;
-          var blob = items[i].getAsFile();
-          var reader = new FileReader();
-          reader.onload = (function (b) {
-            return function (ev) {
-              editPhotos.push(ev.target.result);
-              renderPhotoPreview();
-              // 붙여넣기 성공 시 힌트 텍스트 업데이트
-              var hint = document.getElementById('paste-hint');
-              if (hint) hint.innerHTML = '✅ 이미지 추가됨 — 추가로 <strong>Ctrl+V</strong> 가능';
-            };
-          })(blob);
-          reader.readAsDataURL(blob);
-        }
-      }
-
-      if (!hasImage) {
-        // 이미지가 아닌 경우 안내
-        var hint = document.getElementById('paste-hint');
-        if (hint) {
-          hint.innerHTML = '⚠️ 이미지가 아닙니다. 캡처 후 Ctrl+V 해주세요';
-          setTimeout(function () {
-            hint.innerHTML = '이 영역을 클릭 후 <strong>Ctrl+V</strong> 로 이미지를 붙여넣으세요';
-          }, 2500);
-        }
-      }
+      for (var i = 0; i < items.length; i++) if (items[i].type.indexOf('image') !== -1) { hasImage = true; var blob = items[i].getAsFile(); var reader = new FileReader(); reader.onload = function (ev) { editPhotos.push(ev.target.result); renderPhotoPreview(); var hint = document.getElementById('paste-hint'); if (hint) hint.innerHTML = '✅ 이미지 추가됨 — 추가로 <strong>Ctrl+V</strong> 가능'; }; reader.readAsDataURL(blob); }
+      if (!hasImage) { var hint = document.getElementById('paste-hint'); if (hint) { hint.innerHTML = '⚠️ 이미지가 아닙니다. 캡처 후 Ctrl+V 해주세요'; setTimeout(function () { hint.innerHTML = '이 영역을 클릭 후 <strong>Ctrl+V</strong> 로 이미지를 붙여넣으세요'; }, 2500); } }
     });
+    function renderPhotoPreview() { var el = document.getElementById('photo-preview'); el.innerHTML = editPhotos.map(function (src, i) { return '<div class="preview-item"><img src="' + esc(src) + '"><button class="preview-del" onclick="removePhoto(' + i + ')" title="삭제">✕</button></div>'; }).join(''); }
+    function removePhoto(i) { editPhotos.splice(i, 1); renderPhotoPreview(); }
 
-    // 기존 handlePhotoUpload 는 사용 안 하지만 참조 오류 방지용으로 유지
-    function handlePhotoUpload(e) { }
-    function renderPhotoPreview() {
-      var el = document.getElementById('photo-preview');
-      el.innerHTML = editPhotos.map(function (src, i) {
-        return '<div class="preview-item">' +
-          '<img src="' + src + '">' +
-          '<button class="preview-del" onclick="removePhoto(' + i + ')" title="삭제">✕</button>' +
-          '</div>';
-      }).join('');
-    }
-    function removePhoto(i) {
-      editPhotos.splice(i, 1);
-      renderPhotoPreview();
-    }
-
-    /* ======= 폼 저장 ======= */
     function saveRecord() {
-      var fv = function (id) { return document.getElementById(id).value.trim(); };
-      var model = fv('f-model'), cat = fv('f-cat'), part = fv('f-part'), partNo = fv('f-partno'), type = fv('f-type'),
-        grade = fv('f-grade'), status = fv('f-status'), vendor = fv('f-vendor'),
-        source = fv('f-source'), sourceDetail = fv('f-source-detail'),
-        occDate = fv('f-occdate'), inspDate = fv('f-inspdate'), title = fv('f-title'),
-        detail = fv('f-detail'), check = fv('f-check'), result = fv('f-result'), action = fv('f-action');
-      if (!model || !cat || !part || !type || !grade || !vendor || !occDate || !title || !detail || !check) {
-        alert('필수 항목(*)을 모두 입력해 주세요.'); return;
-      }
-      var eid = document.getElementById('edit-id').value;
-      if (eid) {
-        var d = DB.find(function (x) { return x.id === parseInt(eid); });
-        if (d) {
-          d.model = model; d.cat = cat; d.part = part; d.partNo = partNo; d.type = type; d.grade = grade; d.status = status;
-          d.vendor = vendor; d.source = source; d.sourceDetail = sourceDetail;
-          d.occDate = occDate; d.inspDate = inspDate; d.title = title;
-          d.detail = detail; d.check = check; d.result = result; d.action = action;
-          if (editPhotos.length > 0) d.photos = editPhotos;
-        }
-        alert('수정되었습니다.');
-      } else {
-        DB.push({
-          id: nextId++, model: model, cat: cat, part: part, partNo: partNo, type: type, grade: grade, status: status,
-          title: title, detail: detail, check: check, result: result, action: action,
-          vendor: vendor, source: source, sourceDetail: sourceDetail,
-          occDate: occDate, inspDate: inspDate, photos: editPhotos.slice()
-        });
-        alert('등록되었습니다.');
-      }
+      var model = fv('f-model'), cat = fv('f-cat'), part = fv('f-part'), partNo = fv('f-partno'), type = fv('f-type'), grade = fv('f-grade'), status = fv('f-status'), vendor = fv('f-vendor'), source = fv('f-source'), sourceDetail = fv('f-source-detail'), occDate = fv('f-occdate'), inspDate = fv('f-inspdate'), title = fv('f-title'), detail = fv('f-detail'), check = fv('f-check'), result = fv('f-result'), action = fv('f-action');
+      if (!model || !cat || !part || !type || !grade || !vendor || !occDate || !title || !detail || !check) { alert('필수 항목(*)을 모두 입력해 주세요.'); return; }
+      var eid = fv('edit-id');
+      if (eid) { var d = DB.find(function (x) { return x.id === parseInt(eid, 10); }); if (d) { d.model = model; d.cat = cat; d.part = part; d.partNo = partNo; d.type = type; d.grade = grade; d.status = status; d.vendor = vendor; d.source = source; d.sourceDetail = sourceDetail; d.occDate = occDate; d.inspDate = inspDate; d.title = title; d.detail = detail; d.check = check; d.result = result; d.action = action; d.photos = editPhotos.slice(); } alert('수정되었습니다.'); }
+      else { DB.push({ id: nextId++, model: model, cat: cat, part: part, partNo: partNo, type: type, grade: grade, status: status, title: title, detail: detail, check: check, result: result, action: action, vendor: vendor, source: source, sourceDetail: sourceDetail, occDate: occDate, inspDate: inspDate, photos: editPhotos.slice() }); alert('등록되었습니다.'); }
       resetForm(); drawCards(); drawAdminList(); drawCL();
     }
+    function startEdit(id) { var d = DB.find(function (x) { return x.id === id; }); if (!d) return; closeDetail(); switchTab('admin'); sv('edit-id', d.id); sv('f-model', d.model); sv('f-cat', d.cat); sv('f-part', d.part); sv('f-partno', d.partNo); sv('f-type', d.type); sv('f-grade', d.grade); sv('f-status', d.status); sv('f-vendor', d.vendor); sv('f-source', d.source); sv('f-source-detail', d.sourceDetail); sv('f-occdate', d.occDate); sv('f-inspdate', d.inspDate); sv('f-title', d.title); sv('f-detail', d.detail); sv('f-check', d.check); sv('f-result', d.result); sv('f-action', d.action); editPhotos = d.photos ? d.photos.slice() : []; renderPhotoPreview(); document.getElementById('form-title').textContent = '사례 수정 — ' + d.title; document.getElementById('form-wrap').scrollIntoView({ behavior: 'smooth' }); }
+    function resetForm() { ['f-model', 'f-cat', 'f-part', 'f-partno', 'f-type', 'f-grade', 'f-vendor', 'f-source', 'f-source-detail', 'f-occdate', 'f-inspdate', 'f-title', 'f-detail', 'f-check', 'f-result', 'f-action'].forEach(function (id) { sv(id, ''); }); sv('f-status', 'Open'); sv('edit-id', ''); editPhotos = []; renderPhotoPreview(); document.getElementById('form-title').textContent = '신규 사례 등록'; var hint = document.getElementById('paste-hint'); if (hint) hint.innerHTML = '이 영역을 클릭 후 <strong>Ctrl+V</strong> 로 이미지를 붙여넣으세요'; }
 
-    /* ======= 수정 시작 ======= */
-    function startEdit(id) {
-      var d = DB.find(function (x) { return x.id === id; });
-      if (!d) return;
-      closeDetail();
-      switchTab('admin');
-      var sv = function (eid, val) { document.getElementById(eid).value = val; };
-      sv('edit-id', d.id);
-      sv('f-model', d.model); sv('f-cat', d.cat); sv('f-part', d.part); sv('f-partno', d.partNo || ''); sv('f-type', d.type);
-      sv('f-grade', d.grade); sv('f-status', d.status); sv('f-vendor', d.vendor);
-      sv('f-source', d.source || ''); sv('f-source-detail', d.sourceDetail || '');
-      sv('f-occdate', d.occDate); sv('f-inspdate', d.inspDate); sv('f-title', d.title);
-      sv('f-detail', d.detail); sv('f-check', d.check); sv('f-result', d.result); sv('f-action', d.action);
-      editPhotos = d.photos ? d.photos.slice() : [];
-      renderPhotoPreview();
-      document.getElementById('form-title').textContent = '사례 수정 — ' + d.title;
-      document.getElementById('form-wrap').scrollIntoView({ behavior: 'smooth' });
-    }
+    function arr(key) { if (adminSort.key !== key) return '<span class="sort-arrow">⇅</span>'; return '<span class="sort-arrow">' + (adminSort.asc ? '↑' : '↓') + '</span>'; }
+    function sortBy(key) { if (adminSort.key === key) adminSort.asc = !adminSort.asc; else { adminSort.key = key; adminSort.asc = true; } drawAdminList(); }
+    function onFilterInput(field, value) { adminFilter[field] = value; clearTimeout(_filterTimer); _filterTimer = setTimeout(renderDataRows, 250); }
+    function getFiltered() { var f = DB.filter(function (d) { return (!adminFilter.no || String(d.id).includes(adminFilter.no)) && (!adminFilter.cat || (d.cat || '').toLowerCase().includes(adminFilter.cat.toLowerCase())) && (!adminFilter.model || (d.model || '').toLowerCase().includes(adminFilter.model.toLowerCase())) && (!adminFilter.title || (d.title || '').toLowerCase().includes(adminFilter.title.toLowerCase())) && (!adminFilter.vendor || (d.vendor || '').toLowerCase().includes(adminFilter.vendor.toLowerCase())) && (!adminFilter.source || (d.source || '').toLowerCase().includes(adminFilter.source.toLowerCase())) && (!adminFilter.grade || (d.grade || '').toLowerCase().includes(adminFilter.grade.toLowerCase())) && (!adminFilter.status || (d.status || '').toLowerCase().includes(adminFilter.status.toLowerCase())); }); f.sort(function (a, b) { var va = a[adminSort.key] || '', vb = b[adminSort.key] || ''; return (va < vb ? -1 : va > vb ? 1 : 0) * (adminSort.asc ? 1 : -1); }); return f; }
+    function renderDataRows() { var filtered = getFiltered(); document.getElementById('admin-list-count').textContent = '— 총 ' + DB.length + '건' + (filtered.length < DB.length ? ' (필터: ' + filtered.length + '건)' : ''); var body = document.getElementById('admin-list-body'); if (!body) { drawAdminList(); return; } body.innerHTML = filtered.length ? filtered.map(function (d) { return '<div class="admin-list-row" onclick="startEdit(' + d.id + ')"><span class="meta">' + d.id + '</span><span class="meta">' + esc(d.cat || '-') + '</span><span class="meta">' + esc(d.model || '-') + '</span><span class="title">' + esc(d.title || '-') + '</span><span class="meta">' + esc(d.vendor || '-') + '</span><span class="meta">' + esc(d.source || '-') + '</span><span>' + gb(d.grade) + '</span><span>' + sb(d.status) + '</span></div>'; }).join('') : '<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">필터 조건에 맞는 항목이 없습니다.</div>'; }
+    function drawAdminList() { var el = document.getElementById('admin-list'); if (!el) return; if (!DB.length) { el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">등록된 사례가 없습니다.</div>'; return; } var keys = ['id', 'cat', 'model', 'title', 'vendor', 'source', 'grade', 'status']; var labels = ['No', 'Category', 'Model', 'Title', '발생 협력사', '제기 경로', '등급', '상태']; var pholds = ['No', 'Category', 'Model', 'Title', '협력사', '제기 경로', '등급', '상태']; var fvals = [adminFilter.no, adminFilter.cat, adminFilter.model, adminFilter.title, adminFilter.vendor, adminFilter.source, adminFilter.grade, adminFilter.status]; var headHTML = '<div class="admin-list-head">' + keys.map(function (k, i) { return '<span data-sk="' + k + '">' + labels[i] + arr(k) + '</span>'; }).join('') + '</div>'; var filterHTML = '<div class="admin-filter-row">' + keys.map(function (k, i) { return '<input type="text" id="af-' + k + '" data-fk="' + k + '" placeholder="' + pholds[i] + '" value="' + esc(fvals[i] || '') + '">'; }).join('') + '</div>'; el.innerHTML = headHTML + filterHTML + '<div id="admin-list-body"></div>'; el.querySelector('.admin-list-head').addEventListener('click', function (e) { var t = e.target.closest('[data-sk]'); if (t) sortBy(t.getAttribute('data-sk')); }); el.querySelector('.admin-filter-row').addEventListener('input', function (e) { var inp = e.target; if (inp.dataset.fk) onFilterInput(inp.dataset.fk, inp.value); }); renderDataRows(); }
+    function clearAdminFilter() { adminFilter = { no: '', cat: '', model: '', title: '', vendor: '', source: '', grade: '', status: '' }; adminSort = { key: 'id', asc: true }; drawAdminList(); }
 
-    /* ======= 폼 초기화 ======= */
-    function resetForm() {
-      ['f-model', 'f-cat', 'f-part', 'f-partno', 'f-type', 'f-grade', 'f-vendor', 'f-source', 'f-source-detail', 'f-occdate', 'f-inspdate', 'f-title', 'f-detail', 'f-check', 'f-result', 'f-action']
-        .forEach(function (id) { document.getElementById(id).value = ''; });
-      document.getElementById('f-status').value = 'Open';
-      document.getElementById('edit-id').value = '';
-      editPhotos = [];
-      renderPhotoPreview();
-      document.getElementById('form-title').textContent = '신규 사례 등록';
-    }
+    function drawCL() { var m = fv('cl-model'), c = fv('cl-cat'), pw = document.getElementById('cl-prog-wrap'), sign = document.getElementById('cl-sign'), list = document.getElementById('cl-list'); if (!m) { list.innerHTML = '<div class="empty">모델을 선택하면<br>해당 주의 항목이 표시됩니다.</div>'; pw.style.display = 'none'; sign.style.display = 'none'; return; } var items = DB.filter(function (d) { return d.model === m && d.status === 'Open' && (!c || d.cat === c); }); if (!items.length) { list.innerHTML = '<div class="empty">해당 조합의 Open 불량 사례가 없습니다.<br><span style="font-size:12px;color:var(--green)">안전하게 조립을 진행하세요.</span></div>'; pw.style.display = 'none'; sign.style.display = 'none'; return; } pw.style.display = 'block'; list.innerHTML = items.map(function (d) { var done = !!checkState[d.id]; return '<div class="ci' + (done ? ' done' : '') + '" id="ci-' + d.id + '" onclick="togCL(' + d.id + ')"><input type="checkbox"' + (done ? ' checked' : '') + ' onclick="event.stopPropagation();togCL(' + d.id + ')"><div class="ci-body"><div class="ci-top">' + gb(d.grade) + '<span class="ci-title">' + esc(d.title) + '</span></div><div class="ci-check">확인: ' + esc(d.check) + '</div></div><button class="btn-detail" onclick="event.stopPropagation();openDetail(' + d.id + ')">상세보기</button></div>'; }).join(''); updProg(items); }
+    function togCL(id) { checkState[id] = !checkState[id]; var m = fv('cl-model'), c = fv('cl-cat'); var items = DB.filter(function (d) { return d.model === m && d.status === 'Open' && (!c || d.cat === c); }); var el = document.getElementById('ci-' + id); if (el) { el.classList.toggle('done', !!checkState[id]); el.querySelector('input').checked = !!checkState[id]; } updProg(items); }
+    function updProg(items) { var done = items.filter(function (d) { return checkState[d.id]; }).length, total = items.length; document.getElementById('prog-txt').textContent = done + ' / ' + total; document.getElementById('pfill').style.width = total ? Math.round(done / total * 100) + '%' : '0%'; document.getElementById('cl-sign').style.display = (done === total && total > 0) ? 'block' : 'none'; }
+    function resetCL() { Object.keys(checkState).forEach(function (k) { delete checkState[k]; }); drawCL(); }
+    function submitSign() { var name = fv('sign-name'); if (!name) { alert('작업자 이름을 입력해 주세요.'); return; } var now = new Date(); var ts = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0'); alert('[ 확인 완료 ]\n작업자: ' + name + '\n시각: ' + ts + '\n\n조립을 착수해 주세요.'); }
+    function saveAsFile() { var blob = new Blob([JSON.stringify(DB, null, 2)], { type: 'application/json;charset=utf-8' }); var a = document.createElement('a'); var today = new Date(); var ds = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0'); a.href = URL.createObjectURL(blob); a.download = ds + '_sample_issues.json'; a.click(); URL.revokeObjectURL(a.href); alert('JSON 파일이 다운로드되었습니다.\n\n운영 반영 방법:\n1. 다운로드된 JSON 파일 이름을 sample_issues.json 으로 변경\n2. AQI_Fixture/data/sample_issues.json 파일과 교체\n3. 브라우저 새로고침'); }
+    function bgClick(e, id) { if (e.target === document.getElementById(id)) { if (id === 'detail-bg') closeDetail(); else if (id === 'login-bg') closeLogin(); } }
 
-    /* ======= 관리자 목록 (필터 + 정렬) ======= */
-    var adminFilter = { no: '', cat: '', model: '', title: '', vendor: '', source: '', grade: '', status: '' };
-    var adminSort = { key: 'id', asc: true };
-    var _filterTimer = null;
-
-    // 정렬 화살표 표시
-    function arr(key) {
-      if (adminSort.key !== key) return '<span class="sort-arrow">⇅</span>';
-      return '<span class="sort-arrow">' + (adminSort.asc ? '↑' : '↓') + '</span>';
-    }
-
-    // 헤더 클릭 시 정렬
-    function sortBy(key) {
-      if (adminSort.key === key) adminSort.asc = !adminSort.asc;
-      else { adminSort.key = key; adminSort.asc = true; }
-      drawAdminList();
-    }
-
-    // 필터 입력 시 300ms 디바운스 후 데이터 행만 갱신
-    function onFilterInput(field, value) {
-      adminFilter[field] = value;
-      clearTimeout(_filterTimer);
-      _filterTimer = setTimeout(renderDataRows, 300);
-    }
-
-    // 필터+정렬 적용된 배열 반환
-    function getFiltered() {
-      var f = DB.filter(function (d) {
-        return (!adminFilter.no || String(d.id).includes(adminFilter.no)) &&
-          (!adminFilter.cat || (d.cat || '').toLowerCase().includes(adminFilter.cat.toLowerCase())) &&
-          (!adminFilter.model || (d.model || '').toLowerCase().includes(adminFilter.model.toLowerCase())) &&
-          (!adminFilter.title || (d.title || '').toLowerCase().includes(adminFilter.title.toLowerCase())) &&
-          (!adminFilter.vendor || (d.vendor || '').toLowerCase().includes(adminFilter.vendor.toLowerCase())) &&
-          (!adminFilter.source || (d.source || '').toLowerCase().includes(adminFilter.source.toLowerCase())) &&
-          (!adminFilter.grade || (d.grade || '').toLowerCase().includes(adminFilter.grade.toLowerCase())) &&
-          (!adminFilter.status || (d.status || '').toLowerCase().includes(adminFilter.status.toLowerCase()));
-      });
-      f.sort(function (a, b) {
-        var va = a[adminSort.key] || '', vb = b[adminSort.key] || '';
-        return (va < vb ? -1 : va > vb ? 1 : 0) * (adminSort.asc ? 1 : -1);
-      });
-      return f;
-    }
-
-    // 데이터 행만 업데이트 (필터 input 포커스 유지)
-    function renderDataRows() {
-      var filtered = getFiltered();
-      document.getElementById('admin-list-count').textContent =
-        '— 총 ' + DB.length + '건' + (filtered.length < DB.length ? ' (필터: ' + filtered.length + '건)' : '');
-      var body = document.getElementById('admin-list-body');
-      if (!body) { drawAdminList(); return; }
-      body.innerHTML = filtered.length ? filtered.map(function (d) {
-        return '<div class="admin-list-row" onclick="startEdit(' + d.id + ')">' +
-          '<span class="meta">' + d.id + '</span>' +
-          '<span class="meta">' + (d.cat || '-') + '</span>' +
-          '<span class="meta">' + (d.model || '-') + '</span>' +
-          '<span class="title">' + (d.title || '-') + '</span>' +
-          '<span class="meta">' + (d.vendor || '-') + '</span>' +
-          '<span class="meta">' + (d.source || '-') + '</span>' +
-          '<span>' + gb(d.grade) + '</span>' +
-          '<span>' + sb(d.status) + '</span>' +
-          '</div>';
-      }).join('') : '<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">필터 조건에 맞는 항목이 없습니다.</div>';
-    }
-
-    // 전체 목록 그리기 (헤더 + 필터행 + 데이터행)
-    // ※ data-key 속성 + 이벤트 위임 방식으로 따옴표 충돌 완전 제거
-    function drawAdminList() {
-      var el = document.getElementById('admin-list');
-      if (!DB.length) {
-        el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">등록된 사례가 없습니다.</div>';
-        return;
-      }
-
-      var keys = ['id', 'cat', 'model', 'title', 'vendor', 'source', 'grade', 'status'];
-      var labels = ['No', 'Category', 'Model', 'Title', '발생 협력사', '제기 경로', '등급', '상태'];
-      var pholds = ['No', 'Category', 'Model', 'Title', '협력사', '제기 경로', '등급', '상태'];
-      var fvals = [
-        adminFilter.no,
-        adminFilter.cat,
-        adminFilter.model,
-        adminFilter.title,
-        adminFilter.vendor,
-        adminFilter.source,
-        adminFilter.grade,
-        adminFilter.status
-      ];
-
-      // 헤더
-      var headHTML = '<div class="admin-list-head">' +
-        keys.map(function (k, i) { return '<span data-sk="' + k + '">' + labels[i] + arr(k) + '</span>'; }).join('') +
-        '</div>';
-
-      // 필터 행
-      var filterHTML = '<div class="admin-filter-row">' +
-        keys.map(function (k, i) {
-          return '<input type="text" id="af-' + k + '" data-fk="' + k + '" placeholder="' + pholds[i] + '" value="' + (fvals[i] || '') + '">';
-        }).join('') +
-        '</div>';
-
-      el.innerHTML = headHTML + filterHTML + '<div id="admin-list-body"></div>';
-
-      // 헤더 클릭 → 정렬 (이벤트 위임)
-      el.querySelector('.admin-list-head').addEventListener('click', function (e) {
-        var t = e.target.closest('[data-sk]');
-        if (t) sortBy(t.getAttribute('data-sk'));
-      });
-
-      // 필터 입력 → 디바운스 (이벤트 위임)
-      el.querySelector('.admin-filter-row').addEventListener('input', function (e) {
-        var inp = e.target;
-        if (inp.dataset.fk) onFilterInput(inp.dataset.fk, inp.value);
-      });
-
-      renderDataRows();
-    }
-
-    // 필터 초기화
-    function clearAdminFilter() {
-      adminFilter = { no: '', cat: '', model: '', title: '', vendor: '', source: '', grade: '', status: '' };
-      adminSort = { key: 'id', asc: true };
-      drawAdminList();
-    }
-
-    /* ======= 체크리스트 ======= */
-    function drawCL() {
-      var m = document.getElementById('cl-model').value;
-      var c = document.getElementById('cl-cat').value;
-      var pw = document.getElementById('cl-prog-wrap');
-      var sign = document.getElementById('cl-sign');
-      var list = document.getElementById('cl-list');
-      // 모델 미선택 시에만 안내 표시 (카테고리는 선택 사항)
-      if (!m) {
-        list.innerHTML = '<div class="empty">모델을 선택하면<br>해당 주의 항목이 표시됩니다.</div>';
-        pw.style.display = 'none'; sign.style.display = 'none'; return;
-      }
-      // 모델만 선택 시 전체 표시, 카테고리 선택 시 추가 필터
-      var items = DB.filter(function (d) {
-        return d.model === m && d.status === 'Open' && (!c || d.cat === c);
-      });
-      if (!items.length) {
-        list.innerHTML = '<div class="empty">해당 조합의 Open 불량 사례가 없습니다.<br><span style="font-size:12px;color:var(--green)">안전하게 조립을 진행하세요.</span></div>';
-        pw.style.display = 'none'; sign.style.display = 'none'; return;
-      }
-      pw.style.display = 'block';
-      list.innerHTML = items.map(function (d) {
-        var done = !!checkState[d.id];
-        return '<div class="ci' + (done ? ' done' : '') + '" id="ci-' + d.id + '" onclick="togCL(' + d.id + ')">' +
-          '<input type="checkbox"' + (done ? ' checked' : '') + ' onclick="event.stopPropagation();togCL(' + d.id + ')">' +
-          '<div class="ci-body">' +
-          '<div class="ci-top">' + gb(d.grade) + '<span class="ci-title">' + d.title + '</span></div>' +
-          '<div class="ci-check">확인: ' + d.check + '</div>' +
-          '</div>' +
-          '<button class="btn-detail" onclick="event.stopPropagation();openDetail(' + d.id + ')">상세보기</button>' +
-          '</div>';
-      }).join('');
-      updProg(items);
-    }
-    function togCL(id) {
-      checkState[id] = !checkState[id];
-      var m = document.getElementById('cl-model').value;
-      var c = document.getElementById('cl-cat').value;
-      var items = DB.filter(function (d) {
-        return d.model === m && d.status === 'Open' && (!c || d.cat === c);
-      });
-      var el = document.getElementById('ci-' + id);
-      if (el) { el.classList.toggle('done', !!checkState[id]); el.querySelector('input').checked = !!checkState[id]; }
-      updProg(items);
-    }
-    function updProg(items) {
-      var done = items.filter(function (d) { return checkState[d.id]; }).length;
-      var total = items.length;
-      document.getElementById('prog-txt').textContent = done + ' / ' + total;
-      document.getElementById('pfill').style.width = Math.round(done / total * 100) + '%';
-      document.getElementById('cl-sign').style.display = (done === total && total > 0) ? 'block' : 'none';
-    }
-    function resetCL() {
-      Object.keys(checkState).forEach(function (k) { delete checkState[k]; });
-      drawCL();
-    }
-    function submitSign() {
-      var name = document.getElementById('sign-name').value.trim();
-      if (!name) { alert('작업자 이름을 입력해 주세요.'); return; }
-      var now = new Date();
-      var ts = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') +
-        ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-      alert('[ 확인 완료 ]\n작업자: ' + name + '\n시각: ' + ts + '\n\n조립을 착수해 주세요.');
-    }
-
-    /* ======= 파일로 저장 ======= */
-    function saveAsFile() {
-      var dbJSON = JSON.stringify(DB, null, 2);
-      var html = document.documentElement.outerHTML;
-
-      // var DB = [ ... ]; 위치를 공백 여부와 관계없이 찾기
-      var markerMatch = html.match(/var\s+DB\s*=\s*\[/);
-      if (!markerMatch) {
-        alert('저장 오류: DB 위치를 찾을 수 없습니다.');
-        return;
-      }
-
-      var start = markerMatch.index;
-      var arrayStart = html.indexOf('[', start);
-      if (arrayStart === -1) {
-        alert('저장 오류: DB 배열 시작 위치를 찾을 수 없습니다.');
-        return;
-      }
-
-      var depth = 0;
-      var end = arrayStart;
-
-      for (var i = arrayStart; i < html.length; i++) {
-        if (html[i] === '[') depth++;
-        else if (html[i] === ']') {
-          depth--;
-          if (depth === 0) {
-            end = i;
-            break;
-          }
-        }
-      }
-
-      if (depth !== 0) {
-        alert('저장 오류: DB 배열 종료 위치를 찾을 수 없습니다.');
-        return;
-      }
-
-      var tailStart = end + 1;
-      if (html[tailStart] === ';') tailStart++;
-
-      var newHtml =
-        html.substring(0, start) +
-        'var DB = ' + dbJSON + ';' +
-        html.substring(tailStart);
-
-      var blob = new Blob([newHtml], { type: 'text/html;charset=utf-8' });
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-
-      var today = new Date();
-      var ds = today.getFullYear() + '-' +
-        String(today.getMonth() + 1).padStart(2, '0') + '-' +
-        String(today.getDate()).padStart(2, '0');
-
-      a.download = ds + '_Issue_DB.html';
-      a.click();
-      URL.revokeObjectURL(a.href);
-    }
-
-    /* ======= 공통 ======= */
-    function bgClick(e, id) {
-      if (e.target === document.getElementById(id)) {
-        if (id === 'detail-bg') closeDetail();
-        else if (id === 'login-bg') closeLogin();
-      }
-    }
-
-    /* ======= 이벤트 바인딩 ======= */
-    ['kw', 'fm', 'fcat', 'ft', 'fg', 'fs', 'fvendor', 'fsource', 'fdateFrom', 'fdateTo'].forEach(function (id) {
-      document.getElementById(id).addEventListener(id === 'kw' ? 'input' : 'change', drawCards);
-    });
-
-    ['cl-model', 'cl-cat'].forEach(function (id) {
-      document.getElementById(id).addEventListener('change', function () {
-        Object.keys(checkState).forEach(function (k) { delete checkState[k]; });
-        drawCL();
-      });
-    });
-
-    /* ======= 초기화 ======= */
-    setInitialFilterState();
-    drawCards();
-    drawCL();
-
-    window.addEventListener('resize', function () {
-      // 사용자가 직접 열고 닫은 상태를 과하게 바꾸지 않기 위해
-      // 새로고침/초기 진입 시 기준만 적용하고, resize에서는 버튼 문구만 보정
-      var panel = document.getElementById('searchFilterPanel');
-      var btn = document.getElementById('btnFilterToggle');
-      if (!panel || !btn) return;
-      btn.textContent = panel.classList.contains('is-collapsed') ? '필터 열기' : '필터 접기';
-    });
+    ['kw', 'fm', 'fcat', 'ft', 'fg', 'fs', 'fvendor', 'fsource', 'fdateFrom', 'fdateTo'].forEach(function (id) { document.getElementById(id).addEventListener(id === 'kw' || id === 'fsource' ? 'input' : 'change', drawCards); });
+    ['cl-model', 'cl-cat'].forEach(function (id) { document.getElementById(id).addEventListener('change', function () { checkState = {}; drawCL(); }); });
+    async function initApp() { await loadIssueData(); setInitialFilterState(); drawCards(); drawCL(); window.addEventListener('resize', function () { var panel = document.getElementById('searchFilterPanel'), btn = document.getElementById('btnFilterToggle'); if (!panel || !btn) return; btn.textContent = panel.classList.contains('is-collapsed') ? '필터 열기' : '필터 접기'; }); }
+    initApp();
   </script>
 </body>
 
