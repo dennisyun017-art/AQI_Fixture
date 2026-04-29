@@ -2345,6 +2345,346 @@
         max-height: 280px !important;
       }
     }
+
+    /* =========================================================
+   Step 12-R. Responsive Layout for Tablet / Mobile
+   ========================================================= */
+
+    /* 태블릿: 1024px 이하 */
+    @media (max-width: 1024px) {
+      body {
+        min-width: auto !important;
+      }
+
+      .content {
+        max-width: 100% !important;
+        padding: 18px 16px 32px !important;
+      }
+
+      .hdr {
+        padding: 14px 18px !important;
+        flex-wrap: wrap;
+      }
+
+      .hdr h1 {
+        font-size: 19px !important;
+      }
+
+      .hdr-right {
+        width: 100%;
+        margin-left: 0 !important;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .tab-wrap {
+        padding: 0 16px !important;
+        overflow-x: auto;
+      }
+
+      .tab-bar {
+        min-width: max-content;
+      }
+
+      .tab {
+        white-space: nowrap;
+        padding: 14px 18px !important;
+      }
+
+      .filter-row {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px !important;
+      }
+
+      .filter-row input,
+      .filter-row select,
+      .filter-row button {
+        width: 100%;
+        min-width: 0 !important;
+      }
+
+      .stat-row {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+
+      .modal {
+        width: calc(100vw - 28px) !important;
+        max-width: none !important;
+      }
+
+      .issue-detail-layout {
+        grid-template-columns: 1fr !important;
+      }
+
+      .issue-photo-panel .photo-scroll {
+        max-height: 320px !important;
+      }
+    }
+
+    /* 모바일: 640px 이하 */
+    @media (max-width: 640px) {
+      body {
+        font-size: 13px;
+      }
+
+      .hdr {
+        gap: 8px !important;
+      }
+
+      .hdr>div:first-child {
+        width: 100%;
+      }
+
+      .hdr h1 {
+        font-size: 18px !important;
+      }
+
+      .badge-gray {
+        display: inline-block;
+        margin-top: 4px;
+      }
+
+      .hdr-right {
+        font-size: 11px !important;
+        gap: 6px !important;
+      }
+
+      .btn-sm {
+        min-height: 34px;
+        padding: 6px 10px !important;
+      }
+
+      .content {
+        padding: 14px 10px 28px !important;
+      }
+
+      .filter-row {
+        grid-template-columns: 1fr !important;
+        padding: 12px !important;
+      }
+
+      .filter-row input,
+      .filter-row select,
+      .filter-row button {
+        min-height: 42px;
+        font-size: 13px !important;
+      }
+
+      .stat-row {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+      }
+
+      .stat-card {
+        padding: 12px 12px !important;
+      }
+
+      .stat-num {
+        font-size: 22px !important;
+      }
+
+      .grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+
+      .card {
+        padding: 12px !important;
+      }
+
+      .card-img {
+        height: 150px !important;
+      }
+
+      .modal-bg {
+        padding: 0 !important;
+        align-items: stretch !important;
+      }
+
+      .modal {
+        width: 100vw !important;
+        height: 100vh !important;
+        max-height: none !important;
+        border-radius: 0 !important;
+      }
+
+      .modal-head {
+        padding: 14px 14px !important;
+      }
+
+      .modal-head-title {
+        font-size: 16px !important;
+      }
+
+      .modal-body {
+        padding: 14px !important;
+      }
+
+      .issue-photo-panel {
+        padding: 8px !important;
+      }
+
+      .issue-photo-panel .photo-scroll {
+        max-height: 260px !important;
+      }
+
+      .issue-section {
+        padding: 12px !important;
+      }
+
+      .issue-meta-grid {
+        grid-template-columns: 80px 1fr !important;
+        font-size: 12px !important;
+      }
+
+      .ctrl-row {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .ctrl-row button {
+        min-height: 38px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .admin-list-head,
+      .admin-filter-row,
+      .admin-list-row {
+        grid-template-columns: 36px 1fr 72px 70px !important;
+      }
+    }
+
+    /* 아주 작은 모바일: 420px 이하 */
+    @media (max-width: 420px) {
+      .stat-row {
+        grid-template-columns: 1fr !important;
+      }
+
+      .tab {
+        padding: 12px 14px !important;
+        font-size: 12px !important;
+      }
+
+      .card-img {
+        height: 130px !important;
+      }
+
+      .issue-meta-grid {
+        grid-template-columns: 1fr !important;
+        gap: 3px 0 !important;
+      }
+
+      .issue-meta-grid .meta-k {
+        margin-top: 6px;
+      }
+    }
+
+    /* =========================================================
+   Step 13. Search Filter Toggle / Responsive Filter Panel
+   ========================================================= */
+
+    /* 필터 상단 툴바 */
+    .filter-toolbar {
+      background: #FFFFFF;
+      border: 1px solid #DDE5EE;
+      border-radius: 16px;
+      padding: 13px 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 10px rgba(16, 42, 67, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .filter-title {
+      font-size: 14px;
+      font-weight: 900;
+      color: #102A43;
+      line-height: 1.2;
+    }
+
+    .filter-sub {
+      font-size: 12px;
+      color: #64748B;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .btn-filter-toggle {
+      border: 1px solid #C9D3DF;
+      background: #FFFFFF;
+      color: #52616F;
+      border-radius: 999px;
+      padding: 8px 14px;
+      min-height: 36px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .btn-filter-toggle:hover {
+      border-color: #C9951A;
+      color: #102A43;
+      background: #F8FAFC;
+    }
+
+    /* 필터 접힘 상태 */
+    .filter-row.is-collapsed {
+      display: none !important;
+    }
+
+    /* 필터 패널 내부 버튼 높이 통일 */
+    .filter-row .btn-reset {
+      min-height: 38px;
+      white-space: nowrap;
+    }
+
+    /* 모바일/태블릿 필터 사용성 개선 */
+    @media(max-width:1024px) {
+      .filter-toolbar {
+        margin-bottom: 8px;
+      }
+
+      .filter-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      }
+    }
+
+    @media(max-width:640px) {
+      .filter-toolbar {
+        padding: 12px;
+        border-radius: 14px;
+      }
+
+      .filter-title {
+        font-size: 13px;
+      }
+
+      .filter-sub {
+        font-size: 11.5px;
+      }
+
+      .btn-filter-toggle {
+        min-height: 38px;
+        padding: 8px 12px;
+      }
+
+      .filter-row {
+        grid-template-columns: 1fr !important;
+      }
+    }
   </style>
 </head>
 
@@ -2380,7 +2720,14 @@
     <!-- 검색/카드뷰 -->
     <div id="sec-search" class="sec on">
       <div class="stat-row" id="stat-row"></div>
-      <div class="filter-row">
+      <div class="filter-toolbar">
+        <div>
+          <div class="filter-title">검색 조건</div>
+          <div class="filter-sub" id="filterSummary">전체 Issue 표시 중</div>
+        </div>
+        <button class="btn-filter-toggle" id="btnFilterToggle" onclick="toggleFilters()">필터 접기</button>
+      </div>
+      <div class="filter-row" id="searchFilterPanel">
         <input id="kw" type="text" placeholder="키워드 검색 (부품명, 불량내용...)">
         <select id="fm">
           <option value="">전체 모델</option>
@@ -2773,6 +3120,7 @@
       });
       drawStats(f);
       document.getElementById('result-info').textContent = f.length + '건 표시 중';
+      updateFilterSummary(f.length);
       var el = document.getElementById('card-grid');
       if (!f.length) { el.innerHTML = '<div class="empty">조건에 맞는 사례가 없습니다.</div>'; return; }
       el.innerHTML = f.map(function (d) {
@@ -2800,6 +3148,55 @@
       document.getElementById('fdateTo').value = '';
 
       drawCards();
+      updateFilterSummary(DB.length);
+    }
+    function getActiveFilterCount() {
+      var ids = ['kw', 'fm', 'fcat', 'ft', 'fg', 'fs', 'fvendor', 'fdateFrom', 'fdateTo'];
+      var count = 0;
+
+      ids.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el && el.value && el.value.trim() !== '') count++;
+      });
+
+      return count;
+    }
+
+    function updateFilterSummary(resultCount) {
+      var summary = document.getElementById('filterSummary');
+      if (!summary) return;
+
+      var activeCount = getActiveFilterCount();
+
+      if (activeCount === 0) {
+        summary.textContent = '전체 Issue 표시 중' + (typeof resultCount === 'number' ? ' · ' + resultCount + '건' : '');
+      } else {
+        summary.textContent = '필터 ' + activeCount + '개 적용 중' + (typeof resultCount === 'number' ? ' · ' + resultCount + '건 표시' : '');
+      }
+    }
+
+    function toggleFilters() {
+      var panel = document.getElementById('searchFilterPanel');
+      var btn = document.getElementById('btnFilterToggle');
+      if (!panel || !btn) return;
+
+      var collapsed = panel.classList.toggle('is-collapsed');
+      btn.textContent = collapsed ? '필터 열기' : '필터 접기';
+    }
+
+    function setInitialFilterState() {
+      var panel = document.getElementById('searchFilterPanel');
+      var btn = document.getElementById('btnFilterToggle');
+      if (!panel || !btn) return;
+
+      // 모바일은 기본 접힘, 태블릿/PC는 기본 펼침
+      if (window.innerWidth <= 640) {
+        panel.classList.add('is-collapsed');
+        btn.textContent = '필터 열기';
+      } else {
+        panel.classList.remove('is-collapsed');
+        btn.textContent = '필터 접기';
+      }
     }
     /* ======= 상세 모달 ======= */
     function openDetail(id) {
@@ -3232,7 +3629,18 @@
     });
 
     /* ======= 초기화 ======= */
-    drawCards(); drawCL();
+    setInitialFilterState();
+    drawCards();
+    drawCL();
+
+    window.addEventListener('resize', function () {
+      // 사용자가 직접 열고 닫은 상태를 과하게 바꾸지 않기 위해
+      // 새로고침/초기 진입 시 기준만 적용하고, resize에서는 버튼 문구만 보정
+      var panel = document.getElementById('searchFilterPanel');
+      var btn = document.getElementById('btnFilterToggle');
+      if (!panel || !btn) return;
+      btn.textContent = panel.classList.contains('is-collapsed') ? '필터 열기' : '필터 접기';
+    });
   </script>
 </body>
 
