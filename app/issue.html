@@ -2232,6 +2232,20 @@
           <option value="Open">Open</option>
           <option value="Close">Close</option>
         </select>
+        <select id="fvendor">
+          <option value="">전체 협력사</option>
+          <option>나우</option>
+          <option>이지스</option>
+          <option>아셈</option>
+          <option>SE&amp;T</option>
+          <option>SAM</option>
+          <option>HTC</option>
+        </select>
+
+        <input id="fdateFrom" type="date" title="발생일 From">
+        <input id="fdateTo" type="date" title="발생일 To">
+
+        <button class="btn-reset" onclick="resetSearchFilters()">필터 초기화</button>
       </div>
       <div class="result-info" id="result-info"></div>
       <div id="card-grid" class="grid"></div>
@@ -2557,13 +2571,21 @@
       var t = document.getElementById('ft').value;
       var g = document.getElementById('fg').value;
       var s = document.getElementById('fs').value;
+      var vendor = document.getElementById('fvendor').value;
+      var dateFrom = document.getElementById('fdateFrom').value;
+      var dateTo = document.getElementById('fdateTo').value;
       var f = DB.filter(function (d) {
         if (m && d.model !== m) return false;
         if (c && d.cat !== c) return false;
         if (t && d.type !== t) return false;
         if (g && d.grade !== g) return false;
         if (s && d.status !== s) return false;
-        if (kw && !(d.title + d.part + d.detail + d.type).toLowerCase().includes(kw)) return false;
+        if (vendor && d.vendor !== vendor) return false;
+
+        if (dateFrom && d.occDate < dateFrom) return false;
+        if (dateTo && d.occDate > dateTo) return false;
+
+        if (kw && !(d.title + d.part + d.detail + d.type + d.vendor + d.model).toLowerCase().includes(kw)) return false;
         return true;
       });
       drawStats(f);
@@ -2583,7 +2605,19 @@
           '</div>';
       }).join('');
     }
+    function resetSearchFilters() {
+      document.getElementById('kw').value = '';
+      document.getElementById('fm').value = '';
+      document.getElementById('fcat').value = '';
+      document.getElementById('ft').value = '';
+      document.getElementById('fg').value = '';
+      document.getElementById('fs').value = '';
+      document.getElementById('fvendor').value = '';
+      document.getElementById('fdateFrom').value = '';
+      document.getElementById('fdateTo').value = '';
 
+      drawCards();
+    }
     /* ======= 상세 모달 ======= */
     function openDetail(id) {
       var d = DB.find(function (x) { return x.id === id; });
@@ -2969,7 +3003,7 @@
     }
 
     /* ======= 이벤트 바인딩 ======= */
-    ['kw', 'fm', 'fcat', 'ft', 'fg', 'fs'].forEach(function (id) {
+    ['kw', 'fm', 'fcat', 'ft', 'fg', 'fs', 'fvendor', 'fdateFrom', 'fdateTo'].forEach(function (id) {
       document.getElementById(id).addEventListener(id === 'kw' ? 'input' : 'change', drawCards);
     });
     ['cl-model', 'cl-cat'].forEach(function (id) {
