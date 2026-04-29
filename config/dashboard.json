@@ -8,7 +8,7 @@
       "id": "defect",
       "icon": "🔍",
       "label": "Issue DB",
-      "desc": "외관 불량 사례 조회 및 작업 전 체크리스트",
+      "desc": "Issue 사례 조회 및 작업 전 체크리스트",
       "color": "#C0392B",
       "enabled": true
     },
