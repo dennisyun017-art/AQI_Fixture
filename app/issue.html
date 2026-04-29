@@ -2685,6 +2685,61 @@
         grid-template-columns: 1fr !important;
       }
     }
+
+    /* =========================================================
+   Step 14. Admin Form / Part No. Responsive Refinement
+   ========================================================= */
+
+    .admin-wrap {
+      overflow: hidden;
+    }
+
+    .form-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 14px !important;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      min-height: 40px;
+    }
+
+    .field textarea {
+      min-height: 78px !important;
+    }
+
+    /* 입력 폼 구분감을 조금 더 명확하게 */
+    .admin-wrap h2 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .admin-wrap h2::before {
+      content: '';
+      width: 4px;
+      height: 16px;
+      border-radius: 999px;
+      background: #C9951A;
+      display: inline-block;
+    }
+
+    /* 모바일/태블릿 대응 */
+    @media(max-width:900px) {
+      .form-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .form-btn-row {
+        flex-direction: column-reverse;
+      }
+
+      .form-btn-row button {
+        width: 100%;
+        min-height: 42px;
+      }
+    }
   </style>
 </head>
 
@@ -2844,6 +2899,7 @@
             </select>
           </div>
           <div class="field"><label>부품명 *</label><input type="text" id="f-part" placeholder="예: SUS 배관 Ø25"></div>
+          <div class="field"><label>Part No.</label><input type="text" id="f-partno" placeholder="예: 1234-56789"></div>
           <div class="field"><label>불량 유형 *</label>
             <select id="f-type">
               <option value="">선택</option>
@@ -2991,7 +3047,7 @@
     /* ======= DB ======= */
     var DB = [
       {
-        id: 1, model: 'GENEVA STP300xp', cat: '배관류', part: 'Exhaust Box', type: '치수오차', grade: 'A', status: 'Open',
+        id: 1, model: 'GENEVA STP300xp', cat: '배관류', part: 'Exhaust Box', partNo: 'SAMPLE-001', type: '치수오차', grade: 'A', status: 'Open',
         title: '배관 외경 +3mm 초과 납품',
         detail: '납품된 배관 OD(외경)가 설계 도면 대비 약 3mm 크게 제작됨. 조립 시 센터링 흔들림 발생하여 리크(Leak) 우려. 실제 조립 후 리크 테스트에서 불량 판정.',
         check: '배관 삽입 후 손으로 좌우 흔들어 유격 확인. 흔들림 감지 시 즉시 조립 중단 후 담당자(당사 MFG)에게 사진과 함께 보고.',
@@ -3115,7 +3171,7 @@
         if (dateFrom && d.occDate < dateFrom) return false;
         if (dateTo && d.occDate > dateTo) return false;
 
-        if (kw && !(d.title + d.part + d.detail + d.type + d.vendor + d.model).toLowerCase().includes(kw)) return false;
+        if (kw && !(d.title + d.part + (d.partNo || '') + d.detail + d.type + d.vendor + d.model).toLowerCase().includes(kw)) return false;
         return true;
       });
       drawStats(f);
@@ -3131,7 +3187,7 @@
           '<div class="card-img">' + thumb + '</div>' +
           '<div class="tags">' + gb(d.grade) + sb(d.status) + '<span class="tag tag-n">' + d.cat + '</span></div>' +
           '<div class="card-title">' + d.title + '</div>' +
-          '<div class="card-sub">' + d.model + ' · ' + d.part + '</div>' +
+          '<div class="card-sub">' + d.model + ' · ' + d.part + (d.partNo ? ' · ' + d.partNo : '') + '</div>' +
           '<div class="card-meta">' + d.vendor + ' · ' + d.occDate + '</div>' +
           '</div>';
       }).join('');
@@ -3206,7 +3262,7 @@
       document.getElementById('mh-info').innerHTML =
         '<div class="tags" style="margin-bottom:6px">' + gb(d.grade) + sb(d.status) + '<span class="tag tag-n">' + d.type + '</span><span class="tag tag-n">' + d.cat + '</span></div>' +
         '<div class="modal-head-title">' + d.title + '</div>' +
-        '<div class="modal-head-sub">' + d.model + ' · ' + d.part + '</div>';
+        '<div class="modal-head-sub">' + d.model + ' · ' + d.part + (d.partNo ? ' · ' + d.partNo : '') + '</div>';
       var pHTML = '';
       if (d.photos && d.photos.length > 0) {
         pHTML = '<div class="photo-count">' + d.photos.length + '장 — 스크롤하여 확인</div>' +
@@ -3257,6 +3313,7 @@
         '<div class="meta-k">모델</div><div class="meta-v">' + (d.model || '-') + '</div>' +
         '<div class="meta-k">카테고리</div><div class="meta-v">' + (d.cat || '-') + '</div>' +
         '<div class="meta-k">부품명</div><div class="meta-v">' + (d.part || '-') + '</div>' +
+        '<div class="meta-k">Part No.</div><div class="meta-v">' + (d.partNo || '-') + '</div>' +
         '<div class="meta-k">불량 유형</div><div class="meta-v">' + (d.type || '-') + '</div>' +
         '<div class="meta-k">협력사</div><div class="meta-v">' + (d.vendor || '-') + '</div>' +
         '<div class="meta-k">발생일</div><div class="meta-v">' + (d.occDate || '-') + '</div>' +
@@ -3350,7 +3407,7 @@
     /* ======= 폼 저장 ======= */
     function saveRecord() {
       var fv = function (id) { return document.getElementById(id).value.trim(); };
-      var model = fv('f-model'), cat = fv('f-cat'), part = fv('f-part'), type = fv('f-type'),
+      var model = fv('f-model'), cat = fv('f-cat'), part = fv('f-part'), partNo = fv('f-partno'), type = fv('f-type'),
         grade = fv('f-grade'), status = fv('f-status'), vendor = fv('f-vendor'),
         occDate = fv('f-occdate'), inspDate = fv('f-inspdate'), title = fv('f-title'),
         detail = fv('f-detail'), check = fv('f-check'), result = fv('f-result'), action = fv('f-action');
@@ -3361,7 +3418,7 @@
       if (eid) {
         var d = DB.find(function (x) { return x.id === parseInt(eid); });
         if (d) {
-          d.model = model; d.cat = cat; d.part = part; d.type = type; d.grade = grade; d.status = status;
+          d.model = model; d.cat = cat; d.part = part; d.partNo = partNo; d.type = type; d.grade = grade; d.status = status;
           d.vendor = vendor; d.occDate = occDate; d.inspDate = inspDate; d.title = title;
           d.detail = detail; d.check = check; d.result = result; d.action = action;
           if (editPhotos.length > 0) d.photos = editPhotos;
@@ -3369,7 +3426,7 @@
         alert('수정되었습니다.');
       } else {
         DB.push({
-          id: nextId++, model: model, cat: cat, part: part, type: type, grade: grade, status: status,
+          id: nextId++, model: model, cat: cat, part: part, partNo: partNo, type: type, grade: grade, status: status,
           title: title, detail: detail, check: check, result: result, action: action,
           vendor: vendor, occDate: occDate, inspDate: inspDate, photos: editPhotos.slice()
         });
@@ -3386,7 +3443,7 @@
       switchTab('admin');
       var sv = function (eid, val) { document.getElementById(eid).value = val; };
       sv('edit-id', d.id);
-      sv('f-model', d.model); sv('f-cat', d.cat); sv('f-part', d.part); sv('f-type', d.type);
+      sv('f-model', d.model); sv('f-cat', d.cat); sv('f-part', d.part); sv('f-partno', d.partNo || ''); sv('f-type', d.type);
       sv('f-grade', d.grade); sv('f-status', d.status); sv('f-vendor', d.vendor);
       sv('f-occdate', d.occDate); sv('f-inspdate', d.inspDate); sv('f-title', d.title);
       sv('f-detail', d.detail); sv('f-check', d.check); sv('f-result', d.result); sv('f-action', d.action);
@@ -3398,7 +3455,7 @@
 
     /* ======= 폼 초기화 ======= */
     function resetForm() {
-      ['f-model', 'f-cat', 'f-part', 'f-type', 'f-grade', 'f-vendor', 'f-occdate', 'f-inspdate', 'f-title', 'f-detail', 'f-check', 'f-result', 'f-action']
+      ['f-model', 'f-cat', 'f-part', 'f-partno', 'f-type', 'f-grade', 'f-vendor', 'f-occdate', 'f-inspdate', 'f-title', 'f-detail', 'f-check', 'f-result', 'f-action']
         .forEach(function (id) { document.getElementById(id).value = ''; });
       document.getElementById('f-status').value = 'Open';
       document.getElementById('edit-id').value = '';
