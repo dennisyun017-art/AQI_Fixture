@@ -2162,6 +2162,189 @@
         padding: 12px !important;
       }
     }
+
+    /* =========================================================
+   Step 12. Issue Detail Modal Refinement
+   ========================================================= */
+
+    /* 상세 모달 크기 확대 */
+    .modal {
+      max-width: 860px !important;
+      width: min(860px, calc(100vw - 40px)) !important;
+      max-height: 88vh !important;
+    }
+
+    /* 상세 모달 헤더 */
+    .modal-head {
+      padding: 18px 22px !important;
+      background: #F8FAFC !important;
+      border-bottom: 1px solid #DDE5EE !important;
+    }
+
+    .modal-head-title {
+      font-size: 18px !important;
+      font-weight: 800 !important;
+      color: #102A43 !important;
+      line-height: 1.35 !important;
+    }
+
+    .modal-head-sub {
+      font-size: 12.5px !important;
+      color: #52616F !important;
+    }
+
+    /* 상세 본문 */
+    .modal-body {
+      padding: 18px 22px 22px !important;
+      background: #FFFFFF !important;
+    }
+
+    /* 상세 화면 2단 구성 */
+    .issue-detail-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    /* 사진 영역 */
+    .issue-photo-panel {
+      background: #F1F5F9;
+      border: 1px solid #DDE5EE;
+      border-radius: 16px;
+      padding: 10px;
+    }
+
+    .issue-photo-panel .photo-count {
+      font-size: 11.5px;
+      color: #64748B;
+      margin-bottom: 8px;
+      font-weight: 700;
+      text-align: left;
+    }
+
+    .issue-photo-panel .photo-scroll {
+      max-height: 420px !important;
+      margin-bottom: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      padding: 0 !important;
+    }
+
+    .issue-photo-panel .photo-item {
+      border: 1px solid #DDE5EE;
+      border-radius: 12px;
+      background: #FFFFFF;
+      margin-bottom: 8px;
+    }
+
+    .issue-photo-panel .photo-empty {
+      height: 260px !important;
+      background: #FFFFFF;
+      border: 1px dashed #C9D3DF;
+      border-radius: 12px;
+    }
+
+    /* 상세 정보 영역 */
+    .issue-info-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .issue-section {
+      background: #FFFFFF;
+      border: 1px solid #DDE5EE;
+      border-radius: 14px;
+      padding: 13px 14px;
+      box-shadow: 0 2px 10px rgba(16, 42, 67, 0.04);
+    }
+
+    .issue-section-title {
+      font-size: 11px;
+      font-weight: 900;
+      color: #102A43;
+      letter-spacing: 0.6px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .issue-section-body {
+      font-size: 13px;
+      color: #1F2933;
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+
+    /* 확인 방법 강조 */
+    .issue-section.check {
+      border-color: #A9E8C8;
+      background: #F4FBF8;
+    }
+
+    .issue-section.check .issue-section-title {
+      color: #0F8A5F;
+    }
+
+    .issue-section.check .issue-section-body {
+      color: #0F6E56;
+      font-weight: 700;
+    }
+
+    /* 기본 정보 그리드 */
+    .issue-meta-grid {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 7px 10px;
+      font-size: 12.5px;
+    }
+
+    .issue-meta-grid .meta-k {
+      color: #64748B;
+      font-weight: 800;
+    }
+
+    .issue-meta-grid .meta-v {
+      color: #1F2933;
+      font-weight: 700;
+    }
+
+    /* 기존 kv 스타일 보정 */
+    .kv {
+      display: none !important;
+    }
+
+    .sep {
+      display: none !important;
+    }
+
+    /* 관리자 컨트롤 */
+    .admin-ctrl {
+      margin-top: 0 !important;
+      border-radius: 14px !important;
+      background: #F8FAFC !important;
+      border: 1px solid #DDE5EE !important;
+    }
+
+    .admin-ctrl-title {
+      color: #64748B !important;
+      font-weight: 900 !important;
+    }
+
+    .ctrl-row {
+      gap: 8px !important;
+    }
+
+    /* 모바일 대응 */
+    @media(max-width:900px) {
+      .issue-detail-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .issue-photo-panel .photo-scroll {
+        max-height: 280px !important;
+      }
+    }
   </style>
 </head>
 
@@ -2645,15 +2828,50 @@
         '<button class="btn-del" onclick="deleteRecord(' + id + ')">삭제</button>' +
         '</div></div>';
       document.getElementById('mb').innerHTML =
+        '<div class="issue-detail-layout">' +
+
+        '<div class="issue-photo-panel">' +
         pHTML +
-        '<div class="kv"><span class="k">불량 내용</span><span class="v">' + d.detail + '</span></div><div class="sep"></div>' +
-        '<div class="kv"><span class="k">확인 방법</span><span class="v v-green">' + d.check + '</span></div><div class="sep"></div>' +
-        '<div class="kv"><span class="k">발생 결과</span><span class="v">' + d.result + '</span></div>' +
-        '<div class="kv"><span class="k">당시 조치</span><span class="v">' + d.action + '</span></div><div class="sep"></div>' +
-        '<div class="kv"><span class="k">발생 협력사</span><span class="v">' + d.vendor + '</span></div>' +
-        '<div class="kv"><span class="k">발생일</span><span class="v">' + d.occDate + '</span></div>' +
-        '<div class="kv"><span class="k">검사 시작일</span><span class="v">' + d.inspDate + '</span></div>' +
-        adminHTML;
+        '</div>' +
+
+        '<div class="issue-info-panel">' +
+
+        '<div class="issue-section">' +
+        '<div class="issue-section-title">불량 내용</div>' +
+        '<div class="issue-section-body">' + (d.detail || '-') + '</div>' +
+        '</div>' +
+
+        '<div class="issue-section check">' +
+        '<div class="issue-section-title">작업 전 확인 방법</div>' +
+        '<div class="issue-section-body">' + (d.check || '-') + '</div>' +
+        '</div>' +
+
+        '<div class="issue-section">' +
+        '<div class="issue-section-title">발생 결과 / 당시 조치</div>' +
+        '<div class="issue-section-body">' +
+        '<strong>발생 결과</strong><br>' + (d.result || '-') +
+        '<br><br><strong>당시 조치</strong><br>' + (d.action || '-') +
+        '</div>' +
+        '</div>' +
+
+        '<div class="issue-section">' +
+        '<div class="issue-section-title">기본 정보</div>' +
+        '<div class="issue-meta-grid">' +
+        '<div class="meta-k">모델</div><div class="meta-v">' + (d.model || '-') + '</div>' +
+        '<div class="meta-k">카테고리</div><div class="meta-v">' + (d.cat || '-') + '</div>' +
+        '<div class="meta-k">부품명</div><div class="meta-v">' + (d.part || '-') + '</div>' +
+        '<div class="meta-k">불량 유형</div><div class="meta-v">' + (d.type || '-') + '</div>' +
+        '<div class="meta-k">협력사</div><div class="meta-v">' + (d.vendor || '-') + '</div>' +
+        '<div class="meta-k">발생일</div><div class="meta-v">' + (d.occDate || '-') + '</div>' +
+        '<div class="meta-k">검사 시작일</div><div class="meta-v">' + (d.inspDate || '-') + '</div>' +
+        '</div>' +
+        '</div>' +
+
+        adminHTML +
+
+        '</div>' +
+
+        '</div>';
       document.getElementById('detail-bg').classList.add('on');
     }
     function closeDetail() { document.getElementById('detail-bg').classList.remove('on'); currentDetailId = null; }
