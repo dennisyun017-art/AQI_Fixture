@@ -393,6 +393,473 @@ v1.0  2026-04-24  최초 작성 (대시보드 메인)
         display: none;
       }
     }
+
+    /* =========================================================
+   AQI Dashboard Theme Override
+   Theme: Light Industrial / White + Gold Point
+   Applied: Step 9-2
+   ========================================================= */
+
+    /* ===== 공통 색상 재정의 ===== */
+    :root {
+      --primary: #102A43;
+      --accent: #C9951A;
+      --bg: #F5F7FA;
+      --surface: #FFFFFF;
+      --surface2: #F8FAFC;
+      --text: #1F2933;
+      --text-sub: #6B7A90;
+      --border: #DDE5EE;
+      --radius: 16px;
+    }
+
+    /* ===== 전체 배경 ===== */
+    body {
+      background:
+        linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
+      color: var(--text);
+    }
+
+    /* 기존 다크 격자 제거 */
+    body::before {
+      background-image:
+        linear-gradient(rgba(16, 42, 67, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(16, 42, 67, 0.04) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+
+    /* ===== 헤더 ===== */
+    .header {
+      padding: 28px 36px 0;
+      gap: 16px;
+    }
+
+    .header-eyebrow {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 3px;
+    }
+
+    .header-title {
+      color: #14263A;
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+    }
+
+    .header-title span {
+      color: var(--accent);
+    }
+
+    .header-meta {
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid #E2E8F0;
+      padding: 12px 14px;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(16, 42, 67, 0.06);
+    }
+
+    .header-date {
+      color: #6B7A90;
+      font-size: 12px;
+    }
+
+    .header-status {
+      color: #0F8A5F;
+      background: #E7F8F0;
+      border: 1px solid #B9E8CF;
+      font-weight: 700;
+    }
+
+    .header-status::before {
+      background: #12A56C;
+    }
+
+    /* ===== 구분선 ===== */
+    .divider {
+      margin: 22px 36px;
+      height: 1px;
+      background: #E2E8F0;
+    }
+
+    .divider::after {
+      width: 120px;
+      height: 3px;
+      background: linear-gradient(90deg, #C9951A 0%, #E8A020 100%);
+      border-radius: 999px;
+    }
+
+    /* ===== 메뉴 섹션 ===== */
+    .menu-section {
+      padding: 0 36px 56px;
+    }
+
+    .menu-label {
+      color: #6B7A90;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      margin-bottom: 18px;
+    }
+
+    /* ===== 메뉴 그리드 ===== */
+    .menu-grid {
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 18px;
+    }
+
+    /* ===== 메뉴 카드 ===== */
+    .menu-card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid #DDE5EE;
+      border-radius: 18px;
+      padding: 26px 22px;
+      box-shadow: 0 8px 24px rgba(16, 42, 67, 0.06);
+      backdrop-filter: blur(4px);
+    }
+
+    .menu-card::before {
+      width: 5px;
+      border-radius: 18px 0 0 18px;
+    }
+
+    .menu-card::after {
+      background:
+        radial-gradient(circle at top left, var(--card-color-faint, rgba(201, 149, 26, 0.08)), transparent 60%);
+    }
+
+    .menu-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(201, 149, 26, 0.45);
+      box-shadow: 0 16px 36px rgba(16, 42, 67, 0.12);
+    }
+
+    .menu-card.disabled {
+      opacity: 0.55;
+      filter: grayscale(0.08);
+    }
+
+    .card-icon {
+      font-size: 34px;
+      margin-bottom: 14px;
+      filter: none;
+    }
+
+    .card-label {
+      color: #1F2933;
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+
+    /* 카드 제목 너무 크면 아래 값으로 바꿔도 됨
+.card-label { font-size: 18px; }
+*/
+
+    .card-desc {
+      color: #6B7A90;
+      font-size: 13px;
+      line-height: 1.6;
+      padding-right: 24px;
+    }
+
+    .card-arrow {
+      color: #94A3B8;
+      right: 18px;
+      bottom: 22px;
+      font-size: 22px;
+    }
+
+    .menu-card:hover .card-arrow {
+      color: var(--accent);
+    }
+
+    .card-badge {
+      top: 14px;
+      right: 14px;
+      background: #F8FAFC;
+      color: #6B7A90;
+      border: 1px solid #E2E8F0;
+    }
+
+    /* ===== 로딩 ===== */
+    .loading {
+      background: #F5F7FA;
+    }
+
+    .loading-spinner {
+      border: 3px solid rgba(16, 42, 67, 0.12);
+      border-top-color: var(--accent);
+    }
+
+    .loading-text {
+      color: #6B7A90;
+    }
+
+    /* ===== 에러 ===== */
+    .error-notice {
+      margin: 0 36px 18px;
+      background: #FDECEC;
+      border: 1px solid #F5B5B0;
+      color: #B42318;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+
+    /* ===== 푸터 ===== */
+    .footer {
+      padding: 0 36px 28px;
+    }
+
+    .footer-info,
+    .footer-version {
+      color: #7A8AA0;
+    }
+
+    /* ===== 모바일 ===== */
+    @media (max-width: 600px) {
+      .header {
+        padding: 22px 16px 0;
+      }
+
+      .divider {
+        margin: 18px 16px;
+      }
+
+      .menu-section {
+        padding: 0 16px 34px;
+      }
+
+      .footer {
+        padding: 0 16px 22px;
+      }
+
+      .header-title {
+        font-size: 28px;
+      }
+
+      .card-label {
+        font-size: 24px;
+      }
+    }
+
+    /* =========================================================
+   Step 9-3. Dashboard Background Grid Remove
+   ========================================================= */
+
+    /* 밝은 테마에서는 배경 격자 패턴 제거 */
+    body::before {
+      display: none !important;
+      background-image: none !important;
+    }
+
+    /* 배경을 단색에 가깝게 정리 */
+    body {
+      background: #F5F7FA !important;
+    }
+
+    /* =========================================================
+   Step 9-4. Dashboard Card Size / Spacing Refinement
+   ========================================================= */
+
+    /* 전체 상단 여백 정리 */
+    .header {
+      padding: 26px 34px 0 !important;
+    }
+
+    .header-title {
+      font-size: 30px !important;
+    }
+
+    .divider {
+      margin: 20px 34px !important;
+    }
+
+    .menu-section {
+      padding: 0 34px 48px !important;
+    }
+
+    /* 카드 그리드 폭/간격 정리 */
+    .menu-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important;
+      gap: 16px !important;
+      max-width: 1240px;
+    }
+
+    /* 카드 높이와 내부 여백 정리 */
+    .menu-card {
+      min-height: 150px;
+      padding: 24px 22px !important;
+      border-radius: 16px !important;
+    }
+
+    /* 카드 아이콘 크기 정리 */
+    .card-icon {
+      font-size: 30px !important;
+      margin-bottom: 14px !important;
+    }
+
+    /* 카드 제목 크기 정리 */
+    .card-label {
+      font-size: 20px !important;
+      font-weight: 800 !important;
+      line-height: 1.3 !important;
+      margin-bottom: 8px !important;
+    }
+
+    /* 카드 설명 가독성 정리 */
+    .card-desc {
+      font-size: 12.5px !important;
+      line-height: 1.55 !important;
+      color: #6B7A90 !important;
+    }
+
+    /* 카드 화살표 위치 정리 */
+    .card-arrow {
+      right: 18px !important;
+      bottom: 20px !important;
+    }
+
+    /* 푸터 위치 정리 */
+    .footer {
+      padding: 0 34px 28px !important;
+    }
+
+    /* =========================================================
+   Step 9-5. Dashboard Header / Layout Refinement
+   ========================================================= */
+
+    /* 페이지 전체 최소 폭 안정화 */
+    body {
+      min-width: 1100px;
+    }
+
+    /* 헤더 영역을 업무 포털처럼 정리 */
+    .header {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 30px 34px 0 !important;
+    }
+
+    .header-eyebrow {
+      font-size: 12px !important;
+      color: #C9951A !important;
+      letter-spacing: 3px !important;
+      font-weight: 800 !important;
+    }
+
+    .header-title {
+      font-size: 32px !important;
+      color: #1F2933 !important;
+      margin-top: 8px;
+    }
+
+    .header-title span {
+      color: #C9951A !important;
+    }
+
+    /* 우측 날짜/상태 카드 정리 */
+    .header-meta {
+      min-width: 180px;
+      text-align: left !important;
+    }
+
+    .header-date {
+      margin-bottom: 8px !important;
+      color: #6B7A90 !important;
+    }
+
+    .header-status {
+      justify-content: center;
+      font-size: 12px !important;
+    }
+
+    /* 구분선도 중앙 정렬 폭에 맞춤 */
+    .divider {
+      max-width: 1292px;
+      margin: 22px auto !important;
+    }
+
+    /* 메뉴 영역도 중앙 정렬 */
+    .menu-section {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 0 34px 52px !important;
+    }
+
+    .menu-label {
+      color: #52616F !important;
+      font-size: 12px !important;
+    }
+
+    /* =========================================================
+   Step 9-6. Dashboard Menu Status Badge
+   ========================================================= */
+
+    .menu-card {
+      position: relative;
+    }
+
+    /* 카드 우측 상단 상태 배지 */
+    .menu-card .menu-status {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 4px 9px;
+      border-radius: 999px;
+      letter-spacing: 0.2px;
+    }
+
+    /* 사용 가능 */
+    .menu-card .menu-status.ready {
+      background: #E5F7EF;
+      color: #087443;
+      border: 1px solid #A9E8C8;
+    }
+
+    /* 준비 중 */
+    .menu-card .menu-status.wait {
+      background: #ECEFF3;
+      color: #6B7280;
+      border: 1px solid #D5DBE3;
+    }
+
+    /* 준비 중 카드는 더 명확하게 비활성화 */
+    .menu-card.disabled {
+      opacity: 0.62 !important;
+    }
+
+    .menu-card.disabled .card-icon,
+    .menu-card.disabled .card-label,
+    .menu-card.disabled .card-desc {
+      opacity: 0.72;
+    }
+
+    /* =========================================================
+   Step 9-7. Dashboard Footer Refinement
+   ========================================================= */
+
+    .footer {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 0 34px 30px !important;
+      border-top: 1px solid #E2E8F0;
+      padding-top: 18px !important;
+    }
+
+    .footer-info {
+      color: #64748B !important;
+      font-weight: 600;
+    }
+
+    .footer-version {
+      color: #94A3B8 !important;
+      font-size: 11px !important;
+    }
   </style>
 </head>
 
@@ -431,8 +898,8 @@ v1.0  2026-04-24  최초 작성 (대시보드 메인)
 
   <!-- 푸터 -->
   <footer class="footer">
-    <div class="footer-info" id="footerInfo">AQI System</div>
-    <div class="footer-version">v1.0 · 2026-04-24</div>
+    <div class="footer-info" id="footerInfo">PSK Holdings 제조부문 · AQI System</div>
+    <div class="footer-version">Local Dev · v0.1.0 · 2026-04-29</div>
   </footer>
 
   <script>
@@ -493,9 +960,9 @@ v1.0  2026-04-24  최초 작성 (대시보드 메인)
     // 기본 메뉴 (dashboard.json 없을 때 폴백)
     const DEFAULT_MENUS = [
       { id: 'defect', icon: '🔍', label: 'Issue DB', desc: '외관 불량 사례 조회 및 작업 전 체크리스트', color: '#C0392B', enabled: true },
-      { id: 'standard', icon: '📋', label: '작업표준서 확인', desc: 'Critical Defect 공정 표준서', color: '#2980B9', enabled: true },
-      { id: 'torque', icon: '🔧', label: 'Torque Check', desc: '토크 체결값 측정 및 기록', color: '#1A3A5C', enabled: true },
-      { id: 'leak', icon: '💨', label: 'Leak Check', desc: 'Leak Check 값 측정 및 기록', color: '#1E8C45', enabled: true },
+      { id: 'standard', icon: '📋', label: '작업표준서 확인', desc: 'Critical Defect 공정 표준서', color: '#2980B9', enabled: false },
+      { id: 'torque', icon: '🔧', label: 'Torque Check', desc: '토크 체결값 측정 및 기록', color: '#1A3A5C', enabled: false },
+      { id: 'leak', icon: '💨', label: 'Leak Check', desc: 'Leak Check 값 측정 및 기록', color: '#1E8C45', enabled: false },
     ];
 
     // 카드 생성
@@ -515,11 +982,12 @@ v1.0  2026-04-24  최초 작성 (대시보드 메인)
         card.style.animationDelay = (i * 0.08) + 's';
 
         card.innerHTML = `
-      <span class="card-icon">${m.icon || '📄'}</span>
-      <div class="card-label">${m.label}</div>
-      <div class="card-desc">${m.desc || ''}</div>
-      <span class="card-arrow">›</span>
-    `;
+          <span class="menu-status ${isReady ? 'ready' : 'wait'}">${isReady ? '사용 가능' : '준비 중'}</span>
+          <span class="card-icon">${m.icon || '📄'}</span>
+          <div class="card-label">${m.label}</div>
+          <div class="card-desc">${m.desc || ''}</div>
+          <span class="card-arrow">›</span>
+        `;
 
         grid.appendChild(card);
       });

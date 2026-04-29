@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Issue DB</title>
+  <title>AQI Issue DB</title>
   <style>
     * {
       box-sizing: border-box;
@@ -959,6 +959,7 @@
       background: #f8f8f8;
       border-bottom: 1px solid var(--border);
     }
+
     .admin-filter-row input {
       width: 100%;
       border: 1px solid var(--border2);
@@ -968,10 +969,12 @@
       color: var(--text);
       background: #fff;
     }
+
     .admin-filter-row input:focus {
       outline: none;
       border-color: var(--green);
     }
+
     .admin-filter-clear {
       font-size: 11px;
       color: var(--text3);
@@ -980,7 +983,10 @@
       padding: 4px 0;
       text-decoration: underline;
     }
-    .admin-filter-clear:hover { color: var(--red-txt); }
+
+    .admin-filter-clear:hover {
+      color: var(--red-txt);
+    }
 
     .admin-list-head {
       display: grid;
@@ -995,8 +1001,15 @@
       cursor: pointer;
       user-select: none;
     }
-    .admin-list-head span:hover { color: var(--text); }
-    .sort-arrow { font-size: 10px; margin-left: 2px; }
+
+    .admin-list-head span:hover {
+      color: var(--text);
+    }
+
+    .sort-arrow {
+      font-size: 10px;
+      margin-left: 2px;
+    }
 
     .admin-list-row {
       display: grid;
@@ -1144,6 +1157,511 @@
         grid-template-columns: 1fr
       }
     }
+
+    /* =========================================================
+   AQI Issue DB Theme Override
+   Theme: Light Industrial / White + Gold Point
+   Applied: Step 9-1
+   ========================================================= */
+
+    /* ===== AQI 공통 색상 재정의 ===== */
+    :root {
+      --aqi-primary: #102A43;
+      --aqi-primary-2: #1A3A5C;
+      --aqi-accent: #C9951A;
+      --aqi-accent-2: #E8A020;
+
+      --aqi-bg: #F5F7FA;
+      --aqi-surface: #FFFFFF;
+      --aqi-surface-2: #F8FAFC;
+      --aqi-surface-3: #EEF2F6;
+
+      --aqi-text: #1F2933;
+      --aqi-text-2: #52616F;
+      --aqi-text-3: #8A97A6;
+
+      --aqi-border: #DDE5EE;
+      --aqi-border-2: #C9D3DF;
+
+      --aqi-shadow: 0 8px 24px rgba(16, 42, 67, 0.08);
+      --aqi-shadow-soft: 0 2px 10px rgba(16, 42, 67, 0.06);
+
+      --bg: var(--aqi-surface);
+      --bg2: var(--aqi-surface-2);
+      --bg3: var(--aqi-surface-3);
+      --text: var(--aqi-text);
+      --text2: var(--aqi-text-2);
+      --text3: var(--aqi-text-3);
+      --border: var(--aqi-border);
+      --border2: var(--aqi-border-2);
+
+      --green: #0F8A5F;
+      --green-bg: #E5F7EF;
+
+      --red-bg: #FDECEC;
+      --red-txt: #B42318;
+
+      --amber-bg: #FFF4D6;
+      --amber-txt: #9A6700;
+
+      --teal-bg: #E4F7F5;
+      --teal-txt: #0F766E;
+
+      --blue-bg: #E8F1FC;
+      --blue-txt: #185FA5;
+    }
+
+    /* ===== 전체 배경 ===== */
+    body {
+      background:
+        linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
+      color: var(--aqi-text);
+    }
+
+    /* ===== 상단 헤더 ===== */
+    .hdr {
+      background: linear-gradient(90deg, #0B1F33 0%, #102A43 55%, #123A5A 100%);
+      color: #fff;
+      padding: 16px 28px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 16px rgba(16, 42, 67, 0.18);
+    }
+
+    .hdr h1 {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    .hdr>div:first-child>div {
+      color: var(--aqi-accent-2) !important;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+    }
+
+    .hdr-right {
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .badge-gray {
+      background: rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .badge-green {
+      background: rgba(15, 138, 95, 0.18);
+      color: #A8F0D1;
+      border: 1px solid rgba(168, 240, 209, 0.24);
+    }
+
+    /* ===== 상단 버튼 ===== */
+    .btn-login,
+    .btn-logout,
+    .btn-save-file {
+      border-color: rgba(255, 255, 255, 0.22);
+      color: rgba(255, 255, 255, 0.78);
+    }
+
+    .btn-login:hover,
+    .btn-logout:hover,
+    .btn-save-file:hover {
+      border-color: var(--aqi-accent-2);
+      color: #fff;
+    }
+
+    /* ===== 탭 영역 ===== */
+    .tab-wrap {
+      background: var(--aqi-surface);
+      border-bottom: 1px solid var(--aqi-border);
+      box-shadow: var(--aqi-shadow-soft);
+    }
+
+    .tab {
+      padding: 14px 22px;
+      color: var(--aqi-text-2);
+      border-bottom: 3px solid transparent;
+    }
+
+    .tab:hover {
+      color: var(--aqi-primary);
+      background: #FAFBFC;
+    }
+
+    .tab.on {
+      color: var(--aqi-primary);
+      border-bottom-color: var(--aqi-accent);
+      font-weight: 800;
+    }
+
+    /* ===== 컨텐츠 영역 ===== */
+    .content {
+      max-width: 1360px;
+      padding: 24px 28px 36px;
+    }
+
+    /* ===== 필터 영역 ===== */
+    .filter-row {
+      background: var(--aqi-surface);
+      border: 1px solid var(--aqi-border);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: var(--aqi-shadow-soft);
+    }
+
+    .filter-row input,
+    .filter-row select {
+      background: #fff;
+      border: 1px solid var(--aqi-border-2);
+      color: var(--aqi-text);
+      min-height: 38px;
+    }
+
+    .filter-row input::placeholder {
+      color: var(--aqi-text-3);
+    }
+
+    .filter-row input:focus,
+    .filter-row select:focus {
+      border-color: var(--aqi-accent);
+      box-shadow: 0 0 0 3px rgba(201, 149, 26, 0.14);
+    }
+
+    /* ===== 통계 카드 ===== */
+    .stat-row {
+      margin-top: 18px;
+    }
+
+    .stat-card {
+      border: 1px solid var(--aqi-border);
+      border-radius: 14px;
+      background: var(--aqi-surface);
+      box-shadow: var(--aqi-shadow-soft);
+      padding: 16px 18px;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--aqi-shadow);
+    }
+
+    .stat-num {
+      color: var(--aqi-primary);
+      font-size: 26px;
+    }
+
+    .stat-label {
+      color: var(--aqi-text-2);
+      font-weight: 600;
+    }
+
+    /* ===== 검색 결과 문구 ===== */
+    .result-info {
+      color: var(--aqi-text-2);
+      font-weight: 700;
+      margin: 16px 0 12px;
+    }
+
+    /* ===== 카드 그리드 ===== */
+    .grid {
+      gap: 16px;
+    }
+
+    .card {
+      border: 1px solid var(--aqi-border);
+      border-radius: 16px;
+      background: var(--aqi-surface);
+      box-shadow: var(--aqi-shadow-soft);
+      padding: 14px;
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(201, 149, 26, 0.45);
+      box-shadow: var(--aqi-shadow);
+    }
+
+    .card.closed {
+      opacity: 0.72;
+    }
+
+    .card-img {
+      background: #F1F5F9;
+      border: 1px dashed var(--aqi-border-2);
+      border-radius: 12px;
+      color: var(--aqi-text-3);
+    }
+
+    .card-title {
+      color: var(--aqi-text);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .card-sub {
+      color: var(--aqi-text-2);
+    }
+
+    .card-meta {
+      color: var(--aqi-text-3);
+      padding-top: 8px;
+      border-top: 1px solid var(--aqi-border);
+    }
+
+    /* ===== 등급 / 상태 태그 ===== */
+    .tag {
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-weight: 800;
+      border: 1px solid transparent;
+    }
+
+    .tag-a {
+      background: #FDECEC;
+      color: #B42318;
+      border-color: #F5B5B0;
+    }
+
+    .tag-b {
+      background: #FFF4D6;
+      color: #9A6700;
+      border-color: #F5D47A;
+    }
+
+    .tag-c {
+      background: #E5F7EF;
+      color: #087443;
+      border-color: #A9E8C8;
+    }
+
+    .tag-n {
+      background: #EEF2F6;
+      color: var(--aqi-text-2);
+      border-color: #DDE5EE;
+    }
+
+    .tag-open {
+      background: #E8F1FC;
+      color: #185FA5;
+      border-color: #BBD5F5;
+    }
+
+    .tag-close {
+      background: #ECEFF3;
+      color: #5F6B7A;
+      border-color: #D5DBE3;
+    }
+
+    /* ===== 체크리스트 영역 ===== */
+    .cl-prog,
+    .ci,
+    .sign-box {
+      background: var(--aqi-surface);
+      border: 1px solid var(--aqi-border);
+      border-radius: 14px;
+      box-shadow: var(--aqi-shadow-soft);
+    }
+
+    .ci:hover {
+      background: #FAFBFC;
+      border-color: rgba(201, 149, 26, 0.4);
+    }
+
+    .ci.done {
+      background: #F1F5F9;
+    }
+
+    .pfill {
+      background: linear-gradient(90deg, #0F8A5F, #21B27E);
+    }
+
+    /* ===== 관리자 화면 ===== */
+    .admin-wrap,
+    .admin-list {
+      background: var(--aqi-surface);
+      border: 1px solid var(--aqi-border);
+      border-radius: 16px;
+      box-shadow: var(--aqi-shadow-soft);
+    }
+
+    .admin-wrap h2 {
+      color: var(--aqi-primary);
+    }
+
+    .field label {
+      color: var(--aqi-text-2);
+      font-weight: 700;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      border-color: var(--aqi-border-2);
+      background: #fff;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--aqi-accent);
+      box-shadow: 0 0 0 3px rgba(201, 149, 26, 0.14);
+    }
+
+    .photo-upload-area {
+      background: #FAFBFC;
+      border-color: var(--aqi-border-2);
+    }
+
+    .photo-upload-area:hover {
+      border-color: var(--aqi-accent);
+    }
+
+    /* ===== 관리자 목록 ===== */
+    .admin-list-head {
+      background: #F1F5F9;
+      color: var(--aqi-primary);
+      border-bottom: 1px solid var(--aqi-border);
+    }
+
+    .admin-filter-row {
+      background: #FAFBFC;
+      border-bottom: 1px solid var(--aqi-border);
+    }
+
+    .admin-list-row {
+      border-bottom: 1px solid var(--aqi-border);
+    }
+
+    .admin-list-row:hover {
+      background: #FAFBFC;
+    }
+
+    .admin-list-row .title {
+      color: var(--aqi-text);
+      font-weight: 700;
+    }
+
+    /* ===== 버튼 스타일 ===== */
+    .btn-submit,
+    .btn-primary {
+      background: var(--aqi-primary);
+      color: #fff;
+    }
+
+    .btn-submit:hover,
+    .btn-primary:hover {
+      background: var(--aqi-primary-2);
+    }
+
+    .btn-secondary,
+    .btn-reset,
+    .btn-detail,
+    .btn-close {
+      background: #fff;
+      color: var(--aqi-text-2);
+      border-color: var(--aqi-border-2);
+    }
+
+    .btn-secondary:hover,
+    .btn-reset:hover,
+    .btn-detail:hover,
+    .btn-close:hover {
+      background: #F8FAFC;
+      border-color: var(--aqi-accent);
+      color: var(--aqi-primary);
+    }
+
+    .btn-open {
+      background: var(--blue-bg);
+      color: var(--blue-txt);
+      border-color: #BBD5F5;
+    }
+
+    .btn-close-st {
+      background: #ECEFF3;
+      color: #5F6B7A;
+      border-color: #D5DBE3;
+    }
+
+    .btn-edit {
+      background: var(--amber-bg);
+      color: var(--amber-txt);
+      border-color: #F5D47A;
+    }
+
+    .btn-del {
+      background: var(--red-bg);
+      color: var(--red-txt);
+      border-color: #F5B5B0;
+    }
+
+    /* ===== 모달 ===== */
+    .modal-bg {
+      background: rgba(16, 42, 67, 0.55);
+      backdrop-filter: blur(3px);
+    }
+
+    .modal,
+    .login-modal {
+      border-radius: 18px;
+      box-shadow: 0 18px 48px rgba(16, 42, 67, 0.24);
+    }
+
+    .modal-head {
+      background: #F8FAFC;
+    }
+
+    .modal-head-title {
+      color: var(--aqi-primary);
+    }
+
+    .modal-head-sub {
+      color: var(--aqi-text-2);
+    }
+
+    .modal-body {
+      background: #fff;
+    }
+
+    .photo-scroll {
+      background: #F1F5F9;
+      border-color: var(--aqi-border);
+    }
+
+    /* ===== 로그인 모달 ===== */
+    .login-title {
+      color: var(--aqi-primary);
+    }
+
+    .login-sub {
+      color: var(--aqi-text-2);
+    }
+
+    /* ===== 빈 상태 ===== */
+    .empty {
+      background: var(--aqi-surface);
+      border: 1px solid var(--aqi-border);
+      border-radius: 16px;
+      color: var(--aqi-text-3);
+      box-shadow: var(--aqi-shadow-soft);
+    }
+
+    /* ===== 모바일 보정 ===== */
+    @media(max-width:700px) {
+      .hdr {
+        padding: 14px 16px;
+      }
+
+      .content {
+        padding: 16px 12px 28px;
+      }
+
+      .filter-row {
+        padding: 12px;
+      }
+    }
   </style>
 </head>
 
@@ -1152,10 +1670,10 @@
   <!-- 헤더 -->
   <div class="hdr">
     <div>
-      <div style="font-size:11px;color:#888;margin-bottom:2px">PSK Holdings — 제조부문</div>
+      <div style="font-size:11px;color:#888;margin-bottom:2px">AQI System — PSK Holdings 제조부문</div>
       <h1>Issue DB</h1>
     </div>
-    <span class="badge badge-gray">협력사 조회용</span>
+    <span class="badge badge-gray">외관 불량 실패 사례 관리</span>
     <div class="hdr-right">
       <span id="db-count">총 0건</span>
       <span class="badge badge-green" id="admin-badge">관리자 모드</span>
@@ -1334,8 +1852,7 @@
         <!-- 사진 업로드 - 붙여넣기 방식 -->
         <div class="field">
           <label>사진 첨부 — 캡처 후 아래 영역에 Ctrl+V 로 붙여넣기</label>
-          <div class="photo-upload-area" id="paste-area" tabindex="0"
-               style="outline:none; user-select:none;">
+          <div class="photo-upload-area" id="paste-area" tabindex="0" style="outline:none; user-select:none;">
             <label class="upload-label">
               <div style="font-size:22px;opacity:.3;margin-bottom:4px">📋</div>
               <span id="paste-hint">이 영역을 클릭 후 <strong>Ctrl+V</strong> 로 이미지를 붙여넣으세요</span><br>
@@ -1355,8 +1872,10 @@
 
       <!-- 등록된 목록 -->
       <div class="admin-wrap">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
-          <h2>등록된 사례 목록 <span style="font-size:12px;color:var(--text2);font-weight:400" id="admin-list-count"></span></h2>
+        <div
+          style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+          <h2>등록된 사례 목록 <span style="font-size:12px;color:var(--text2);font-weight:400" id="admin-list-count"></span>
+          </h2>
           <span class="admin-filter-clear" onclick="clearAdminFilter()">🔄 필터 초기화</span>
         </div>
         <div class="admin-list" id="admin-list"></div>
@@ -1380,7 +1899,7 @@
   <div class="modal-bg" id="login-bg" onclick="bgClick(event,'login-bg')">
     <div class="login-modal">
       <div class="login-title">관리자 로그인</div>
-      <div class="login-sub">당사 담당자 전용</div>
+      <div class="login-sub">AQI 관리자 전용</div>
       <div class="login-field">
         <input type="text" id="lid" placeholder="아이디" onkeydown="if(event.key==='Enter')doLogin()">
         <input type="password" id="lpw" placeholder="비밀번호" onkeydown="if(event.key==='Enter')doLogin()">
@@ -1624,7 +2143,7 @@
 
     /* ======= 사진 붙여넣기 (Ctrl+V) ======= */
     // 페이지 전체에서 붙여넣기 이벤트 감지
-    document.addEventListener('paste', function(e) {
+    document.addEventListener('paste', function (e) {
       // 붙여넣기 영역이 활성화(포커스)되어 있거나, 폼이 열려있을 때만 동작
       var pasteArea = document.getElementById('paste-area');
       if (!pasteArea) return;
@@ -1638,8 +2157,8 @@
           hasImage = true;
           var blob = items[i].getAsFile();
           var reader = new FileReader();
-          reader.onload = (function(b) {
-            return function(ev) {
+          reader.onload = (function (b) {
+            return function (ev) {
               editPhotos.push(ev.target.result);
               renderPhotoPreview();
               // 붙여넣기 성공 시 힌트 텍스트 업데이트
@@ -1656,7 +2175,7 @@
         var hint = document.getElementById('paste-hint');
         if (hint) {
           hint.innerHTML = '⚠️ 이미지가 아닙니다. 캡처 후 Ctrl+V 해주세요';
-          setTimeout(function() {
+          setTimeout(function () {
             hint.innerHTML = '이 영역을 클릭 후 <strong>Ctrl+V</strong> 로 이미지를 붙여넣으세요';
           }, 2500);
         }
@@ -1664,7 +2183,7 @@
     });
 
     // 기존 handlePhotoUpload 는 사용 안 하지만 참조 오류 방지용으로 유지
-    function handlePhotoUpload(e) {}
+    function handlePhotoUpload(e) { }
     function renderPhotoPreview() {
       var el = document.getElementById('photo-preview');
       el.innerHTML = editPhotos.map(function (src, i) {
@@ -1740,8 +2259,8 @@
     }
 
     /* ======= 관리자 목록 (필터 + 정렬) ======= */
-    var adminFilter = { no:'', cat:'', model:'', title:'', vendor:'', grade:'', status:'' };
-    var adminSort   = { key:'id', asc: true };
+    var adminFilter = { no: '', cat: '', model: '', title: '', vendor: '', grade: '', status: '' };
+    var adminSort = { key: 'id', asc: true };
     var _filterTimer = null;
 
     // 정렬 화살표 표시
@@ -1766,16 +2285,16 @@
 
     // 필터+정렬 적용된 배열 반환
     function getFiltered() {
-      var f = DB.filter(function(d) {
-        return (!adminFilter.no     || String(d.id).includes(adminFilter.no)) &&
-               (!adminFilter.cat    || (d.cat||'').toLowerCase().includes(adminFilter.cat.toLowerCase())) &&
-               (!adminFilter.model  || (d.model||'').toLowerCase().includes(adminFilter.model.toLowerCase())) &&
-               (!adminFilter.title  || (d.title||'').toLowerCase().includes(adminFilter.title.toLowerCase())) &&
-               (!adminFilter.vendor || (d.vendor||'').toLowerCase().includes(adminFilter.vendor.toLowerCase())) &&
-               (!adminFilter.grade  || (d.grade||'').toLowerCase().includes(adminFilter.grade.toLowerCase())) &&
-               (!adminFilter.status || (d.status||'').toLowerCase().includes(adminFilter.status.toLowerCase()));
+      var f = DB.filter(function (d) {
+        return (!adminFilter.no || String(d.id).includes(adminFilter.no)) &&
+          (!adminFilter.cat || (d.cat || '').toLowerCase().includes(adminFilter.cat.toLowerCase())) &&
+          (!adminFilter.model || (d.model || '').toLowerCase().includes(adminFilter.model.toLowerCase())) &&
+          (!adminFilter.title || (d.title || '').toLowerCase().includes(adminFilter.title.toLowerCase())) &&
+          (!adminFilter.vendor || (d.vendor || '').toLowerCase().includes(adminFilter.vendor.toLowerCase())) &&
+          (!adminFilter.grade || (d.grade || '').toLowerCase().includes(adminFilter.grade.toLowerCase())) &&
+          (!adminFilter.status || (d.status || '').toLowerCase().includes(adminFilter.status.toLowerCase()));
       });
-      f.sort(function(a, b) {
+      f.sort(function (a, b) {
         var va = a[adminSort.key] || '', vb = b[adminSort.key] || '';
         return (va < vb ? -1 : va > vb ? 1 : 0) * (adminSort.asc ? 1 : -1);
       });
@@ -1789,16 +2308,16 @@
         '— 씽 ' + DB.length + '건' + (filtered.length < DB.length ? ' (필터: ' + filtered.length + '건)' : '');
       var body = document.getElementById('admin-list-body');
       if (!body) { drawAdminList(); return; }
-      body.innerHTML = filtered.length ? filtered.map(function(d) {
+      body.innerHTML = filtered.length ? filtered.map(function (d) {
         return '<div class="admin-list-row" onclick="startEdit(' + d.id + ')">' +
           '<span class="meta">' + d.id + '</span>' +
-          '<span class="meta">' + (d.cat||'-') + '</span>' +
-          '<span class="meta">' + (d.model||'-') + '</span>' +
-          '<span class="title">' + (d.title||'-') + '</span>' +
-          '<span class="meta">' + (d.vendor||'-') + '</span>' +
+          '<span class="meta">' + (d.cat || '-') + '</span>' +
+          '<span class="meta">' + (d.model || '-') + '</span>' +
+          '<span class="title">' + (d.title || '-') + '</span>' +
+          '<span class="meta">' + (d.vendor || '-') + '</span>' +
           '<span>' + gb(d.grade) + '</span>' +
           '<span>' + sb(d.status) + '</span>' +
-        '</div>';
+          '</div>';
       }).join('') : '<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">필터 조건에 맞는 항목이 없습니다.</div>';
     }
 
@@ -1811,34 +2330,34 @@
         return;
       }
 
-      var keys     = ['id','cat','model','title','vendor','grade','status'];
-      var labels   = ['No','Category','Model','Title','발생 협력사','등급','상태'];
-      var pholds   = ['No','Category','Model','Title','협력사','등급','상태'];
-      var fvals    = [adminFilter.no,adminFilter.cat,adminFilter.model,
-                      adminFilter.title,adminFilter.vendor,adminFilter.grade,adminFilter.status];
+      var keys = ['id', 'cat', 'model', 'title', 'vendor', 'grade', 'status'];
+      var labels = ['No', 'Category', 'Model', 'Title', '발생 협력사', '등급', '상태'];
+      var pholds = ['No', 'Category', 'Model', 'Title', '협력사', '등급', '상태'];
+      var fvals = [adminFilter.no, adminFilter.cat, adminFilter.model,
+      adminFilter.title, adminFilter.vendor, adminFilter.grade, adminFilter.status];
 
       // 헤더
       var headHTML = '<div class="admin-list-head">' +
-        keys.map(function(k,i){ return '<span data-sk="'+k+'">'+labels[i]+arr(k)+'</span>'; }).join('') +
-      '</div>';
+        keys.map(function (k, i) { return '<span data-sk="' + k + '">' + labels[i] + arr(k) + '</span>'; }).join('') +
+        '</div>';
 
       // 필터 행
       var filterHTML = '<div class="admin-filter-row">' +
-        keys.map(function(k,i){
-          return '<input type="text" id="af-'+k+'" data-fk="'+k+'" placeholder="'+pholds[i]+'" value="'+(fvals[i]||'')+'">';
+        keys.map(function (k, i) {
+          return '<input type="text" id="af-' + k + '" data-fk="' + k + '" placeholder="' + pholds[i] + '" value="' + (fvals[i] || '') + '">';
         }).join('') +
-      '</div>';
+        '</div>';
 
       el.innerHTML = headHTML + filterHTML + '<div id="admin-list-body"></div>';
 
       // 헤더 클릭 → 정렬 (이벤트 위임)
-      el.querySelector('.admin-list-head').addEventListener('click', function(e) {
+      el.querySelector('.admin-list-head').addEventListener('click', function (e) {
         var t = e.target.closest('[data-sk]');
         if (t) sortBy(t.getAttribute('data-sk'));
       });
 
       // 필터 입력 → 디바운스 (이벤트 위임)
-      el.querySelector('.admin-filter-row').addEventListener('input', function(e) {
+      el.querySelector('.admin-filter-row').addEventListener('input', function (e) {
         var inp = e.target;
         if (inp.dataset.fk) onFilterInput(inp.dataset.fk, inp.value);
       });
@@ -1848,8 +2367,8 @@
 
     // 필터 초기화
     function clearAdminFilter() {
-      adminFilter = { no:'', cat:'', model:'', title:'', vendor:'', grade:'', status:'' };
-      adminSort   = { key:'id', asc: true };
+      adminFilter = { no: '', cat: '', model: '', title: '', vendor: '', grade: '', status: '' };
+      adminSort = { key: 'id', asc: true };
       drawAdminList();
     }
 
