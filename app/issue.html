@@ -2768,6 +2768,84 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
+    /* =========================================================
+   Step 16. Admin List Source Column
+   ========================================================= */
+
+    .admin-list-head,
+    .admin-filter-row,
+    .admin-list-row {
+      grid-template-columns: 40px 95px 110px 1fr 100px 120px 70px 80px !important;
+    }
+
+    /* 제기 경로가 길 경우 줄임표 처리 */
+    .admin-list-row .meta {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* 태블릿 이하에서는 핵심 컬럼만 표시 */
+    @media(max-width:900px) {
+
+      .admin-list-head,
+      .admin-filter-row,
+      .admin-list-row {
+        grid-template-columns: 36px 1fr 90px 80px !important;
+      }
+
+      .admin-list-head span:nth-child(2),
+      .admin-list-head span:nth-child(3),
+      .admin-list-head span:nth-child(5),
+      .admin-list-head span:nth-child(6),
+      .admin-filter-row input:nth-child(2),
+      .admin-filter-row input:nth-child(3),
+      .admin-filter-row input:nth-child(5),
+      .admin-filter-row input:nth-child(6),
+      .admin-list-row>*:nth-child(2),
+      .admin-list-row>*:nth-child(3),
+      .admin-list-row>*:nth-child(5),
+      .admin-list-row>*:nth-child(6) {
+        display: none !important;
+      }
+    }
+
+    /* =========================================================
+   Fix. Tab Section Display Stability
+   ========================================================= */
+
+    .sec {
+      display: none !important;
+    }
+
+    .sec.on {
+      display: block !important;
+    }
+
+    /* =========================================================
+   Fix. Admin Layout Visibility
+   ========================================================= */
+
+    #sec-admin {
+      max-width: 1360px;
+      margin: 0 auto;
+    }
+
+    #sec-admin.on {
+      display: block !important;
+    }
+
+    #sec-search.on,
+    #sec-cl.on,
+    #sec-admin.on {
+      min-height: 300px;
+    }
+
+    .admin-wrap {
+      margin-top: 0 !important;
+      margin-bottom: 18px !important;
+    }
   </style>
 </head>
 
@@ -3176,12 +3254,27 @@
     /* ======= 탭 ======= */
     function switchTab(t) {
       var tabs = ['search', 'cl', 'admin'];
-      document.querySelectorAll('.tab').forEach(function (b, i) { b.classList.toggle('on', tabs[i] === t); });
+
+      document.querySelectorAll('.tab').forEach(function (b) {
+        b.classList.remove('on');
+      });
+
+      if (t === 'search') {
+        document.querySelectorAll('.tab')[0].classList.add('on');
+      } else if (t === 'cl') {
+        document.querySelectorAll('.tab')[1].classList.add('on');
+      } else if (t === 'admin') {
+        document.querySelectorAll('.tab')[2].classList.add('on');
+      }
+
       tabs.forEach(function (n) {
         var el = document.getElementById('sec-' + n);
         if (el) el.classList.toggle('on', n === t);
       });
-      if (t === 'admin') drawAdminList();
+
+      if (t === 'admin') {
+        drawAdminList();
+      }
     }
 
     /* ======= 통계 ======= */
@@ -3209,6 +3302,7 @@
       var source = document.getElementById('fsource').value;
       var dateFrom = document.getElementById('fdateFrom').value;
       var dateTo = document.getElementById('fdateTo').value;
+
       var f = DB.filter(function (d) {
         if (m && d.model !== m) return false;
         if (c && d.cat !== c) return false;
@@ -3217,26 +3311,42 @@
         if (s && d.status !== s) return false;
         if (vendor && d.vendor !== vendor) return false;
         if (source && !(d.source || '').toLowerCase().includes(source.toLowerCase())) return false;
-
         if (dateFrom && d.occDate < dateFrom) return false;
         if (dateTo && d.occDate > dateTo) return false;
 
-        if (kw && !(d.title + d.part + (d.partNo || '') + d.detail + d.type + d.vendor + d.model + (d.source || '') + (d.sourceDetail || '')).toLowerCase().includes(kw)) return false;
+        if (
+          kw &&
+          !(d.title + d.part + (d.partNo || '') + d.detail + d.type + d.vendor + d.model + (d.source || '') + (d.sourceDetail || ''))
+            .toLowerCase()
+            .includes(kw)
+        ) return false;
+
         return true;
       });
+
       drawStats(f);
       document.getElementById('result-info').textContent = f.length + '건 표시 중';
       updateFilterSummary(f.length);
+
       var el = document.getElementById('card-grid');
-      if (!f.length) { el.innerHTML = '<div class="empty">조건에 맞는 사례가 없습니다.</div>'; return; }
+
+      if (!f.length) {
+        el.innerHTML = '<div class="empty">조건에 맞는 사례가 없습니다.</div>';
+        return;
+      }
+
       el.innerHTML = f.map(function (d) {
-        var thumb = d.photos && d.photos.length > 0 ?
-          '<img src="' + d.photos[0] + '" alt="사진">' :
-          '<div style="font-size:22px;opacity:.25">&#128247;</div><span>사진 미등록</span>';
+        var thumb = d.photos && d.photos.length > 0
+          ? '<img src="' + d.photos[0] + '" alt="사진">'
+          : '<div style="font-size:22px;opacity:.25">&#128247;</div><span>사진 미등록</span>';
+
         return '<div class="card' + (d.status === 'Close' ? ' closed' : '') + '" onclick="openDetail(' + d.id + ')">' +
           '<div class="card-img">' + thumb + '</div>' +
-          '<div class="tags">' + gb(d.grade) + sb(d.status) + '<span class="tag tag-n">' + d.cat + '</span>' +
-          (d.source ? '<span class="tag tag-source">' + shortText(d.source, 14) + '</span>' : '') +
+          '<div class="tags">' +
+          gb(d.grade) +
+          sb(d.status) +
+          '<span class="tag tag-n">' + d.cat + '</span>' +
+          (d.source ? '<span class="tag tag-source">' + d.source + '</span>' : '') +
           '</div>' +
           '<div class="card-title">' + d.title + '</div>' +
           '<div class="card-sub">' + d.model + ' · ' + d.part + (d.partNo ? ' · ' + d.partNo : '') + '</div>' +
@@ -3527,7 +3637,7 @@
     }
 
     /* ======= 관리자 목록 (필터 + 정렬) ======= */
-    var adminFilter = { no: '', cat: '', model: '', title: '', vendor: '', grade: '', status: '' };
+    var adminFilter = { no: '', cat: '', model: '', title: '', vendor: '', source: '', grade: '', status: '' };
     var adminSort = { key: 'id', asc: true };
     var _filterTimer = null;
 
@@ -3559,6 +3669,7 @@
           (!adminFilter.model || (d.model || '').toLowerCase().includes(adminFilter.model.toLowerCase())) &&
           (!adminFilter.title || (d.title || '').toLowerCase().includes(adminFilter.title.toLowerCase())) &&
           (!adminFilter.vendor || (d.vendor || '').toLowerCase().includes(adminFilter.vendor.toLowerCase())) &&
+          (!adminFilter.source || (d.source || '').toLowerCase().includes(adminFilter.source.toLowerCase())) &&
           (!adminFilter.grade || (d.grade || '').toLowerCase().includes(adminFilter.grade.toLowerCase())) &&
           (!adminFilter.status || (d.status || '').toLowerCase().includes(adminFilter.status.toLowerCase()));
       });
@@ -3583,6 +3694,7 @@
           '<span class="meta">' + (d.model || '-') + '</span>' +
           '<span class="title">' + (d.title || '-') + '</span>' +
           '<span class="meta">' + (d.vendor || '-') + '</span>' +
+          '<span class="meta">' + (d.source || '-') + '</span>' +
           '<span>' + gb(d.grade) + '</span>' +
           '<span>' + sb(d.status) + '</span>' +
           '</div>';
@@ -3598,11 +3710,19 @@
         return;
       }
 
-      var keys = ['id', 'cat', 'model', 'title', 'vendor', 'grade', 'status'];
-      var labels = ['No', 'Category', 'Model', 'Title', '발생 협력사', '등급', '상태'];
-      var pholds = ['No', 'Category', 'Model', 'Title', '협력사', '등급', '상태'];
-      var fvals = [adminFilter.no, adminFilter.cat, adminFilter.model,
-      adminFilter.title, adminFilter.vendor, adminFilter.grade, adminFilter.status];
+      var keys = ['id', 'cat', 'model', 'title', 'vendor', 'source', 'grade', 'status'];
+      var labels = ['No', 'Category', 'Model', 'Title', '발생 협력사', '제기 경로', '등급', '상태'];
+      var pholds = ['No', 'Category', 'Model', 'Title', '협력사', '제기 경로', '등급', '상태'];
+      var fvals = [
+        adminFilter.no,
+        adminFilter.cat,
+        adminFilter.model,
+        adminFilter.title,
+        adminFilter.vendor,
+        adminFilter.source,
+        adminFilter.grade,
+        adminFilter.status
+      ];
 
       // 헤더
       var headHTML = '<div class="admin-list-head">' +
@@ -3635,7 +3755,7 @@
 
     // 필터 초기화
     function clearAdminFilter() {
-      adminFilter = { no: '', cat: '', model: '', title: '', vendor: '', grade: '', status: '' };
+      adminFilter = { no: '', cat: '', model: '', title: '', vendor: '', source: '', grade: '', status: '' };
       adminSort = { key: 'id', asc: true };
       drawAdminList();
     }
