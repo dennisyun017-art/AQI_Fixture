@@ -2740,6 +2740,34 @@
         min-height: 42px;
       }
     }
+
+    /* =========================================================
+   Step 15. Issue Source / Meeting Field
+   ========================================================= */
+
+    .tag-source {
+      background: #F4F0FF !important;
+      color: #5B3DB6 !important;
+      border-color: #D8CCFF !important;
+    }
+
+    /* 제기 경로 필터/입력 필드가 모바일에서도 잘 보이도록 보정 */
+    @media(max-width:640px) {
+
+      #fsource,
+      #f-source,
+      #f-source-detail {
+        width: 100%;
+      }
+    }
+
+    /* Issue 제기 경로 태그 길이 보정 */
+    .tag-source {
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   </style>
 </head>
 
@@ -2826,7 +2854,7 @@
           <option>SAM</option>
           <option>HTC</option>
         </select>
-
+        <input id="fsource" type="text" placeholder="제기 경로 검색">
         <input id="fdateFrom" type="date" title="발생일 From">
         <input id="fdateTo" type="date" title="발생일 To">
 
@@ -2933,6 +2961,17 @@
               <option>SAM</option>
               <option>HTC</option>
             </select>
+          </div>
+          <div class="field"><label>Issue 제기 경로</label>
+            <input type="text" id="f-source" placeholder="예: 주간 품질회의 / 제조팀 제기 / 고객 VOC / 현장 확인">
+          </div>
+
+          <div class="field"><label>제기 경로 상세</label>
+            <input type="text" id="f-source-detail" placeholder="예: 2026-04-29 주간 품질회의 / 제조2팀 김OO / 고객사 요청">
+          </div>
+
+          <div class="field"><label>제기 경로 상세</label>
+            <input type="text" id="f-source-detail" placeholder="예: 홍길동 / 주간 품질회의 / 고객 VOC">
           </div>
           <div class="field"><label>발생일 *</label><input type="date" id="f-occdate"></div>
           <div class="field"><label>검사 시작일</label><input type="date" id="f-inspdate"></div>
@@ -3048,6 +3087,7 @@
     var DB = [
       {
         id: 1, model: 'GENEVA STP300xp', cat: '배관류', part: 'Exhaust Box', partNo: 'SAMPLE-001', type: '치수오차', grade: 'A', status: 'Open',
+        source: 'Meeting', sourceDetail: '주간 품질회의',
         title: '배관 외경 +3mm 초과 납품',
         detail: '납품된 배관 OD(외경)가 설계 도면 대비 약 3mm 크게 제작됨. 조립 시 센터링 흔들림 발생하여 리크(Leak) 우려. 실제 조립 후 리크 테스트에서 불량 판정.',
         check: '배관 삽입 후 손으로 좌우 흔들어 유격 확인. 흔들림 감지 시 즉시 조립 중단 후 담당자(당사 MFG)에게 사진과 함께 보고.',
@@ -3111,7 +3151,15 @@
         vendor: '나우', occDate: '2025-04-10', inspDate: '2025-04-11', photos: []
       }
     ];
-    var nextId = 8;
+    /* 샘플 DB 보정: ID 중복 방지 및 신규 필드 기본값 보정 */
+    DB.forEach(function (d, i) {
+      d.id = i + 1;
+      d.partNo = d.partNo || '';
+      d.source = d.source || '';
+      d.sourceDetail = d.sourceDetail || '';
+    });
+
+    var nextId = DB.length + 1;
     var editPhotos = [];
     var checkState = {};
     var currentDetailId = null;
@@ -3158,6 +3206,7 @@
       var g = document.getElementById('fg').value;
       var s = document.getElementById('fs').value;
       var vendor = document.getElementById('fvendor').value;
+      var source = document.getElementById('fsource').value;
       var dateFrom = document.getElementById('fdateFrom').value;
       var dateTo = document.getElementById('fdateTo').value;
       var f = DB.filter(function (d) {
@@ -3167,11 +3216,12 @@
         if (g && d.grade !== g) return false;
         if (s && d.status !== s) return false;
         if (vendor && d.vendor !== vendor) return false;
+        if (source && !(d.source || '').toLowerCase().includes(source.toLowerCase())) return false;
 
         if (dateFrom && d.occDate < dateFrom) return false;
         if (dateTo && d.occDate > dateTo) return false;
 
-        if (kw && !(d.title + d.part + (d.partNo || '') + d.detail + d.type + d.vendor + d.model).toLowerCase().includes(kw)) return false;
+        if (kw && !(d.title + d.part + (d.partNo || '') + d.detail + d.type + d.vendor + d.model + (d.source || '') + (d.sourceDetail || '')).toLowerCase().includes(kw)) return false;
         return true;
       });
       drawStats(f);
@@ -3185,7 +3235,9 @@
           '<div style="font-size:22px;opacity:.25">&#128247;</div><span>사진 미등록</span>';
         return '<div class="card' + (d.status === 'Close' ? ' closed' : '') + '" onclick="openDetail(' + d.id + ')">' +
           '<div class="card-img">' + thumb + '</div>' +
-          '<div class="tags">' + gb(d.grade) + sb(d.status) + '<span class="tag tag-n">' + d.cat + '</span></div>' +
+          '<div class="tags">' + gb(d.grade) + sb(d.status) + '<span class="tag tag-n">' + d.cat + '</span>' +
+          (d.source ? '<span class="tag tag-source">' + shortText(d.source, 14) + '</span>' : '') +
+          '</div>' +
           '<div class="card-title">' + d.title + '</div>' +
           '<div class="card-sub">' + d.model + ' · ' + d.part + (d.partNo ? ' · ' + d.partNo : '') + '</div>' +
           '<div class="card-meta">' + d.vendor + ' · ' + d.occDate + '</div>' +
@@ -3200,14 +3252,18 @@
       document.getElementById('fg').value = '';
       document.getElementById('fs').value = '';
       document.getElementById('fvendor').value = '';
+      document.getElementById('fsource').value = '';
       document.getElementById('fdateFrom').value = '';
       document.getElementById('fdateTo').value = '';
-
+      function shortText(text, maxLen) {
+        text = text || '';
+        return text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
+      }
       drawCards();
       updateFilterSummary(DB.length);
     }
     function getActiveFilterCount() {
-      var ids = ['kw', 'fm', 'fcat', 'ft', 'fg', 'fs', 'fvendor', 'fdateFrom', 'fdateTo'];
+      var ids = ['kw', 'fm', 'fcat', 'ft', 'fg', 'fs', 'fvendor', 'fsource', 'fdateFrom', 'fdateTo'];
       var count = 0;
 
       ids.forEach(function (id) {
@@ -3316,6 +3372,8 @@
         '<div class="meta-k">Part No.</div><div class="meta-v">' + (d.partNo || '-') + '</div>' +
         '<div class="meta-k">불량 유형</div><div class="meta-v">' + (d.type || '-') + '</div>' +
         '<div class="meta-k">협력사</div><div class="meta-v">' + (d.vendor || '-') + '</div>' +
+        '<div class="meta-k">제기 경로</div><div class="meta-v">' + (d.source || '-') + '</div>' +
+        '<div class="meta-k">경로 상세</div><div class="meta-v">' + (d.sourceDetail || '-') + '</div>' +
         '<div class="meta-k">발생일</div><div class="meta-v">' + (d.occDate || '-') + '</div>' +
         '<div class="meta-k">검사 시작일</div><div class="meta-v">' + (d.inspDate || '-') + '</div>' +
         '</div>' +
@@ -3409,6 +3467,7 @@
       var fv = function (id) { return document.getElementById(id).value.trim(); };
       var model = fv('f-model'), cat = fv('f-cat'), part = fv('f-part'), partNo = fv('f-partno'), type = fv('f-type'),
         grade = fv('f-grade'), status = fv('f-status'), vendor = fv('f-vendor'),
+        source = fv('f-source'), sourceDetail = fv('f-source-detail'),
         occDate = fv('f-occdate'), inspDate = fv('f-inspdate'), title = fv('f-title'),
         detail = fv('f-detail'), check = fv('f-check'), result = fv('f-result'), action = fv('f-action');
       if (!model || !cat || !part || !type || !grade || !vendor || !occDate || !title || !detail || !check) {
@@ -3419,7 +3478,8 @@
         var d = DB.find(function (x) { return x.id === parseInt(eid); });
         if (d) {
           d.model = model; d.cat = cat; d.part = part; d.partNo = partNo; d.type = type; d.grade = grade; d.status = status;
-          d.vendor = vendor; d.occDate = occDate; d.inspDate = inspDate; d.title = title;
+          d.vendor = vendor; d.source = source; d.sourceDetail = sourceDetail;
+          d.occDate = occDate; d.inspDate = inspDate; d.title = title;
           d.detail = detail; d.check = check; d.result = result; d.action = action;
           if (editPhotos.length > 0) d.photos = editPhotos;
         }
@@ -3428,7 +3488,8 @@
         DB.push({
           id: nextId++, model: model, cat: cat, part: part, partNo: partNo, type: type, grade: grade, status: status,
           title: title, detail: detail, check: check, result: result, action: action,
-          vendor: vendor, occDate: occDate, inspDate: inspDate, photos: editPhotos.slice()
+          vendor: vendor, source: source, sourceDetail: sourceDetail,
+          occDate: occDate, inspDate: inspDate, photos: editPhotos.slice()
         });
         alert('등록되었습니다.');
       }
@@ -3445,6 +3506,7 @@
       sv('edit-id', d.id);
       sv('f-model', d.model); sv('f-cat', d.cat); sv('f-part', d.part); sv('f-partno', d.partNo || ''); sv('f-type', d.type);
       sv('f-grade', d.grade); sv('f-status', d.status); sv('f-vendor', d.vendor);
+      sv('f-source', d.source || ''); sv('f-source-detail', d.sourceDetail || '');
       sv('f-occdate', d.occDate); sv('f-inspdate', d.inspDate); sv('f-title', d.title);
       sv('f-detail', d.detail); sv('f-check', d.check); sv('f-result', d.result); sv('f-action', d.action);
       editPhotos = d.photos ? d.photos.slice() : [];
@@ -3455,7 +3517,7 @@
 
     /* ======= 폼 초기화 ======= */
     function resetForm() {
-      ['f-model', 'f-cat', 'f-part', 'f-partno', 'f-type', 'f-grade', 'f-vendor', 'f-occdate', 'f-inspdate', 'f-title', 'f-detail', 'f-check', 'f-result', 'f-action']
+      ['f-model', 'f-cat', 'f-part', 'f-partno', 'f-type', 'f-grade', 'f-vendor', 'f-source', 'f-source-detail', 'f-occdate', 'f-inspdate', 'f-title', 'f-detail', 'f-check', 'f-result', 'f-action']
         .forEach(function (id) { document.getElementById(id).value = ''; });
       document.getElementById('f-status').value = 'Open';
       document.getElementById('edit-id').value = '';
@@ -3511,7 +3573,7 @@
     function renderDataRows() {
       var filtered = getFiltered();
       document.getElementById('admin-list-count').textContent =
-        '— 씽 ' + DB.length + '건' + (filtered.length < DB.length ? ' (필터: ' + filtered.length + '건)' : '');
+        '— 총 ' + DB.length + '건' + (filtered.length < DB.length ? ' (필터: ' + filtered.length + '건)' : '');
       var body = document.getElementById('admin-list-body');
       if (!body) { drawAdminList(); return; }
       body.innerHTML = filtered.length ? filtered.map(function (d) {
@@ -3647,21 +3709,58 @@
     function saveAsFile() {
       var dbJSON = JSON.stringify(DB, null, 2);
       var html = document.documentElement.outerHTML;
-      var marker = 'var DB=[';
-      var start = html.indexOf(marker);
-      if (start === -1) { alert('저장 오류: DB 위치를 찾을 수 없습니다.'); return; }
-      var depth = 0, end = start + marker.length - 1;
-      for (var i = start + marker.length - 1; i < html.length; i++) {
-        if (html[i] === '[') depth++;
-        else if (html[i] === ']') { depth--; if (depth === 0) { end = i; break; } }
+
+      // var DB = [ ... ]; 위치를 공백 여부와 관계없이 찾기
+      var markerMatch = html.match(/var\s+DB\s*=\s*\[/);
+      if (!markerMatch) {
+        alert('저장 오류: DB 위치를 찾을 수 없습니다.');
+        return;
       }
-      var newHtml = html.substring(0, start) + 'var DB=' + dbJSON + html.substring(end + 1);
+
+      var start = markerMatch.index;
+      var arrayStart = html.indexOf('[', start);
+      if (arrayStart === -1) {
+        alert('저장 오류: DB 배열 시작 위치를 찾을 수 없습니다.');
+        return;
+      }
+
+      var depth = 0;
+      var end = arrayStart;
+
+      for (var i = arrayStart; i < html.length; i++) {
+        if (html[i] === '[') depth++;
+        else if (html[i] === ']') {
+          depth--;
+          if (depth === 0) {
+            end = i;
+            break;
+          }
+        }
+      }
+
+      if (depth !== 0) {
+        alert('저장 오류: DB 배열 종료 위치를 찾을 수 없습니다.');
+        return;
+      }
+
+      var tailStart = end + 1;
+      if (html[tailStart] === ';') tailStart++;
+
+      var newHtml =
+        html.substring(0, start) +
+        'var DB = ' + dbJSON + ';' +
+        html.substring(tailStart);
+
       var blob = new Blob([newHtml], { type: 'text/html;charset=utf-8' });
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
+
       var today = new Date();
-      var ds = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
-      a.download = ds + '_외관불량_실패DB_v3.html';
+      var ds = today.getFullYear() + '-' +
+        String(today.getMonth() + 1).padStart(2, '0') + '-' +
+        String(today.getDate()).padStart(2, '0');
+
+      a.download = ds + '_Issue_DB.html';
       a.click();
       URL.revokeObjectURL(a.href);
     }
@@ -3675,9 +3774,10 @@
     }
 
     /* ======= 이벤트 바인딩 ======= */
-    ['kw', 'fm', 'fcat', 'ft', 'fg', 'fs', 'fvendor', 'fdateFrom', 'fdateTo'].forEach(function (id) {
+    ['kw', 'fm', 'fcat', 'ft', 'fg', 'fs', 'fvendor', 'fsource', 'fdateFrom', 'fdateTo'].forEach(function (id) {
       document.getElementById(id).addEventListener(id === 'kw' ? 'input' : 'change', drawCards);
     });
+
     ['cl-model', 'cl-cat'].forEach(function (id) {
       document.getElementById(id).addEventListener('change', function () {
         Object.keys(checkState).forEach(function (k) { delete checkState[k]; });
