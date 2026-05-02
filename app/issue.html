@@ -1529,6 +1529,64 @@
 
   <script>
     var AID = 'admin', APW = 'psk1234', isAdmin = false;
+    var ISSUE_OPTIONS_FALLBACK = {
+      models: ['GENEVA STP300xp', 'ECOLITE3000', 'CVD-3000', 'ALD-200', 'ETCH-500'],
+      categories: ['배관류', '가공품', '체결부품', '전장부품'],
+      defectTypes: ['치수오차', '형상불일치', '센터링', '표면불량'],
+      grades: ['A', 'B', 'C'],
+      statuses: ['Open', 'Close'],
+      vendors: ['나우', '이지스', '아셈', 'SE&T', 'SAM', 'HTC']
+    };
+
+    var ISSUE_OPTIONS = ISSUE_OPTIONS_FALLBACK;
+
+    async function loadIssueOptions() {
+      try {
+        var res = await fetch('../config/issue_options.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error('issue_options.json 로드 실패: ' + res.status);
+
+        var data = await res.json();
+        ISSUE_OPTIONS = Object.assign({}, ISSUE_OPTIONS_FALLBACK, data);
+
+        console.log('[AQI] issue_options.json 로드 완료');
+      } catch (err) {
+        console.warn('[AQI] 옵션 JSON 로드 실패. 기본 옵션 사용:', err);
+        ISSUE_OPTIONS = ISSUE_OPTIONS_FALLBACK;
+      }
+    }
+
+    function fillSelect(id, items, firstLabel, keepValue) {
+      var el = document.getElementById(id);
+      if (!el) return;
+
+      var current = keepValue ? el.value : '';
+      var html = '<option value="">' + firstLabel + '</option>';
+
+      items.forEach(function (v) {
+        html += '<option value="' + v + '">' + v + '</option>';
+      });
+
+      el.innerHTML = html;
+
+      if (current) el.value = current;
+    }
+
+    function applyIssueOptions() {
+      fillSelect('fm', ISSUE_OPTIONS.models, '전체 모델', true);
+      fillSelect('fcat', ISSUE_OPTIONS.categories, '전체 카테고리', true);
+      fillSelect('ft', ISSUE_OPTIONS.defectTypes, '전체 불량유형', true);
+      fillSelect('fg', ISSUE_OPTIONS.grades, '전체 등급', true);
+      fillSelect('fs', ISSUE_OPTIONS.statuses, '전체 상태', true);
+      fillSelect('fvendor', ISSUE_OPTIONS.vendors, '전체 협력사', true);
+
+      fillSelect('cl-model', ISSUE_OPTIONS.models, '모델 선택', true);
+      fillSelect('cl-cat', ISSUE_OPTIONS.categories, '카테고리 선택', true);
+
+      fillSelect('f-model', ISSUE_OPTIONS.models, '선택', true);
+      fillSelect('f-cat', ISSUE_OPTIONS.categories, '선택', true);
+      fillSelect('f-type', ISSUE_OPTIONS.defectTypes, '선택', true);
+      fillSelect('f-vendor', ISSUE_OPTIONS.vendors, '선택', true);
+    }
     var DB_FALLBACK = [
       { id: 1, model: 'GENEVA STP300xp', cat: '배관류', part: 'Exhaust Box', partNo: 'SAMPLE-001', type: '치수오차', grade: 'A', status: 'Open', source: '주간 품질회의', sourceDetail: '주간 품질회의', title: '배관 외경 +3mm 초과 납품', detail: '납품된 배관 OD(외경)가 설계 도면 대비 약 3mm 크게 제작됨. 조립 시 센터링 흔들림 발생하여 리크(Leak) 우려. 실제 조립 후 리크 테스트에서 불량 판정.', check: '배관 삽입 후 손으로 좌우 흔들어 유격 확인. 흔들림 감지 시 즉시 조립 중단 후 담당자(당사 MFG)에게 사진과 함께 보고.', result: '리크 발생 우려', action: '전량 반품 후 재제작 완료. 협력사 치수 관리 기준 재교육 실시.', vendor: '나우', occDate: '2025-01-08', inspDate: '2025-01-10', photos: [] },
       { id: 2, model: 'CVD-3000', cat: '배관류', part: 'SUS 배관 Ø25', partNo: 'SAMPLE-002', type: '치수오차', grade: 'A', status: 'Open', source: '제조팀 제기', sourceDetail: '제조팀 작업자 제기', title: '배관 외경 +3mm 초과 납품', detail: '납품된 배관 OD(외경)가 설계 도면 대비 약 3mm 크게 제작됨. 조립 시 센터링 흔들림 발생하여 리크(Leak) 우려. 실제 조립 후 리크 테스트에서 불량 판정.', check: '배관 삽입 후 손으로 좌우 흔들어 유격 확인. 흔들림 감지 시 즉시 조립 중단 후 담당자(당사 QC)에게 사진과 함께 보고.', result: '리크 발생 우려', action: '전량 반품 후 재제작 완료. 협력사 치수 관리 기준 재교육 실시.', vendor: '나우', occDate: '2025-01-08', inspDate: '2025-01-10', photos: [] },
@@ -1761,7 +1819,12 @@
     ['kw', 'fm', 'fcat', 'ft', 'fg', 'fs', 'fvendor', 'fsource', 'fdateFrom', 'fdateTo'].forEach(function (id) { document.getElementById(id).addEventListener(id === 'kw' || id === 'fsource' ? 'input' : 'change', drawCards); });
     ['cl-model', 'cl-cat'].forEach(function (id) { document.getElementById(id).addEventListener('change', function () { checkState = {}; drawCL(); }); });
     async function initApp() {
-      await loadIssueData(); setInitialFilterState();
+      await loadIssueOptions();
+      applyIssueOptions();
+
+      await loadIssueData();
+
+      setInitialFilterState();
       setDefaultDates();
       drawCards();
       drawCL(); window.addEventListener('resize', function () { var panel = document.getElementById('searchFilterPanel'), btn = document.getElementById('btnFilterToggle'); if (!panel || !btn) return; btn.textContent = panel.classList.contains('is-collapsed') ? '필터 열기' : '필터 접기'; });

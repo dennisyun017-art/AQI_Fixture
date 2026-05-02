@@ -1,0 +1,38 @@
+{
+    "models": [
+        "GENEVA STP300xp",
+        "ECOLITE3000",
+        "CVD-3000",
+        "ALD-200",
+        "ETCH-500"
+    ],
+    "categories": [
+        "배관류",
+        "가공품",
+        "체결부품",
+        "전장부품"
+    ],
+    "defectTypes": [
+        "치수오차",
+        "형상불일치",
+        "센터링",
+        "표면불량"
+    ],
+    "grades": [
+        "A",
+        "B",
+        "C"
+    ],
+    "statuses": [
+        "Open",
+        "Close"
+    ],
+    "vendors": [
+        "나우",
+        "이지스",
+        "아셈",
+        "SE&T",
+        "SAM",
+        "HTC"
+    ]
+}
