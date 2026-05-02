@@ -1279,6 +1279,21 @@
         height: 130px;
       }
     }
+
+    /* =========================================================
+   Step 23. Required Field Validation
+   ========================================================= */
+
+    .field-error {
+      border-color: #B42318 !important;
+      box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.12) !important;
+      background: #FFF8F8 !important;
+    }
+
+    .required-mark {
+      color: #B42318;
+      font-weight: 900;
+    }
   </style>
 </head>
 
@@ -1644,16 +1659,88 @@
     function renderPhotoPreview() { var el = document.getElementById('photo-preview'); el.innerHTML = editPhotos.map(function (src, i) { return '<div class="preview-item"><img src="' + esc(src) + '"><button class="preview-del" onclick="removePhoto(' + i + ')" title="삭제">✕</button></div>'; }).join(''); }
     function removePhoto(i) { editPhotos.splice(i, 1); renderPhotoPreview(); }
 
+    function todayStr() {
+      var d = new Date();
+      return d.getFullYear() + '-' +
+        String(d.getMonth() + 1).padStart(2, '0') + '-' +
+        String(d.getDate()).padStart(2, '0');
+    }
+
+    function setDefaultDates() {
+      var occ = document.getElementById('f-occdate');
+      if (occ && !occ.value) occ.value = todayStr();
+    }
+
+    function clearFieldErrors() {
+      document.querySelectorAll('.field-error').forEach(function (el) {
+        el.classList.remove('field-error');
+      });
+    }
+
+    function markFieldError(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.add('field-error');
+    }
+
+    function validateRequiredFields() {
+      clearFieldErrors();
+
+      var required = [
+        { id: 'f-model', name: '모델명' },
+        { id: 'f-cat', name: '카테고리' },
+        { id: 'f-part', name: '부품명' },
+        { id: 'f-type', name: '불량 유형' },
+        { id: 'f-grade', name: '등급' },
+        { id: 'f-vendor', name: '발생 협력사' },
+        { id: 'f-occdate', name: '발생일' },
+        { id: 'f-title', name: '불량 제목' },
+        { id: 'f-detail', name: '불량 내용' },
+        { id: 'f-check', name: '확인 방법' }
+      ];
+
+      var missing = [];
+
+      required.forEach(function (f) {
+        var el = document.getElementById(f.id);
+        if (!el || !el.value.trim()) {
+          missing.push(f.name);
+          markFieldError(f.id);
+        }
+      });
+
+      if (missing.length > 0) {
+        alert('필수 항목을 입력해 주세요.\n\n- ' + missing.join('\n- '));
+
+        var first = document.querySelector('.field-error');
+        if (first) {
+          first.focus();
+          first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        return false;
+      }
+
+      return true;
+    }
+
     function saveRecord() {
       var model = fv('f-model'), cat = fv('f-cat'), part = fv('f-part'), partNo = fv('f-partno'), type = fv('f-type'), grade = fv('f-grade'), status = fv('f-status'), vendor = fv('f-vendor'), source = fv('f-source'), sourceDetail = fv('f-source-detail'), occDate = fv('f-occdate'), inspDate = fv('f-inspdate'), title = fv('f-title'), detail = fv('f-detail'), check = fv('f-check'), result = fv('f-result'), action = fv('f-action');
-      if (!model || !cat || !part || !type || !grade || !vendor || !occDate || !title || !detail || !check) { alert('필수 항목(*)을 모두 입력해 주세요.'); return; }
+      if (!validateRequiredFields()) return;
       var eid = fv('edit-id');
       if (eid) { var d = DB.find(function (x) { return x.id === parseInt(eid, 10); }); if (d) { d.model = model; d.cat = cat; d.part = part; d.partNo = partNo; d.type = type; d.grade = grade; d.status = status; d.vendor = vendor; d.source = source; d.sourceDetail = sourceDetail; d.occDate = occDate; d.inspDate = inspDate; d.title = title; d.detail = detail; d.check = check; d.result = result; d.action = action; d.photos = editPhotos.slice(); } alert('수정되었습니다.'); }
       else { DB.push({ id: nextId++, model: model, cat: cat, part: part, partNo: partNo, type: type, grade: grade, status: status, title: title, detail: detail, check: check, result: result, action: action, vendor: vendor, source: source, sourceDetail: sourceDetail, occDate: occDate, inspDate: inspDate, photos: editPhotos.slice() }); alert('등록되었습니다.'); }
-      resetForm(); drawCards(); drawAdminList(); drawCL();
+      resetForm();
+      resetSearchFilters();
+      drawCards();
+      drawAdminList();
+      drawCL();
+      switchTab('search');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     function startEdit(id) { var d = DB.find(function (x) { return x.id === id; }); if (!d) return; closeDetail(); switchTab('admin'); sv('edit-id', d.id); sv('f-model', d.model); sv('f-cat', d.cat); sv('f-part', d.part); sv('f-partno', d.partNo); sv('f-type', d.type); sv('f-grade', d.grade); sv('f-status', d.status); sv('f-vendor', d.vendor); sv('f-source', d.source); sv('f-source-detail', d.sourceDetail); sv('f-occdate', d.occDate); sv('f-inspdate', d.inspDate); sv('f-title', d.title); sv('f-detail', d.detail); sv('f-check', d.check); sv('f-result', d.result); sv('f-action', d.action); editPhotos = d.photos ? d.photos.slice() : []; renderPhotoPreview(); document.getElementById('form-title').textContent = '사례 수정 — ' + d.title; document.getElementById('form-wrap').scrollIntoView({ behavior: 'smooth' }); }
     function resetForm() { ['f-model', 'f-cat', 'f-part', 'f-partno', 'f-type', 'f-grade', 'f-vendor', 'f-source', 'f-source-detail', 'f-occdate', 'f-inspdate', 'f-title', 'f-detail', 'f-check', 'f-result', 'f-action'].forEach(function (id) { sv(id, ''); }); sv('f-status', 'Open'); sv('edit-id', ''); editPhotos = []; renderPhotoPreview(); document.getElementById('form-title').textContent = '신규 사례 등록'; var hint = document.getElementById('paste-hint'); if (hint) hint.innerHTML = '이 영역을 클릭 후 <strong>Ctrl+V</strong> 로 이미지를 붙여넣으세요'; }
+    setDefaultDates();
+    clearFieldErrors();
 
     function arr(key) { if (adminSort.key !== key) return '<span class="sort-arrow">⇅</span>'; return '<span class="sort-arrow">' + (adminSort.asc ? '↑' : '↓') + '</span>'; }
     function sortBy(key) { if (adminSort.key === key) adminSort.asc = !adminSort.asc; else { adminSort.key = key; adminSort.asc = true; } drawAdminList(); }
@@ -1673,7 +1760,12 @@
 
     ['kw', 'fm', 'fcat', 'ft', 'fg', 'fs', 'fvendor', 'fsource', 'fdateFrom', 'fdateTo'].forEach(function (id) { document.getElementById(id).addEventListener(id === 'kw' || id === 'fsource' ? 'input' : 'change', drawCards); });
     ['cl-model', 'cl-cat'].forEach(function (id) { document.getElementById(id).addEventListener('change', function () { checkState = {}; drawCL(); }); });
-    async function initApp() { await loadIssueData(); setInitialFilterState(); drawCards(); drawCL(); window.addEventListener('resize', function () { var panel = document.getElementById('searchFilterPanel'), btn = document.getElementById('btnFilterToggle'); if (!panel || !btn) return; btn.textContent = panel.classList.contains('is-collapsed') ? '필터 열기' : '필터 접기'; }); }
+    async function initApp() {
+      await loadIssueData(); setInitialFilterState();
+      setDefaultDates();
+      drawCards();
+      drawCL(); window.addEventListener('resize', function () { var panel = document.getElementById('searchFilterPanel'), btn = document.getElementById('btnFilterToggle'); if (!panel || !btn) return; btn.textContent = panel.classList.contains('is-collapsed') ? '필터 열기' : '필터 접기'; });
+    }
     initApp();
   </script>
 </body>
