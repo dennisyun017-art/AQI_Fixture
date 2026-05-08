@@ -1,7 +1,7 @@
 {
-  "title": "AQI System",
-  "subtitle": "PSK Holdings — 제조부문",
-  "version": "v0.2.0",
+  "title": "AQI (Assembly Quality Inspection) System",
+  "subtitle": "PSK Group",
+  "version": "v0.2.1",
   "lastModified": "2026-05-08",
   "menus": [
     {
