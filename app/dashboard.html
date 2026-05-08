@@ -6,16 +6,17 @@
 파일명  : dashboard.html
 작성일  : 2026-05-08
 작성자  : Dennis
-버전    : v0.2.0
+버전    : v0.2.1
 --------------------------------------------
 개정이력
 v0.1.0  2026-04-24  최초 작성
 v0.2.0  2026-05-08  PSK 스타일 적용, 카드 6개(3+3), Visual Check / Automated Report 추가
+v0.2.1  2026-05-08  상단 브랜드/시스템명 변경 및 dashboard.json 메타 정보 화면 반영
 ============================================
 -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AQI System — PSK Holdings</title>
+  <title>AQI (Assembly Quality Inspection) System — PSK Group</title>
   <style>
     /* ===== 리셋 ===== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -65,6 +66,7 @@ v0.2.0  2026-05-08  PSK 스타일 적용, 카드 6개(3+3), Visual Check / Autom
       font-weight: 900;
       letter-spacing: 0.5px;
       color: #fff;
+      white-space: nowrap;
     }
 
     .top-bar-divider {
@@ -77,6 +79,7 @@ v0.2.0  2026-05-08  PSK 스타일 적용, 카드 6개(3+3), Visual Check / Autom
       font-size: 14px;
       font-weight: 600;
       color: rgba(255,255,255,0.92);
+      white-space: nowrap;
     }
 
     .top-bar-right {
@@ -319,10 +322,19 @@ v0.2.0  2026-05-08  PSK 스타일 적용, 카드 6개(3+3), Visual Check / Autom
     /* ===== 반응형 ===== */
     @media (max-width: 900px) {
       .menu-grid { grid-template-columns: repeat(2, 1fr); }
+      .top-bar-title { font-size: 13px; }
     }
+
     @media (max-width: 600px) {
+      body { min-width: 0; }
       .menu-grid { grid-template-columns: 1fr; }
       .main { padding: 20px 16px 40px; }
+      .top-bar {
+        padding: 0 16px;
+      }
+      .top-bar-title {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -337,13 +349,13 @@ v0.2.0  2026-05-08  PSK 스타일 적용, 카드 6개(3+3), Visual Check / Autom
   <!-- 상단 헤더 바 -->
   <div class="top-bar">
     <div class="top-bar-left">
-      <div class="top-bar-logo">PSK Group</div>
+      <div class="top-bar-logo" id="headerLogo">PSK Group</div>
       <div class="top-bar-divider"></div>
-      <div class="top-bar-title">AQI System — 제조부문</div>
+      <div class="top-bar-title" id="headerTitle">AQI (Assembly Quality Inspection) System</div>
     </div>
     <div class="top-bar-right">
       <span id="headerDate"></span>
-      <span class="top-bar-version" id="headerVersion">v0.2.0</span>
+      <span class="top-bar-version" id="headerVersion">v0.2.1</span>
     </div>
   </div>
 
@@ -371,8 +383,8 @@ v0.2.0  2026-05-08  PSK 스타일 적용, 카드 6개(3+3), Visual Check / Autom
 
   <!-- 푸터 -->
   <footer class="footer">
-    <span id="footerInfo">PSK Holdings — 제조부문 · AQI System</span>
-    <span id="footerVersion">v0.2.0 · 2026-05-08</span>
+    <span id="footerInfo">PSK Group · AQI (Assembly Quality Inspection) System</span>
+    <span id="footerVersion">v0.2.1 · 2026-05-08</span>
   </footer>
 
   <script>
@@ -391,6 +403,14 @@ v0.2.0  2026-05-08  PSK 스타일 적용, 카드 6개(3+3), Visual Check / Autom
       report:   'report.html',
     };
     /* ==================================== */
+
+    // 기본 메타 정보 (dashboard.json 로드 실패 시 폴백)
+    const DEFAULT_META = {
+      title: 'AQI (Assembly Quality Inspection) System',
+      subtitle: 'PSK Group',
+      version: 'v0.2.1',
+      lastModified: '2026-05-08'
+    };
 
     // 기본 메뉴 (dashboard.json 로드 실패 시 폴백)
     const DEFAULT_MENUS = [
@@ -411,6 +431,25 @@ v0.2.0  2026-05-08  PSK 스타일 적용, 카드 6개(3+3), Visual Check / Autom
       document.getElementById('headerDate').textContent = `${y}.${m}.${d}`;
     }
 
+    // dashboard.json의 title/subtitle/version 정보를 화면에 반영
+    function applyDashboardMeta(data) {
+      const meta = {
+        title: data.title || DEFAULT_META.title,
+        subtitle: data.subtitle || DEFAULT_META.subtitle,
+        version: data.version || DEFAULT_META.version,
+        lastModified: data.lastModified || DEFAULT_META.lastModified
+      };
+
+      document.title = `${meta.title} — ${meta.subtitle}`;
+
+      document.getElementById('headerLogo').textContent = meta.subtitle;
+      document.getElementById('headerTitle').textContent = meta.title;
+      document.getElementById('headerVersion').textContent = meta.version;
+
+      document.getElementById('footerInfo').textContent = `${meta.subtitle} · ${meta.title}`;
+      document.getElementById('footerVersion').textContent = `${meta.version} · ${meta.lastModified}`;
+    }
+
     // dashboard.json 로드 → 카드 생성
     async function loadDashboard() {
       try {
@@ -418,17 +457,19 @@ v0.2.0  2026-05-08  PSK 스타일 적용, 카드 6개(3+3), Visual Check / Autom
         if (!res.ok) throw new Error('dashboard.json 로드 실패');
         const data = await res.json();
 
-        // 버전 업데이트
-        if (data.version) {
-          document.getElementById('headerVersion').textContent = data.version;
-          document.getElementById('footerVersion').textContent =
-            data.version + ' · ' + (data.lastModified || '');
-        }
+        // dashboard.json 메타 정보 반영
+        applyDashboardMeta(data);
 
+        // 메뉴 카드 생성
         buildCards(data.menus || []);
       } catch (e) {
         console.warn('dashboard.json 로드 실패, 기본 메뉴 사용:', e);
         showError('⚠️ dashboard.json을 불러오지 못했습니다. 기본 메뉴를 표시합니다.');
+
+        // 폴백 메타 정보 반영
+        applyDashboardMeta(DEFAULT_META);
+
+        // 폴백 메뉴 생성
         buildCards(DEFAULT_MENUS);
       } finally {
         setTimeout(() => {
