@@ -15,7 +15,7 @@
     {
       "id": "standard",
       "icon": "📋",
-      "label": "작업표준서 확인",
+      "label": "Working Spec",
       "desc": "Critical Defect 공정 표준서",
       "color": "#2980B9",
       "enabled": false
