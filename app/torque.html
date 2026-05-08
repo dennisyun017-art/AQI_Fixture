@@ -1,0 +1,3406 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <!--
+============================================
+파일명  : torque.html
+작성일  : 2026-05-08
+작성자  : Dennis
+버전    : v0.3.9.3.1.1
+--------------------------------------------
+개정이력
+v0.3.0  2026-05-08  Torque Check 정보 입력 화면 최초 구성
+v0.3.1  2026-05-08  태블릿/현장 사용 기준 Compact UI 최적화
+v0.3.2  2026-05-08  Torque Check Sheet 화면 추가, 수동 입력/붙여넣기/CSV 출력 구조 반영
+v0.3.3  2026-05-08  Check Point 이미지 경로 기반 표시 구조 추가
+v0.3.4  2026-05-08  측정값 붙여넣기 파서 고도화, 미리보기/열 선택/덮어쓰기 옵션 추가
+v0.3.9.3  2026-05-08  PDF/인쇄용 Check Sheet 레이아웃 개선, 출력용 정보/서명란 추가
+v0.3.9.3  2026-05-08  PDF 출력 시 Check Point 이미지 포함, 출력/CSV 파일명 WO_MODEL_MODULE_BP 형식 적용
+v0.3.9.3  2026-05-08  PDF 출력용 병합표 스타일 추가, Check Point 이미지 표 내부 표시
+v0.3.9.3  2026-05-08  localStorage 기반 작업 자동 저장/복원/초기화 기능 추가
+v0.3.9.3.1 2026-05-08  새로고침 시 저장 측정값이 초기 샘플로 덮어써지는 문제 수정
+============================================
+-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torque Check — AQI System</title>
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --purple: #6B21A8;
+            --purple-dark: #4C1D95;
+            --purple-mid: #7C3AED;
+            --bg: #F4F6F9;
+            --surface: #FFFFFF;
+            --border: #D8E0EA;
+            --border-dark: #B8C2D0;
+            --text: #1E293B;
+            --text-sub: #64748B;
+            --text-light: #94A3B8;
+            --green: #16A34A;
+            --red: #DC2626;
+            --orange: #EA580C;
+            --blue: #2563EB;
+            --dark-blue: #40516A;
+            --radius: 12px;
+            --shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
+        }
+
+        body {
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .top-bar {
+            height: 46px;
+            padding: 0 18px;
+            background: linear-gradient(135deg, var(--purple-dark), var(--purple-mid));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #fff;
+        }
+
+        .top-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .brand {
+            font-size: 15px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .divider {
+            width: 1px;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .system-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.92);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.88);
+            white-space: nowrap;
+        }
+
+        .version-pill {
+            padding: 3px 9px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .tab-nav {
+            height: 42px;
+            background: var(--purple-dark);
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            padding: 0 18px;
+        }
+
+        .tab-item {
+            height: 42px;
+            padding: 0 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.62);
+            text-decoration: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .tab-item:hover,
+        .tab-item.active {
+            color: #fff;
+        }
+
+        .tab-item.active {
+            border-bottom-color: #fff;
+        }
+
+        .main {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 16px 18px 24px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .page-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+
+        .breadcrumb {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-sub);
+            margin-bottom: 5px;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 900;
+            line-height: 1.2;
+        }
+
+        .page-desc {
+            margin-top: 5px;
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        .status-mini {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 11px;
+            border-radius: 999px;
+            background: #EAF8EF;
+            border: 1px solid #BCE6C9;
+            color: #087443;
+            font-size: 12px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22C55E;
+        }
+
+        .panel,
+        .info-card,
+        .metric-card,
+        .table-card,
+        .current-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .panel {
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            min-height: 52px;
+            padding: 9px 18px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: linear-gradient(180deg, #FFFFFF, #FAFBFD);
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        .panel-subtitle {
+            margin-top: 2px;
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        .step-badge {
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: #F3E8FF;
+            color: var(--purple-dark);
+            border: 1px solid #DDD6FE;
+            font-size: 11px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .panel-body {
+            padding: 15px 18px 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr 1fr;
+            gap: 12px 14px;
+            align-items: start;
+        }
+
+        .field {
+            min-width: 0;
+        }
+
+        .field-label {
+            margin-bottom: 5px;
+            font-size: 11px;
+            font-weight: 900;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .required {
+            color: var(--red);
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            height: 36px;
+            border: 1px solid var(--border-dark);
+            border-radius: 8px;
+            padding: 0 10px;
+            background: #fff;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            outline: none;
+        }
+
+        textarea {
+            height: 120px;
+            padding: 10px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--purple);
+            box-shadow: 0 0 0 3px rgba(107, 33, 168, 0.08);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 6px;
+        }
+
+        .input-row input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .btn {
+            height: 36px;
+            padding: 0 13px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            font-size: 12px;
+            font-weight: 900;
+            font-family: inherit;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: transform 0.12s, box-shadow 0.12s, background 0.12s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-search {
+            background: #111827;
+            color: #fff;
+            min-width: 58px;
+        }
+
+        .btn-primary {
+            background: var(--purple);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(107, 33, 168, 0.18);
+        }
+
+        .btn-dark {
+            background: #1E293B;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: #fff;
+            border-color: var(--border-dark);
+            color: var(--text);
+        }
+
+        .btn-orange {
+            background: #F97316;
+            color: #fff;
+        }
+
+        .btn-green {
+            background: #16A34A;
+            color: #fff;
+        }
+
+        .btn-red {
+            background: #DC2626;
+            color: #fff;
+        }
+
+        .type-toggle,
+        .pm-toggle {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .pm-toggle {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .toggle-btn,
+        .pm-btn {
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border-dark);
+            background: #fff;
+            color: var(--text-sub);
+            font-size: 12px;
+            font-weight: 900;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .toggle-btn.active,
+        .pm-btn.active {
+            background: var(--purple);
+            border-color: var(--purple);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(107, 33, 168, 0.16);
+        }
+
+        .summary-strip {
+            margin-top: 14px;
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .summary-item {
+            min-width: 0;
+            padding: 9px 10px;
+            border-radius: 10px;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+        }
+
+        .summary-label {
+            font-size: 10px;
+            font-weight: 900;
+            color: var(--text-sub);
+            letter-spacing: 0.2px;
+            margin-bottom: 4px;
+        }
+
+        .summary-value {
+            font-size: 12px;
+            font-weight: 900;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-height: 16px;
+        }
+
+        .notice-line {
+            margin-top: 10px;
+            padding: 9px 11px;
+            border-radius: 10px;
+            background: #EEF5FF;
+            border: 1px solid #CFE2FF;
+            color: #1E40AF;
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        .autosave-line {
+            margin-top: 8px;
+            padding: 7px 10px;
+            border-radius: 9px;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            color: #64748B;
+            font-size: 10.5px;
+            font-weight: 800;
+            line-height: 1.45;
+        }
+
+        .autosave-line.has-data {
+            background: #F0FDF4;
+            border-color: #BBF7D0;
+            color: #166534;
+        }
+
+        .completion-line {
+            margin-top: 8px;
+            padding: 8px 10px;
+            border-radius: 9px;
+            background: #FFF7ED;
+            border: 1px solid #FED7AA;
+            color: #9A3412;
+            font-size: 11px;
+            font-weight: 900;
+            line-height: 1.45;
+        }
+
+        .completion-line.done {
+            background: #ECFDF5;
+            border-color: #86EFAC;
+            color: #166534;
+        }
+
+        .completion-line.locked {
+            background: #F1F5F9;
+            border-color: #CBD5E1;
+            color: #475569;
+        }
+
+        .result-line {
+            display: none;
+            margin-top: 10px;
+            padding: 9px 11px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 800;
+            line-height: 1.5;
+        }
+
+        .result-line.show {
+            display: block;
+        }
+
+        .result-line.success {
+            background: #EAF8EF;
+            border: 1px solid #BCE6C9;
+            color: #106C3C;
+        }
+
+        .result-line.error {
+            background: #FEF2F2;
+            border: 1px solid #FECACA;
+            color: #B91C1C;
+        }
+
+        .action-bar {
+            margin-top: 14px;
+            padding-top: 13px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-left,
+        .action-right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .sheet-toolbar {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) auto;
+            gap: 12px;
+            margin-bottom: 10px;
+            align-items: stretch;
+        }
+
+        .info-card {
+            border-radius: 14px;
+            padding: 12px 14px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .info-item {
+            min-width: 0;
+        }
+
+        .info-label {
+            font-size: 10px;
+            font-weight: 900;
+            color: var(--text-sub);
+            margin-bottom: 3px;
+        }
+
+        .info-value {
+            font-size: 12px;
+            font-weight: 900;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .toolbar-buttons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .progress-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .metric-card {
+            border-radius: 12px;
+            padding: 10px 12px;
+        }
+
+        .metric-label {
+            font-size: 10px;
+            font-weight: 900;
+            color: var(--text-sub);
+            margin-bottom: 3px;
+        }
+
+        .metric-value {
+            font-size: 17px;
+            font-weight: 900;
+        }
+
+        .metric-value.ok {
+            color: var(--green);
+        }
+
+        .metric-value.ng {
+            color: var(--red);
+        }
+
+        .metric-value.wait {
+            color: var(--text-sub);
+        }
+
+        .measure-layout {
+            display: grid;
+            grid-template-columns: minmax(260px, 0.72fr) minmax(0, 2.45fr);
+            gap: 10px;
+            align-items: start;
+        }
+
+        .current-card {
+            border: 2px solid #DDD6FE;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .current-header {
+            padding: 10px 12px;
+            background: #F6F0FF;
+            border-bottom: 1px solid #DDD6FE;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .current-title {
+            font-size: 14px;
+            font-weight: 900;
+            color: var(--purple-dark);
+        }
+
+        .current-body {
+            padding: 10px;
+        }
+
+        .point-image-box {
+            margin-bottom: 9px;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            background: #F8FAFC;
+            overflow: hidden;
+            min-height: 130px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .point-image-box img {
+            width: 100%;
+            max-height: 180px;
+            object-fit: contain;
+            display: block;
+            background: #fff;
+        }
+
+        .point-image-empty {
+            width: 100%;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94A3B8;
+            font-size: 12px;
+            font-weight: 900;
+            text-align: center;
+            padding: 16px;
+            line-height: 1.6;
+        }
+
+        .current-main {
+            font-size: 14px;
+            font-weight: 900;
+            line-height: 1.35;
+            margin-bottom: 10px;
+        }
+
+        .current-spec {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 7px;
+            margin-bottom: 10px;
+        }
+
+        .spec-box {
+            border: 1px solid #E2E8F0;
+            background: #F8FAFC;
+            border-radius: 10px;
+            padding: 8px;
+        }
+
+        .spec-label {
+            font-size: 10px;
+            font-weight: 900;
+            color: var(--text-sub);
+            margin-bottom: 3px;
+        }
+
+        .spec-value {
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        .manual-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 7px;
+            margin-bottom: 8px;
+        }
+
+        .current-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 7px;
+        }
+
+        .ble-box {
+            margin-top: 10px;
+            border: 1px dashed #CBD5E1;
+            border-radius: 10px;
+            padding: 9px 10px;
+            background: #FAFBFC;
+            font-size: 11px;
+            color: var(--text-sub);
+            line-height: 1.5;
+        }
+
+        .table-card {
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .table-head {
+            min-height: 44px;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
+            background: #FAFBFD;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .table-title {
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        .table-sub {
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            max-height: calc(100vh - 340px);
+            min-height: 300px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 0;
+            table-layout: fixed;
+            font-size: 10.5px;
+        }
+
+        .table-wrap th:nth-child(1),
+        .table-wrap td:nth-child(1) {
+            width: 34px;
+        }
+
+        .table-wrap th:nth-child(2),
+        .table-wrap td:nth-child(2) {
+            width: 118px;
+        }
+
+        .table-wrap th:nth-child(3),
+        .table-wrap td:nth-child(3) {
+            width: 58px;
+        }
+
+        .table-wrap th:nth-child(4),
+        .table-wrap td:nth-child(4) {
+            width: 70px;
+        }
+
+        .table-wrap th:nth-child(5),
+        .table-wrap td:nth-child(5) {
+            width: 44px;
+        }
+
+        .table-wrap th:nth-child(6),
+        .table-wrap td:nth-child(6) {
+            width: 66px;
+        }
+
+        .table-wrap th:nth-child(7),
+        .table-wrap td:nth-child(7) {
+            width: 78px;
+        }
+
+        .table-wrap th:nth-child(8),
+        .table-wrap td:nth-child(8),
+        .table-wrap th:nth-child(9),
+        .table-wrap td:nth-child(9),
+        .table-wrap th:nth-child(10),
+        .table-wrap td:nth-child(10) {
+            width: 92px;
+        }
+
+        .table-wrap th:nth-child(11),
+        .table-wrap td:nth-child(11) {
+            width: 52px;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            background: var(--dark-blue);
+            color: #fff;
+            border: 1px solid #26374E;
+            padding: 6px 3px;
+            text-align: center;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        td {
+            border: 1px solid #D1D5DB;
+            padding: 4px 3px;
+            text-align: center;
+            background: #fff;
+            height: 32px;
+            vertical-align: middle;
+        }
+
+        tr.table-row-clickable {
+            cursor: pointer;
+        }
+
+        tr.table-row-clickable:hover td {
+            background: #F8FAFF;
+        }
+
+        tr.active-row td {
+            background: #F6F0FF;
+            box-shadow: inset 0 0 0 1px #A855F7;
+        }
+
+        tr.active-row:hover td {
+            background: #F6F0FF;
+        }
+
+        tr.group-start td {
+            border-top: 2px solid #6B7280;
+        }
+
+        .td-left {
+            text-align: left;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .cell-btn {
+            width: 100%;
+            min-width: 0;
+            height: 25px;
+            border: 1px solid #CBD5E1;
+            border-radius: 6px;
+            background: #F8FAFC;
+            color: #475569;
+            font-size: 9.5px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .cell-btn.active {
+            background: #F3E8FF;
+            color: var(--purple-dark);
+            border-color: #C084FC;
+        }
+
+        .image-link-btn {
+            height: 24px;
+            padding: 0 6px;
+            border-radius: 6px;
+            border: 1px solid #CBD5E1;
+            background: #fff;
+            color: #475569;
+            font-size: 9.5px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .image-link-btn:hover {
+            border-color: var(--purple);
+            color: var(--purple-dark);
+        }
+
+        .image-none {
+            color: #94A3B8;
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        .cell-result {
+            min-width: 0;
+            border-radius: 7px;
+            padding: 4px 3px;
+            font-size: 9.5px;
+            font-weight: 900;
+            line-height: 1.2;
+        }
+
+        .cell-result.ok {
+            background: #DCFCE7;
+            color: #166534;
+            border: 1px solid #86EFAC;
+        }
+
+        .cell-result.ng {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FCA5A5;
+        }
+
+        .cell-result.wait {
+            background: #F1F5F9;
+            color: #64748B;
+            border: 1px solid #CBD5E1;
+        }
+
+        .result-small {
+            font-size: 8px;
+            color: inherit;
+            opacity: 0.85;
+        }
+
+        .status-tag {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 0;
+            width: 100%;
+            height: 22px;
+            border-radius: 999px;
+            font-size: 9.5px;
+            font-weight: 900;
+        }
+
+        .status-tag.ok {
+            background: #DCFCE7;
+            color: #166534;
+        }
+
+        .status-tag.ng {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .status-tag.ing {
+            background: #F3E8FF;
+            color: var(--purple-dark);
+        }
+
+        .status-tag.wait {
+            background: #F1F5F9;
+            color: #64748B;
+        }
+
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.42);
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+        }
+
+        .modal-backdrop.show {
+            display: flex;
+        }
+
+        .modal {
+            width: min(820px, 100%);
+            max-height: calc(100vh - 36px);
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.22);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #FAFBFD;
+            flex-shrink: 0;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        .modal-body {
+            padding: 16px;
+            overflow: auto;
+        }
+
+        .paste-help {
+            margin-bottom: 10px;
+            padding: 9px 11px;
+            border-radius: 10px;
+            background: #EEF5FF;
+            border: 1px solid #CFE2FF;
+            color: #1E40AF;
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        .paste-options {
+            display: grid;
+            grid-template-columns: 1.4fr 0.8fr 0.8fr 0.8fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .paste-option-label {
+            margin-bottom: 4px;
+            font-size: 10px;
+            font-weight: 900;
+            color: var(--text-sub);
+        }
+
+        .paste-preview-box {
+            margin-top: 10px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .paste-preview-table {
+            width: 100%;
+            min-width: 0;
+            font-size: 11px;
+        }
+
+        .paste-preview-table th {
+            position: sticky;
+            top: 0;
+            background: #475569;
+            color: #fff;
+            padding: 6px;
+            z-index: 1;
+        }
+
+        .paste-preview-table td {
+            height: 28px;
+            padding: 4px 6px;
+            border: 1px solid #E2E8F0;
+        }
+
+        .preview-ok {
+            color: var(--green);
+            font-weight: 900;
+        }
+
+        .preview-ng {
+            color: var(--red);
+            font-weight: 900;
+        }
+
+        .preview-skip {
+            color: var(--text-sub);
+            font-weight: 900;
+        }
+
+        .modal-actions {
+            padding: 13px 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+
+        .print-only {
+            display: none;
+        }
+
+        .print-title-block,
+        .print-summary,
+        .print-sign-area,
+        .print-image-section,
+        .print-merged-sheet {
+            display: none;
+        }
+
+        .print-image-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .print-image-card {
+            border: 1px solid #111;
+            padding: 4px;
+            min-height: 90px;
+            page-break-inside: avoid;
+            background: #fff;
+        }
+
+        .print-image-title {
+            font-size: 8px;
+            font-weight: 900;
+            margin-bottom: 3px;
+            line-height: 1.25;
+        }
+
+        .print-image-card img {
+            width: 100%;
+            height: 88px;
+            object-fit: contain;
+            display: block;
+            background: #fff;
+            border: 1px solid #999;
+        }
+
+        .print-image-empty {
+            height: 88px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed #999;
+            color: #777;
+            font-size: 8px;
+            font-weight: 900;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .footer {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 12px 18px 18px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 10.5px;
+            color: var(--text-sub);
+        }
+
+        @media (max-width:1100px) {
+            .main {
+                padding: 14px 14px 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 11px 12px;
+            }
+
+            .summary-strip {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .info-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .progress-grid {
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+            }
+
+            .measure-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .point-image-box {
+                min-height: 130px;
+            }
+
+            .point-image-box img {
+                max-height: 180px;
+            }
+
+            .table-wrap {
+                max-height: 430px;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+            .panel-body {
+                padding: 14px;
+            }
+
+            .paste-options {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width:760px) {
+            .system-title {
+                display: none;
+            }
+
+            .top-bar {
+                padding: 0 12px;
+            }
+
+            .tab-nav {
+                padding: 0 8px;
+                overflow-x: auto;
+            }
+
+            .tab-item {
+                padding: 0 12px;
+                flex: 0 0 auto;
+            }
+
+            .page-head {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-strip,
+            .info-grid,
+            .progress-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .sheet-toolbar {
+                grid-template-columns: 1fr;
+            }
+
+            .toolbar-buttons {
+                justify-content: flex-start;
+            }
+
+            .action-bar {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .action-left,
+            .action-right {
+                width: 100%;
+            }
+
+            .action-left .btn,
+            .action-right .btn {
+                flex: 1;
+            }
+
+            .paste-options {
+                grid-template-columns: 1fr;
+            }
+
+            .table-wrap {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 760px;
+            }
+
+            .footer {
+                flex-direction: column;
+            }
+        }
+
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 8mm;
+            }
+
+            html,
+            body {
+                width: 100%;
+                min-height: 0;
+                background: #fff;
+                color: #000;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .top-bar,
+            .tab-nav,
+            .page-head,
+            .toolbar-buttons,
+            .progress-grid,
+            .current-card,
+            .modal-backdrop,
+            .footer,
+            .result-line,
+            .table-head,
+            #entryScreen,
+            .btn,
+            .image-link-btn {
+                display: none !important;
+            }
+
+            .screen {
+                display: none !important;
+            }
+
+            #sheetScreen {
+                display: block !important;
+            }
+
+            .main {
+                max-width: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .print-title-block,
+            .print-summary,
+            .print-sign-area {
+                display: block;
+            }
+
+            .print-title-block {
+                text-align: center;
+                margin-bottom: 8px;
+                border-bottom: 2px solid #111;
+                padding-bottom: 6px;
+            }
+
+            .print-title {
+                font-size: 18px;
+                font-weight: 900;
+                letter-spacing: 0.5px;
+            }
+
+            .print-subtitle {
+                margin-top: 3px;
+                font-size: 10px;
+                color: #333;
+            }
+
+            .info-card {
+                box-shadow: none;
+                border: 1px solid #111;
+                border-radius: 0;
+                padding: 6px 8px;
+                margin-bottom: 6px;
+            }
+
+            .info-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 0;
+                border-left: 1px solid #333;
+                border-top: 1px solid #333;
+            }
+
+            .info-item {
+                border-right: 1px solid #333;
+                border-bottom: 1px solid #333;
+                padding: 4px 5px;
+            }
+
+            .info-label {
+                font-size: 8px;
+                color: #333;
+                margin-bottom: 2px;
+            }
+
+            .info-value {
+                font-size: 10px;
+                color: #000;
+            }
+
+            .print-summary {
+                margin-bottom: 6px;
+                font-size: 9px;
+                line-height: 1.4;
+            }
+
+            .sheet-toolbar {
+                display: block;
+                margin-bottom: 0;
+            }
+
+            .measure-layout {
+                display: block;
+            }
+
+            .table-card {
+                box-shadow: none;
+                border: none;
+                border-radius: 0;
+                overflow: visible;
+            }
+
+            .table-wrap {
+                max-height: none;
+                min-height: 0;
+                overflow: visible;
+            }
+
+            table {
+                width: 100%;
+                min-width: 0;
+                font-size: 8px;
+                table-layout: fixed;
+                page-break-inside: auto;
+            }
+
+            thead {
+                display: table-header-group;
+            }
+
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+
+            th {
+                position: static;
+                background: #D9E2F3 !important;
+                color: #000;
+                border: 1px solid #111;
+                padding: 3px 2px;
+                font-size: 8px;
+            }
+
+            td {
+                border: 1px solid #111;
+                padding: 2px 2px;
+                height: 20px;
+                font-size: 8px;
+                color: #000;
+            }
+
+            tr.active-row td {
+                background: #fff;
+                box-shadow: none;
+            }
+
+            tr.group-start td {
+                border-top: 1.5px solid #111;
+            }
+
+            .cell-result {
+                min-width: 0;
+                border: none !important;
+                background: transparent !important;
+                color: #000 !important;
+                padding: 0;
+                font-size: 8px;
+                line-height: 1.15;
+            }
+
+            .result-small {
+                font-size: 7px;
+            }
+
+            .status-tag {
+                height: auto;
+                min-width: 0;
+                border-radius: 0;
+                background: transparent !important;
+                color: #000 !important;
+                font-size: 8px;
+            }
+
+            .print-merged-sheet {
+                display: block;
+                margin-top: 6px;
+            }
+
+            .print-merged-title {
+                font-size: 10px;
+                font-weight: 900;
+                margin-bottom: 4px;
+                border-bottom: 1px solid #111;
+                padding-bottom: 2px;
+            }
+
+            .print-merged-table {
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: fixed;
+                font-size: 7.5px;
+            }
+
+            .print-merged-table th {
+                position: static;
+                background: #3F5068 !important;
+                color: #fff;
+                border: 1px solid #111;
+                padding: 3px 2px;
+                font-size: 7.5px;
+                text-align: center;
+                font-weight: 900;
+            }
+
+            .print-merged-table td {
+                border: 1px solid #111;
+                padding: 2px 2px;
+                height: 20px;
+                font-size: 7.5px;
+                text-align: center;
+                vertical-align: middle;
+                background: #fff;
+                color: #000;
+            }
+
+            .print-merged-table .p-left {
+                text-align: left;
+                padding-left: 4px;
+            }
+
+            .print-img-cell img {
+                width: 100%;
+                height: 86px;
+                object-fit: contain;
+                display: block;
+                background: #fff;
+            }
+
+            .print-img-empty {
+                height: 86px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #777;
+                font-size: 7px;
+                font-weight: 900;
+                border: 1px dashed #999;
+            }
+
+            .p-meas {
+                font-weight: 900;
+                line-height: 1.15;
+            }
+
+            .p-ok {
+                background: #E2F0D9 !important;
+                color: #000;
+            }
+
+            .p-ng {
+                background: #FCE4D6 !important;
+                color: #000;
+            }
+
+            .p-wait {
+                background: #fff !important;
+                color: #777;
+            }
+
+            .p-small {
+                font-size: 6.5px;
+                font-weight: 700;
+            }
+
+            .measure-layout {
+                display: none !important;
+            }
+
+            .print-image-section {
+                display: none !important;
+                margin-top: 8px;
+                page-break-inside: avoid;
+            }
+
+            .print-section-title {
+                font-size: 10px;
+                font-weight: 900;
+                margin-bottom: 4px;
+                border-bottom: 1px solid #111;
+                padding-bottom: 2px;
+            }
+
+            .print-image-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 5px;
+            }
+
+            .print-image-card {
+                border: 1px solid #111;
+                padding: 3px;
+                min-height: 78px;
+                page-break-inside: avoid;
+            }
+
+            .print-image-title {
+                font-size: 7px;
+                font-weight: 900;
+                margin-bottom: 2px;
+                line-height: 1.2;
+            }
+
+            .print-image-card img {
+                width: 100%;
+                height: 70px;
+                object-fit: contain;
+                border: 1px solid #999;
+            }
+
+            .print-image-empty {
+                height: 70px;
+                border: 1px dashed #999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #777;
+                font-size: 7px;
+                font-weight: 900;
+                text-align: center;
+            }
+
+            .print-sign-area {
+                margin-top: 8px;
+            }
+
+            .sign-table {
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: fixed;
+                font-size: 9px;
+            }
+
+            .sign-table td {
+                border: 1px solid #111;
+                height: 34px;
+                text-align: center;
+                padding: 3px;
+            }
+
+            .sign-label {
+                background: #F2F2F2;
+                font-weight: 900;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="top-bar">
+        <div class="top-left">
+            <div class="brand">PSK Group</div>
+            <div class="divider"></div>
+            <div class="system-title">AQI (Assembly Quality Inspection) System</div>
+        </div>
+        <div class="top-right">
+            <span id="headerDate">2026.05.08</span>
+            <span class="version-pill">v0.3.9.3</span>
+        </div>
+    </header>
+
+    <nav class="tab-nav">
+        <a class="tab-item" href="dashboard.html">🏠 메인 대시보드</a>
+        <a class="tab-item active" href="torque.html">🔧 Torque Check</a>
+        <div class="tab-item">📋 작업 이력</div>
+        <div class="tab-item">⚙️ 관리자</div>
+    </nav>
+
+    <main class="main">
+        <section class="screen active" id="entryScreen">
+            <section class="page-head">
+                <div>
+                    <div class="breadcrumb">HOME &gt; Torque Check &gt; 작업 정보 입력</div>
+                    <h1 class="page-title">Torque Check</h1>
+                    <div class="page-desc">토크 측정 전 WO / Model / Module / 작업자 정보를 입력합니다.</div>
+                </div>
+                <div class="status-mini"><span class="status-dot"></span>입력 화면 정상</div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-header">
+                    <div>
+                        <div class="panel-title">작업 정보 입력</div>
+                        <div class="panel-subtitle">필수 정보 입력 후 Torque Check Sheet로 이동합니다.</div>
+                    </div>
+                    <div class="step-badge">STEP 1</div>
+                </div>
+
+                <div class="panel-body">
+                    <div class="form-grid">
+                        <div class="field">
+                            <div class="field-label">WO <span class="required">*</span></div>
+                            <div class="input-row">
+                                <input type="text" id="woInput" placeholder="WC511018">
+                                <button type="button" class="btn btn-search" id="searchBtn">검색</button>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="field-label">Model <span class="required">*</span></div><input type="text"
+                                id="modelInput" placeholder="SUPRA XP">
+                        </div>
+                        <div class="field">
+                            <div class="field-label">Module <span class="required">*</span></div><input type="text"
+                                id="moduleInput" placeholder="EFEM">
+                        </div>
+                        <div class="field">
+                            <div class="field-label">BP <span class="required">*</span></div><input type="text"
+                                id="bpInput" placeholder="이지스">
+                        </div>
+                        <div class="field">
+                            <div class="field-label">Name <span class="required">*</span></div><input type="text"
+                                id="nameInput" placeholder="홍길동">
+                        </div>
+                        <div class="field">
+                            <div class="field-label">Inspection <span class="required">*</span></div>
+                            <div class="type-toggle">
+                                <button type="button" class="toggle-btn active" data-value="1차">1차</button>
+                                <button type="button" class="toggle-btn" data-value="2차">2차</button>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="field-label">Fixture ID</div><input type="text" id="fixtureInput"
+                                placeholder="F-01">
+                        </div>
+                        <div class="field">
+                            <div class="field-label">Station</div><input type="text" id="stationInput"
+                                placeholder="Main Torque Station">
+                        </div>
+                        <div class="field">
+                            <div class="field-label">Memo</div><input type="text" id="memoInput" placeholder="필요 시 메모">
+                        </div>
+                    </div>
+
+                    <div class="summary-strip">
+                        <div class="summary-item">
+                            <div class="summary-label">WO</div>
+                            <div class="summary-value" id="summaryWO">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">MODEL / MODULE</div>
+                            <div class="summary-value" id="summaryModel">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">BP / NAME</div>
+                            <div class="summary-value" id="summaryOperator">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">INSPECTION</div>
+                            <div class="summary-value" id="summaryType">1차</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">FIXTURE / STATION</div>
+                            <div class="summary-value" id="summaryEtc">-</div>
+                        </div>
+                    </div>
+
+                    <div class="notice-line">현재 WO 검색은 예시 데이터 기준입니다. 이후 DB 연동 시 WO 기준으로 Model / Module / BP / Name을 자동
+                        조회하도록 연결합니다.</div>
+                    <div class="autosave-line autoSaveStatus">자동 저장 대기 중</div>
+                    <div class="result-line" id="entryResultLine"></div>
+
+                    <div class="action-bar">
+                        <div class="action-left">
+                            <button type="button" class="btn btn-secondary" id="resetBtn">초기화</button>
+                            <button type="button" class="btn btn-secondary" id="sampleBtn">샘플 입력</button>
+                            <button type="button" class="btn btn-secondary" id="restoreWorkBtn">이전 작업 불러오기</button>
+                            <button type="button" class="btn btn-red" id="clearSavedWorkBtn">저장 작업 초기화</button>
+                        </div>
+                        <div class="action-right">
+                            <button type="button" class="btn btn-secondary" id="backBtn">대시보드</button>
+                            <button type="button" class="btn btn-primary" id="saveBtn">정보 저장</button>
+                            <button type="button" class="btn btn-dark" id="nextBtn">Check Sheet</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <section class="screen" id="sheetScreen">
+            <section class="page-head">
+                <div>
+                    <div class="breadcrumb">HOME &gt; Torque Check &gt; Torque Check Sheet</div>
+                    <h1 class="page-title">Torque Check Sheet</h1>
+                    <div class="page-desc">현재 측정 열을 선택한 뒤 수동 입력 또는 붙여넣기로 측정값을 저장합니다.</div>
+                </div>
+                <div class="status-mini"><span class="status-dot"></span>Sheet 화면 정상</div>
+            </section>
+
+            <div class="print-title-block">
+                <div class="print-title">AQI Torque Check Sheet</div>
+                <div class="print-subtitle">AQI (Assembly Quality Inspection) System · PSK Group</div>
+            </div>
+
+            <div class="sheet-toolbar">
+                <section class="info-card">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">WO</div>
+                            <div class="info-value" id="sheetWO">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">MODEL</div>
+                            <div class="info-value" id="sheetModel">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">MODULE</div>
+                            <div class="info-value" id="sheetModule">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">BP</div>
+                            <div class="info-value" id="sheetBP">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">NAME</div>
+                            <div class="info-value" id="sheetName">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">CHECK ITEM</div>
+                            <div class="info-value">Torque 검사</div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="toolbar-buttons">
+                    <button type="button" class="btn btn-secondary" id="backToEntryBtn">정보 수정</button>
+                    <button type="button" class="btn btn-primary" id="pasteOpenBtn">측정값 붙여넣기</button>
+                    <button type="button" class="btn btn-green" id="completeBtn">작업 완료</button>
+                    <button type="button" class="btn btn-secondary" id="unlockBtn">완료 해제</button>
+                    <button type="button" class="btn btn-orange" id="printBtn">PDF 출력</button>
+                    <button type="button" class="btn btn-green" id="csvBtn">CSV 내보내기</button>
+                </div>
+            </div>
+
+            <div class="print-summary" id="printSummaryText">
+                출력일: - / Total: - / OK: - / NG: - / 미측정: -
+            </div>
+
+            <section class="progress-grid">
+                <div class="metric-card">
+                    <div class="metric-label">TOTAL</div>
+                    <div class="metric-value" id="metricTotal">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">OK</div>
+                    <div class="metric-value ok" id="metricOK">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">NG</div>
+                    <div class="metric-value ng" id="metricNG">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">미측정</div>
+                    <div class="metric-value wait" id="metricWait">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">현재 측정 열</div>
+                    <div class="pm-toggle">
+                        <button type="button" class="pm-btn active" data-pm="pm1">PM1</button>
+                        <button type="button" class="pm-btn" data-pm="pm2">PM2</button>
+                        <button type="button" class="pm-btn" data-pm="pm3">PM3</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="measure-layout">
+                <aside class="current-card">
+                    <div class="current-header">
+                        <div class="current-title">현재 측정 Point</div>
+                        <div class="step-badge" id="currentPmBadge">PM1</div>
+                    </div>
+                    <div class="current-body">
+                        <div class="point-image-box" id="currentImageBox">
+                            <div class="point-image-empty">Check Point 이미지 없음</div>
+                        </div>
+                        <div class="current-main" id="currentPointTitle">-</div>
+                        <div class="current-spec">
+                            <div class="spec-box">
+                                <div class="spec-label">SPEC</div>
+                                <div class="spec-value" id="currentSpec">-</div>
+                            </div>
+                            <div class="spec-box">
+                                <div class="spec-label">허용범위</div>
+                                <div class="spec-value" id="currentRange">-</div>
+                            </div>
+                        </div>
+                        <div class="manual-row">
+                            <input type="text" id="manualValueInput" placeholder="측정값 입력">
+                            <button type="button" class="btn btn-primary" id="manualApplyBtn">입력</button>
+                        </div>
+                        <div class="current-actions">
+                            <button type="button" class="btn btn-secondary" id="prevPointBtn">이전 Point</button>
+                            <button type="button" class="btn btn-dark" id="nextPointBtn">다음 Point</button>
+                            <button type="button" class="btn btn-secondary" id="clearPointBtn">현재값 삭제</button>
+                            <button type="button" class="btn btn-red" id="markNgBtn">NG 표시</button>
+                        </div>
+                        <div class="ble-box">
+                            <strong>BLE 연동 예정:</strong><br>
+                            현재는 수동 입력/붙여넣기 방식입니다. 나중에 토크렌치 수신값이 들어오면 현재 선택된 PM/Point에 자동 입력되도록 연결합니다.
+                        </div>
+                    </div>
+                </aside>
+
+                <section class="table-card">
+                    <div class="table-head">
+                        <div>
+                            <div class="table-title">Torque Point List</div>
+                            <div class="table-sub">샘플 36 Point 기준 · Model/Module별 Master는 추후 관리자 화면에서 관리</div>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>NO</th>
+                                    <th>Check 항목</th>
+                                    <th>Bolt</th>
+                                    <th>Point</th>
+                                    <th>Img</th>
+                                    <th>Spec</th>
+                                    <th>Range</th>
+                                    <th>PM1</th>
+                                    <th>PM2</th>
+                                    <th>PM3</th>
+                                    <th>상태</th>
+                                </tr>
+                            </thead>
+                            <tbody id="torqueTableBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+
+            <div class="print-merged-sheet">
+                <div class="print-merged-title">Torque Check Sheet</div>
+                <table class="print-merged-table">
+                    <thead>
+                        <tr>
+                            <th style="width:4%;">NO</th>
+                            <th style="width:11%;">Check 항목<br>(MCB 위치)</th>
+                            <th style="width:7%;">Bolt Size</th>
+                            <th style="width:16%;">Check Point</th>
+                            <th style="width:8%;">Point</th>
+                            <th style="width:7%;">Spec</th>
+                            <th style="width:8%;">사용 Bolt<br>종류</th>
+                            <th style="width:7%;">체결값</th>
+                            <th style="width:11%;">SUB1<br>(PM1)</th>
+                            <th style="width:11%;">SUB1<br>(PM2)</th>
+                            <th style="width:11%;">SUB2<br>(PM3)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="printMergedBody"></tbody>
+                </table>
+            </div>
+
+            <div class="print-image-section">
+                <div class="print-section-title">Check Point Images</div>
+                <div class="print-image-grid" id="printImageGrid"></div>
+            </div>
+
+            <div class="print-sign-area">
+                <table class="sign-table">
+                    <tr>
+                        <td class="sign-label" style="width:12%;">Prepared by</td>
+                        <td style="width:21%;"></td>
+                        <td class="sign-label" style="width:12%;">Checked by</td>
+                        <td style="width:21%;"></td>
+                        <td class="sign-label" style="width:12%;">Approved by</td>
+                        <td style="width:22%;"></td>
+                    </tr>
+                    <tr>
+                        <td class="sign-label">Date</td>
+                        <td></td>
+                        <td class="sign-label">Date</td>
+                        <td></td>
+                        <td class="sign-label">Date</td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="autosave-line autoSaveStatus">자동 저장 대기 중</div>
+            <div class="completion-line" id="completionStatusLine">작업 진행 중 · 전체 측정 완료 후 [작업 완료]를 눌러주세요.</div>
+            <div class="result-line" id="sheetResultLine"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <span>PSK Group · AQI (Assembly Quality Inspection) System</span>
+        <span>Torque Check · v0.3.9.3 · 2026-05-08</span>
+    </footer>
+
+    <div class="modal-backdrop" id="pasteModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">측정값 일괄 붙여넣기</div>
+                <button type="button" class="btn btn-secondary" id="pasteCloseBtn">닫기</button>
+            </div>
+            <div class="modal-body">
+                <div class="paste-help">
+                    현재 선택된 측정 열(<strong id="pastePmText">PM1</strong>)에 측정값을 일괄 적용합니다.<br>
+                    토크렌치 프로그램, CSV, 엑셀에서 복사한 데이터를 붙여넣고 파싱 방식을 선택하세요.
+                </div>
+                <div class="paste-options">
+                    <div>
+                        <div class="paste-option-label">파싱 방식</div>
+                        <select id="pasteParseMode">
+                            <option value="VALUE_ONLY">한 줄에 측정값만 있음</option>
+                            <option value="LAST_NUMBER">각 줄의 마지막 숫자 사용</option>
+                            <option value="FIRST_NUMBER">각 줄의 첫 번째 숫자 사용</option>
+                            <option value="COLUMN">CSV/엑셀 지정 열 사용</option>
+                        </select>
+                    </div>
+                    <div>
+                        <div class="paste-option-label">열 번호</div><input type="text" id="pasteColumnNo" value="4"
+                            placeholder="예: 4">
+                    </div>
+                    <div>
+                        <div class="paste-option-label">시작 위치</div>
+                        <select id="pasteStartMode">
+                            <option value="CURRENT">현재 Point부터</option>
+                            <option value="FIRST">Point 1부터</option>
+                        </select>
+                    </div>
+                    <div>
+                        <div class="paste-option-label">기존값 처리</div>
+                        <select id="pasteOverwriteMode">
+                            <option value="OVERWRITE">기존값 덮어쓰기</option>
+                            <option value="EMPTY_ONLY">빈 칸만 입력</option>
+                        </select>
+                    </div>
+                </div>
+
+                <textarea id="pasteTextArea" placeholder="예 1: 측정값만 있는 경우
+25.1
+25.0
+24.9
+
+예 2: CSV/엑셀 복사 데이터
+1,2026-05-08,10:31:22,25.1,kgf.cm
+2,2026-05-08,10:31:30,25.0,kgf.cm"></textarea>
+
+                <div class="notice-line" id="pastePreview">붙여넣기 후 [미리보기]를 누르면 적용 대상과 OK/NG를 확인합니다.</div>
+                <div class="paste-preview-box" id="pastePreviewBox" style="display:none;">
+                    <table class="paste-preview-table">
+                        <thead>
+                            <tr>
+                                <th>대상</th>
+                                <th>측정값</th>
+                                <th>Spec</th>
+                                <th>판정</th>
+                                <th>처리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pastePreviewBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <div class="action-left">
+                    <button type="button" class="btn btn-secondary" id="pasteSampleBtn">샘플값</button>
+                    <button type="button" class="btn btn-secondary" id="pastePreviewBtn">미리보기</button>
+                </div>
+                <div class="action-right">
+                    <button type="button" class="btn btn-primary" id="pasteApplyBtn">미리보기 결과 적용</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const APP_VERSION = 'v0.3.9.3'
+        const UNIT = 'kgf·cm';
+        const TOLERANCE_PERCENT = 1;
+
+        const STORAGE_KEYS = {
+            entry: 'aqi_torque_entry',
+            rows: 'aqi_torque_rows',
+            currentPm: 'aqi_torque_current_pm',
+            currentIndex: 'aqi_torque_current_index',
+            screen: 'aqi_torque_screen',
+            completed: 'aqi_torque_completed',
+            completedAt: 'aqi_torque_completed_at',
+            savedAt: 'aqi_torque_saved_at'
+        };
+
+        const MOCK_WO_DATA = {
+            "WC511018": { model: "SUPRA XP", module: "EFEM", bp: "이지스", name: "홍길동", fixture: "F-01", station: "Main Torque Station" },
+            "WC511019": { model: "SUPRA N", module: "VAC", bp: "한빛테크", name: "김철수", fixture: "F-02", station: "Sub Torque Station" }
+        };
+
+        function createEmptyMeasurement() {
+            return { value: null, result: 'WAIT', source: null, measuredAt: null };
+        }
+
+        function createSampleTorqueMaster() {
+            const rows = [];
+            const groups = [
+                { no: 1, item: 'FCIP Source CH1', bolt: 'Part Bolt', spec: 25, imagePath: '../assets/torque/SUPRA_XP/EFEM/fcip_source_ch1.png' },
+                { no: 2, item: 'FCIP Source CH2', bolt: 'Part Bolt', spec: 25, imagePath: '../assets/torque/SUPRA_XP/EFEM/fcip_source_ch2.png' },
+                { no: 3, item: 'FCIP Source CH3', bolt: 'Part Bolt', spec: 25, imagePath: '../assets/torque/SUPRA_XP/EFEM/fcip_source_ch3.png' },
+                { no: 4, item: 'FCIP Source CH4', bolt: 'Part Bolt', spec: 25, imagePath: '../assets/torque/SUPRA_XP/EFEM/fcip_source_ch4.png' },
+                { no: 5, item: 'RF Generator CH1', bolt: 'Part Bolt', spec: 18, imagePath: '../assets/torque/SUPRA_XP/EFEM/rf_generator_ch1.png' },
+                { no: 6, item: 'RF Generator CH2', bolt: 'Part Bolt', spec: 18, imagePath: '../assets/torque/SUPRA_XP/EFEM/rf_generator_ch2.png' }
+            ];
+
+            groups.forEach(group => {
+                for (let i = 1; i <= 6; i++) {
+                    const min = group.spec * (1 - TOLERANCE_PERCENT / 100);
+                    const max = group.spec * (1 + TOLERANCE_PERCENT / 100);
+                    rows.push({
+                        id: `${group.no}-${i}`,
+                        no: group.no,
+                        item: group.item,
+                        boltSize: group.bolt,
+                        point: `Point ${i}`,
+                        specValue: group.spec,
+                        unit: UNIT,
+                        tolerancePercent: TOLERANCE_PERCENT,
+                        minValue: Number(min.toFixed(2)),
+                        maxValue: Number(max.toFixed(2)),
+                        imagePath: group.imagePath,
+                        measurements: { pm1: createEmptyMeasurement(), pm2: createEmptyMeasurement(), pm3: createEmptyMeasurement() }
+                    });
+                }
+            });
+            return rows;
+        }
+
+        let torqueRows = createSampleTorqueMaster();
+        let entryData = null;
+        let inspectionType = '1차';
+        let currentPm = 'pm1';
+        let currentIndex = 0;
+        let lastPastePreviewRows = [];
+        let autoSaveTimer = null;
+        let suppressAutoSave = false;
+        let isCompleted = false;
+        let completedAt = null;
+
+        const entryScreen = document.getElementById('entryScreen');
+        const sheetScreen = document.getElementById('sheetScreen');
+
+        const woInput = document.getElementById('woInput');
+        const modelInput = document.getElementById('modelInput');
+        const moduleInput = document.getElementById('moduleInput');
+        const bpInput = document.getElementById('bpInput');
+        const nameInput = document.getElementById('nameInput');
+        const fixtureInput = document.getElementById('fixtureInput');
+        const stationInput = document.getElementById('stationInput');
+        const memoInput = document.getElementById('memoInput');
+
+        const summaryWO = document.getElementById('summaryWO');
+        const summaryModel = document.getElementById('summaryModel');
+        const summaryOperator = document.getElementById('summaryOperator');
+        const summaryType = document.getElementById('summaryType');
+        const summaryEtc = document.getElementById('summaryEtc');
+
+        const entryResultLine = document.getElementById('entryResultLine');
+        const sheetResultLine = document.getElementById('sheetResultLine');
+
+        const toggleButtons = Array.from(document.querySelectorAll('.toggle-btn'));
+        const pmButtons = Array.from(document.querySelectorAll('.pm-btn'));
+
+        const torqueTableBody = document.getElementById('torqueTableBody');
+        const tableWrap = document.querySelector('.table-wrap');
+        const manualValueInput = document.getElementById('manualValueInput');
+
+        const currentPmBadge = document.getElementById('currentPmBadge');
+        const currentPointTitle = document.getElementById('currentPointTitle');
+        const currentSpec = document.getElementById('currentSpec');
+        const currentRange = document.getElementById('currentRange');
+        const currentImageBox = document.getElementById('currentImageBox');
+        const printImageGrid = document.getElementById('printImageGrid');
+        const printMergedBody = document.getElementById('printMergedBody');
+
+        const pasteModal = document.getElementById('pasteModal');
+        const pasteTextArea = document.getElementById('pasteTextArea');
+        const pastePreview = document.getElementById('pastePreview');
+        const pastePreviewBox = document.getElementById('pastePreviewBox');
+        const pastePreviewBody = document.getElementById('pastePreviewBody');
+        const pastePmText = document.getElementById('pastePmText');
+        const pasteParseMode = document.getElementById('pasteParseMode');
+        const pasteColumnNo = document.getElementById('pasteColumnNo');
+        const pasteStartMode = document.getElementById('pasteStartMode');
+        const pasteOverwriteMode = document.getElementById('pasteOverwriteMode');
+        const autoSaveStatusEls = Array.from(document.querySelectorAll('.autoSaveStatus'));
+        const completionStatusLine = document.getElementById('completionStatusLine');
+        const completeBtn = document.getElementById('completeBtn');
+        const unlockBtn = document.getElementById('unlockBtn');
+
+        function formatDateTime(value) {
+            const date = value ? new Date(value) : new Date();
+            if (Number.isNaN(date.getTime())) return '-';
+
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            const hh = String(date.getHours()).padStart(2, '0');
+            const mm = String(date.getMinutes()).padStart(2, '0');
+            const ss = String(date.getSeconds()).padStart(2, '0');
+
+            return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+        }
+
+        function updateAutoSaveStatus(message, hasData) {
+            autoSaveStatusEls.forEach(el => {
+                el.textContent = message;
+                el.classList.toggle('has-data', !!hasData);
+            });
+        }
+
+        function hasSavedWork() {
+            return !!localStorage.getItem(STORAGE_KEYS.entry) || !!localStorage.getItem(STORAGE_KEYS.rows);
+        }
+
+        function safeJsonParse(text, fallback) {
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                return fallback;
+            }
+        }
+
+        function autoSaveWork(screenName) {
+            if (suppressAutoSave) return;
+
+            const nowIso = new Date().toISOString();
+            const entry = getFormData();
+
+            localStorage.setItem(STORAGE_KEYS.entry, JSON.stringify(entry));
+            localStorage.setItem(STORAGE_KEYS.rows, JSON.stringify(torqueRows));
+            localStorage.setItem(STORAGE_KEYS.currentPm, currentPm);
+            localStorage.setItem(STORAGE_KEYS.currentIndex, String(currentIndex));
+            localStorage.setItem(STORAGE_KEYS.screen, screenName || (sheetScreen.classList.contains('active') ? 'sheet' : 'entry'));
+            localStorage.setItem(STORAGE_KEYS.completed, isCompleted ? 'true' : 'false');
+            localStorage.setItem(STORAGE_KEYS.completedAt, completedAt || '');
+            localStorage.setItem(STORAGE_KEYS.savedAt, nowIso);
+
+            updateAutoSaveStatus(`자동 저장 완료: ${formatDateTime(nowIso)}`, true);
+        }
+
+        function scheduleAutoSave(screenName) {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(() => {
+                autoSaveWork(screenName);
+            }, 300);
+        }
+
+        function restoreSavedWork() {
+            const savedEntry = safeJsonParse(localStorage.getItem(STORAGE_KEYS.entry), null);
+            const savedRows = safeJsonParse(localStorage.getItem(STORAGE_KEYS.rows), null);
+            const savedPm = localStorage.getItem(STORAGE_KEYS.currentPm) || 'pm1';
+            const savedIndex = parseInt(localStorage.getItem(STORAGE_KEYS.currentIndex), 10);
+            const savedScreen = localStorage.getItem(STORAGE_KEYS.screen) || 'entry';
+            const savedCompleted = localStorage.getItem(STORAGE_KEYS.completed) === 'true';
+            const savedCompletedAt = localStorage.getItem(STORAGE_KEYS.completedAt) || null;
+            const savedAt = localStorage.getItem(STORAGE_KEYS.savedAt);
+
+            if (!savedEntry && !Array.isArray(savedRows)) {
+                showEntryResult('복원할 저장 작업이 없습니다.', false);
+                updateAutoSaveStatus('저장된 작업 없음', false);
+                return false;
+            }
+
+            suppressAutoSave = true;
+
+            if (savedEntry) {
+                entryData = savedEntry;
+                woInput.value = savedEntry.wo || '';
+                modelInput.value = savedEntry.model || '';
+                moduleInput.value = savedEntry.module || '';
+                bpInput.value = savedEntry.bp || '';
+                nameInput.value = savedEntry.name || '';
+                fixtureInput.value = savedEntry.fixtureId || '';
+                stationInput.value = savedEntry.station || '';
+                memoInput.value = savedEntry.memo || '';
+                inspectionType = savedEntry.inspectionType || '1차';
+
+                toggleButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.getAttribute('data-value') === inspectionType);
+                });
+            }
+
+            if (Array.isArray(savedRows) && savedRows.length > 0) {
+                torqueRows = normalizeRestoredRows(savedRows);
+            }
+
+            currentPm = ['pm1', 'pm2', 'pm3'].includes(savedPm) ? savedPm : 'pm1';
+            pmButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-pm') === currentPm);
+            });
+
+            currentIndex = Number.isInteger(savedIndex)
+                ? Math.max(0, Math.min(savedIndex, torqueRows.length - 1))
+                : 0;
+
+            isCompleted = savedCompleted;
+            completedAt = savedCompletedAt;
+
+            updateEntrySummary();
+            applySheetInfo();
+            renderTorqueTable();
+            updateCurrentPoint();
+            updateMetrics();
+            updateCompletionUI();
+
+            if (savedScreen === 'sheet' && entryData && entryData.wo) {
+                entryScreen.classList.remove('active');
+                sheetScreen.classList.add('active');
+                showSheetResult('이전 작업을 복원했습니다.', true);
+            } else {
+                sheetScreen.classList.remove('active');
+                entryScreen.classList.add('active');
+                showEntryResult('이전 작업을 복원했습니다.', true);
+            }
+
+            suppressAutoSave = false;
+            updateAutoSaveStatus(`저장 작업 복원 완료: ${formatDateTime(savedAt)}`, true);
+            return true;
+        }
+
+        function normalizeRestoredRows(rows) {
+            return rows.map(row => {
+                const baseMeasurements = row.measurements || {};
+
+                return {
+                    ...row,
+                    measurements: {
+                        pm1: normalizeMeasurement(baseMeasurements.pm1),
+                        pm2: normalizeMeasurement(baseMeasurements.pm2),
+                        pm3: normalizeMeasurement(baseMeasurements.pm3)
+                    }
+                };
+            });
+        }
+
+        function normalizeMeasurement(measurement) {
+            if (!measurement) return createEmptyMeasurement();
+
+            return {
+                value: measurement.value ?? null,
+                result: measurement.result || 'WAIT',
+                source: measurement.source || null,
+                measuredAt: measurement.measuredAt || null
+            };
+        }
+
+        function clearSavedWork() {
+            if (!confirm('저장된 Torque 작업 데이터를 초기화하시겠습니까?\\n현재 화면 입력값도 초기화됩니다.')) {
+                return;
+            }
+
+            Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+
+            suppressAutoSave = true;
+            torqueRows = createSampleTorqueMaster();
+            currentPm = 'pm1';
+            currentIndex = 0;
+            entryData = null;
+            isCompleted = false;
+            completedAt = null;
+
+            pmButtons.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-pm') === 'pm1'));
+            resetForm();
+            Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+            suppressAutoSave = false;
+            renderTorqueTable();
+            updateCurrentPoint();
+            updateMetrics();
+
+            sheetScreen.classList.remove('active');
+            entryScreen.classList.add('active');
+
+            updateCompletionUI();
+            updateAutoSaveStatus('저장된 작업 없음', false);
+            showEntryResult('저장 작업을 초기화했습니다.', true);
+        }
+
+        function setHeaderDate() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            document.getElementById('headerDate').textContent = `${y}.${m}.${d}`;
+        }
+
+        function updateEntrySummary() {
+            const wo = woInput.value.trim();
+            const model = modelInput.value.trim();
+            const module = moduleInput.value.trim();
+            const bp = bpInput.value.trim();
+            const name = nameInput.value.trim();
+            const fixture = fixtureInput.value.trim();
+            const station = stationInput.value.trim();
+
+            summaryWO.textContent = wo || '-';
+            summaryModel.textContent = (model || module) ? `${model || '-'} / ${module || '-'}` : '-';
+            summaryOperator.textContent = (bp || name) ? `${bp || '-'} / ${name || '-'}` : '-';
+            summaryType.textContent = inspectionType || '-';
+            summaryEtc.textContent = (fixture || station) ? `${fixture || '-'} / ${station || '-'}` : '-';
+        }
+
+        function bindEntryToggle() {
+            toggleButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    toggleButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    inspectionType = this.getAttribute('data-value') || '1차';
+                    updateEntrySummary();
+                });
+            });
+        }
+
+        function searchWO() {
+            const wo = woInput.value.trim().toUpperCase();
+            if (!wo) { showEntryResult('WO를 입력해주세요.', false); woInput.focus(); return; }
+
+            const data = MOCK_WO_DATA[wo];
+            if (!data) { showEntryResult('등록된 예시 WO가 없습니다. 수동 입력으로 진행하세요.', false); updateEntrySummary(); return; }
+
+            woInput.value = wo;
+            modelInput.value = data.model || '';
+            moduleInput.value = data.module || '';
+            bpInput.value = data.bp || '';
+            nameInput.value = data.name || '';
+            fixtureInput.value = data.fixture || '';
+            stationInput.value = data.station || '';
+            updateEntrySummary();
+            autoSaveWork('entry');
+            showEntryResult(`WO [${wo}] 조회 완료`, true);
+        }
+
+        function fillSample() {
+            woInput.value = 'WC511018';
+            modelInput.value = 'SUPRA XP';
+            moduleInput.value = 'EFEM';
+            bpInput.value = '이지스';
+            nameInput.value = '홍길동';
+            fixtureInput.value = 'F-01';
+            stationInput.value = 'Main Torque Station';
+            memoInput.value = '';
+            inspectionType = '1차';
+            isCompleted = false;
+            completedAt = null;
+            toggleButtons.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-value') === '1차'));
+            updateEntrySummary();
+            autoSaveWork('entry');
+            showEntryResult('샘플값이 입력되었습니다.', true);
+        }
+
+        function resetForm() {
+            [woInput, modelInput, moduleInput, bpInput, nameInput, fixtureInput, stationInput, memoInput].forEach(el => el.value = '');
+            inspectionType = '1차';
+            isCompleted = false;
+            completedAt = null;
+            toggleButtons.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-value') === '1차'));
+            entryResultLine.className = 'result-line';
+            entryResultLine.textContent = '';
+            updateEntrySummary();
+            autoSaveWork('entry');
+        }
+
+        function getFormData() {
+            return {
+                wo: woInput.value.trim(),
+                model: modelInput.value.trim(),
+                module: moduleInput.value.trim(),
+                bp: bpInput.value.trim(),
+                name: nameInput.value.trim(),
+                inspectionType,
+                fixtureId: fixtureInput.value.trim(),
+                station: stationInput.value.trim(),
+                memo: memoInput.value.trim(),
+                savedAt: new Date().toISOString()
+            };
+        }
+
+        function validateForm() {
+            const data = getFormData();
+            if (!data.wo) return { ok: false, message: 'WO를 입력해주세요.', target: woInput };
+            if (!data.model) return { ok: false, message: 'Model을 입력해주세요.', target: modelInput };
+            if (!data.module) return { ok: false, message: 'Module을 입력해주세요.', target: moduleInput };
+            if (!data.bp) return { ok: false, message: 'BP를 입력해주세요.', target: bpInput };
+            if (!data.name) return { ok: false, message: 'Name을 입력해주세요.', target: nameInput };
+            return { ok: true, data };
+        }
+
+        function saveFormData() {
+            const check = validateForm();
+            if (!check.ok) { showEntryResult(check.message, false); check.target.focus(); return false; }
+            entryData = check.data;
+            sessionStorage.setItem('aqi_torque_entry', JSON.stringify(entryData));
+            autoSaveWork('entry');
+            showEntryResult('작업 정보가 저장되었습니다.', true);
+            return true;
+        }
+
+        function goSheet() {
+            const saved = saveFormData();
+            if (!saved) return;
+            applySheetInfo();
+            renderTorqueTable();
+            updateCurrentPoint();
+            updateMetrics();
+            entryScreen.classList.remove('active');
+            sheetScreen.classList.add('active');
+            autoSaveWork('sheet');
+            updateCompletionUI();
+            showSheetResult('Torque Check Sheet 화면으로 이동했습니다.', true);
+        }
+
+        function goEntry() {
+            sheetScreen.classList.remove('active');
+            entryScreen.classList.add('active');
+            autoSaveWork('entry');
+            updateCompletionUI();
+            showEntryResult('작업 정보를 수정할 수 있습니다.', true);
+        }
+
+        function applySheetInfo() {
+            const data = entryData || getFormData();
+            document.getElementById('sheetWO').textContent = data.wo || '-';
+            document.getElementById('sheetModel').textContent = data.model || '-';
+            document.getElementById('sheetModule').textContent = data.module || '-';
+            document.getElementById('sheetBP').textContent = data.bp || '-';
+            document.getElementById('sheetName').textContent = data.name || '-';
+        }
+
+        function showEntryResult(message, isSuccess) {
+            entryResultLine.textContent = message;
+            entryResultLine.className = 'result-line show ' + (isSuccess ? 'success' : 'error');
+        }
+
+        function showSheetResult(message, isSuccess) {
+            sheetResultLine.textContent = message;
+            sheetResultLine.className = 'result-line show ' + (isSuccess ? 'success' : 'error');
+        }
+
+        function renderTorqueTable() {
+            torqueTableBody.innerHTML = '';
+
+            torqueRows.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                const isGroupStart = index === 0 || torqueRows[index - 1].no !== row.no;
+                const isActive = index === currentIndex;
+                if (isGroupStart) tr.classList.add('group-start');
+                if (isActive) tr.classList.add('active-row');
+
+                tr.innerHTML = `
+          <td>${row.no}</td>
+          <td class="td-left">${escapeHtml(row.item)}</td>
+          <td>${escapeHtml(row.boltSize)}</td>
+          <td><button type="button" class="cell-btn ${isActive ? 'active' : ''}" data-index="${index}">${escapeHtml(row.point)}</button></td>
+          <td>${row.imagePath ? `<button type="button" class="image-link-btn" data-image-index="${index}">보기</button>` : `<span class="image-none">없음</span>`}</td>
+          <td>${row.specValue} ${row.unit}</td>
+          <td>${row.minValue} ~ ${row.maxValue}</td>
+          <td>${renderMeasurementCell(row.measurements.pm1)}</td>
+          <td>${renderMeasurementCell(row.measurements.pm2)}</td>
+          <td>${renderMeasurementCell(row.measurements.pm3)}</td>
+          <td>${renderRowStatus(row)}</td>
+        `;
+                torqueTableBody.appendChild(tr);
+            });
+
+            document.querySelectorAll('.cell-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    currentIndex = Number(this.getAttribute('data-index'));
+                    updateCurrentPoint();
+                    renderTorqueTable();
+                    autoSaveWork('sheet');
+                });
+            });
+
+            document.querySelectorAll('.image-link-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    currentIndex = Number(this.getAttribute('data-image-index'));
+                    updateCurrentPoint();
+                    renderTorqueTable();
+                    autoSaveWork('sheet');
+                    showSheetResult('선택한 Point 이미지를 현재 측정 카드에 표시했습니다.', true);
+                });
+            });
+
+            document.querySelectorAll('.table-row-clickable').forEach(rowEl => {
+                rowEl.addEventListener('click', function (e) {
+                    if (e.target.closest('button')) return;
+
+                    currentIndex = Number(this.getAttribute('data-row-index'));
+                    updateCurrentPoint();
+                    renderTorqueTable();
+                    autoSaveWork('sheet');
+                    showSheetResult('선택한 행을 현재 측정 Point로 설정했습니다.', true);
+                });
+            });
+
+            setTimeout(scrollActiveRowIntoView, 0);
+        }
+
+        function scrollActiveRowIntoView() {
+            const activeRow = torqueTableBody.querySelector('tr.active-row');
+            if (!activeRow || !tableWrap || !sheetScreen.classList.contains('active')) return;
+
+            const rowTop = activeRow.offsetTop;
+            const rowBottom = rowTop + activeRow.offsetHeight;
+            const visibleTop = tableWrap.scrollTop;
+            const visibleBottom = visibleTop + tableWrap.clientHeight;
+
+            if (rowTop < visibleTop) {
+                tableWrap.scrollTop = Math.max(0, rowTop - 8);
+            } else if (rowBottom > visibleBottom) {
+                tableWrap.scrollTop = rowBottom - tableWrap.clientHeight + 8;
+            }
+        }
+
+        function renderMeasurementCell(m) {
+            if (!m || m.result === 'WAIT' || m.value === null) return `<div class="cell-result wait">미측정</div>`;
+            const cls = m.result === 'OK' ? 'ok' : 'ng';
+            const sourceText = m.source ? m.source : '-';
+            return `<div class="cell-result ${cls}">${m.value}<br><span class="result-small">${m.result} · ${sourceText}</span></div>`;
+        }
+
+        function renderRowStatus(row) {
+            const results = [row.measurements.pm1.result, row.measurements.pm2.result, row.measurements.pm3.result];
+            if (results.includes('NG')) return `<span class="status-tag ng">NG</span>`;
+            if (results.every(v => v === 'OK')) return `<span class="status-tag ok">완료</span>`;
+            if (currentIndex >= 0 && torqueRows[currentIndex].id === row.id) return `<span class="status-tag ing">진행</span>`;
+            return `<span class="status-tag wait">대기</span>`;
+        }
+
+        function renderCurrentImage(row) {
+            if (!row || !row.imagePath) {
+                currentImageBox.innerHTML = '<div class="point-image-empty">Check Point 이미지 없음</div>';
+                return;
+            }
+            currentImageBox.innerHTML = `
+        <img src="${escapeHtml(row.imagePath)}" alt="${escapeHtml(row.item)} ${escapeHtml(row.point)}"
+          onerror="this.parentElement.innerHTML='<div class=&quot;point-image-empty&quot;>이미지 파일을 찾을 수 없습니다.<br>assets/torque 폴더를 확인하세요.</div>';">
+      `;
+        }
+
+        function updateCurrentPoint() {
+            const row = torqueRows[currentIndex];
+            if (!row) return;
+            currentPmBadge.textContent = currentPm.toUpperCase();
+            currentPointTitle.textContent = `${row.item} / ${row.boltSize} / ${row.point}`;
+            currentSpec.textContent = `${row.specValue} ${row.unit}`;
+            currentRange.textContent = `${row.minValue} ~ ${row.maxValue}`;
+            renderCurrentImage(row);
+            pastePmText.textContent = currentPm.toUpperCase();
+        }
+
+        function calculateMetrics() {
+            const total = torqueRows.length * 3;
+            let ok = 0, ng = 0, wait = 0;
+            torqueRows.forEach(row => {
+                ['pm1', 'pm2', 'pm3'].forEach(pm => {
+                    const result = row.measurements[pm].result;
+                    if (result === 'OK') ok++;
+                    else if (result === 'NG') ng++;
+                    else wait++;
+                });
+            });
+            return { total, ok, ng, wait };
+        }
+
+        function sanitizeFileNamePart(value) {
+            return String(value || '')
+                .trim()
+                .replace(/[\\/:*?"<>|]/g, '_')
+                .replace(/\s+/g, '_')
+                .replace(/_+/g, '_')
+                .replace(/^_+|_+$/g, '') || 'NA';
+        }
+
+        function buildOutputBaseName() {
+            return [
+                entryData?.wo,
+                entryData?.model,
+                entryData?.module,
+                entryData?.bp
+            ].map(sanitizeFileNamePart).join('_');
+        }
+
+        function renderPrintMergedTable() {
+            if (!printMergedBody) return;
+
+            const groups = [];
+            const groupMap = new Map();
+
+            torqueRows.forEach(row => {
+                if (!groupMap.has(row.no)) {
+                    groupMap.set(row.no, {
+                        no: row.no,
+                        item: row.item,
+                        boltSize: row.boltSize,
+                        specValue: row.specValue,
+                        unit: row.unit,
+                        minValue: row.minValue,
+                        maxValue: row.maxValue,
+                        imagePath: row.imagePath,
+                        rows: []
+                    });
+                    groups.push(groupMap.get(row.no));
+                }
+                groupMap.get(row.no).rows.push(row);
+            });
+
+            const htmlRows = [];
+
+            groups.forEach(group => {
+                const rowSpan = group.rows.length;
+
+                group.rows.forEach((row, idx) => {
+                    const first = idx === 0;
+
+                    htmlRows.push(`
+            <tr>
+              ${first ? `<td rowspan="${rowSpan}">${group.no}</td>` : ''}
+              ${first ? `<td rowspan="${rowSpan}" class="p-left"><strong>${escapeHtml(group.item)}</strong></td>` : ''}
+              ${first ? `<td rowspan="${rowSpan}">${escapeHtml(group.boltSize)}</td>` : ''}
+              ${first ? `<td rowspan="${rowSpan}" class="print-img-cell">${renderPrintImageCell(group)}</td>` : ''}
+              <td>${escapeHtml(row.point)}</td>
+              ${first ? `<td rowspan="${rowSpan}">${group.specValue}<br><span class="p-small">${escapeHtml(group.unit)}</span></td>` : ''}
+              ${first ? `<td rowspan="${rowSpan}">${escapeHtml(group.boltSize)}</td>` : ''}
+              ${first ? `<td rowspan="${rowSpan}">${group.specValue}<br><span class="p-small">${escapeHtml(group.unit)}</span></td>` : ''}
+              <td class="${measurementPrintClass(row.measurements.pm1)}">${renderPrintMeasurement(row.measurements.pm1)}</td>
+              <td class="${measurementPrintClass(row.measurements.pm2)}">${renderPrintMeasurement(row.measurements.pm2)}</td>
+              <td class="${measurementPrintClass(row.measurements.pm3)}">${renderPrintMeasurement(row.measurements.pm3)}</td>
+            </tr>
+          `);
+                });
+            });
+
+            printMergedBody.innerHTML = htmlRows.join('');
+        }
+
+        function renderPrintImageCell(group) {
+            if (!group.imagePath) {
+                return '<div class="print-img-empty">이미지 없음</div>';
+            }
+
+            return `
+        <img
+          src="${escapeHtml(group.imagePath)}"
+          alt="${escapeHtml(group.item)}"
+          onerror="this.outerHTML='<div class=&quot;print-img-empty&quot;>이미지 파일 없음</div>';"
+        >
+      `;
+        }
+
+        function measurementPrintClass(m) {
+            if (!m || m.result === 'WAIT' || m.value === null) return 'p-wait';
+            if (m.result === 'OK') return 'p-ok';
+            if (m.result === 'NG') return 'p-ng';
+            return 'p-wait';
+        }
+
+        function renderPrintMeasurement(m) {
+            if (!m || m.result === 'WAIT' || m.value === null) return '-';
+
+            return `
+        <div class="p-meas">${escapeHtml(m.value)}</div>
+        <div class="p-small">${escapeHtml(m.result)}</div>
+      `;
+        }
+
+        function renderPrintImages() {
+            if (!printImageGrid) return;
+
+            const uniqueMap = new Map();
+
+            torqueRows.forEach(row => {
+                if (!row.imagePath) return;
+                const key = row.imagePath;
+                if (!uniqueMap.has(key)) {
+                    uniqueMap.set(key, {
+                        title: `${row.no}. ${row.item} / ${row.boltSize}`,
+                        imagePath: row.imagePath
+                    });
+                }
+            });
+
+            if (uniqueMap.size === 0) {
+                printImageGrid.innerHTML = '<div class="print-image-empty">등록된 Check Point 이미지가 없습니다.</div>';
+                return;
+            }
+
+            printImageGrid.innerHTML = Array.from(uniqueMap.values()).map(item => `
+        <div class="print-image-card">
+          <div class="print-image-title">${escapeHtml(item.title)}</div>
+          <img
+            src="${escapeHtml(item.imagePath)}"
+            alt="${escapeHtml(item.title)}"
+            onerror="this.outerHTML='<div class=&quot;print-image-empty&quot;>이미지 파일 없음</div>';"
+          >
+        </div>
+      `).join('');
+        }
+
+        function updatePrintSummary(metrics) {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('printSummaryText').textContent =
+                `출력일: ${y}-${m}-${d} ${hh}:${mm} / Total: ${metrics.total} / OK: ${metrics.ok} / NG: ${metrics.ng} / 미측정: ${metrics.wait}`;
+        }
+
+        function updateMetrics() {
+            const metrics = calculateMetrics();
+            document.getElementById('metricTotal').textContent = metrics.total;
+            document.getElementById('metricOK').textContent = metrics.ok;
+            document.getElementById('metricNG').textContent = metrics.ng;
+            document.getElementById('metricWait').textContent = metrics.wait;
+            updatePrintSummary(metrics);
+            renderPrintImages();
+            renderPrintMergedTable();
+            updateCompletionUI();
+            sessionStorage.setItem('aqi_torque_rows', JSON.stringify(torqueRows));
+        }
+
+        function updateCompletionUI() {
+            if (!completionStatusLine) return;
+
+            const metrics = calculateMetrics();
+            const lockedControls = [
+                document.getElementById('pasteOpenBtn'),
+                document.getElementById('backToEntryBtn'),
+                document.getElementById('manualApplyBtn'),
+                document.getElementById('clearPointBtn'),
+                document.getElementById('markNgBtn')
+            ];
+
+            const entryControls = [
+                woInput, modelInput, moduleInput, bpInput, nameInput,
+                fixtureInput, stationInput, memoInput,
+                document.getElementById('searchBtn'),
+                document.getElementById('saveBtn'),
+                document.getElementById('nextBtn')
+            ];
+
+            lockedControls.forEach(el => {
+                if (el) el.disabled = isCompleted;
+            });
+
+            entryControls.forEach(el => {
+                if (el) el.disabled = isCompleted;
+            });
+
+            toggleButtons.forEach(btn => btn.disabled = isCompleted);
+
+            if (completeBtn) {
+                completeBtn.disabled = isCompleted;
+                completeBtn.style.display = isCompleted ? 'none' : '';
+                completeBtn.title = metrics.wait > 0
+                    ? `미측정 ${metrics.wait}건이 남아 있습니다.`
+                    : '작업 완료 처리';
+            }
+
+            if (unlockBtn) {
+                unlockBtn.style.display = isCompleted ? '' : 'none';
+            }
+
+            if (manualValueInput) {
+                manualValueInput.disabled = isCompleted;
+            }
+
+            if (isCompleted) {
+                completionStatusLine.className = 'completion-line done';
+                completionStatusLine.textContent = `작업 완료됨 · 완료 시각: ${formatDateTime(completedAt)} · 결과 수정이 잠금 처리되었습니다.`;
+            } else if (metrics.wait === 0) {
+                completionStatusLine.className = 'completion-line';
+                completionStatusLine.textContent = metrics.ng > 0
+                    ? `전체 측정 완료 · NG ${metrics.ng}건 존재 · 확인 후 [작업 완료]를 눌러주세요.`
+                    : '전체 측정 완료 · [작업 완료]를 눌러 완료 처리하세요.';
+            } else {
+                completionStatusLine.className = 'completion-line locked';
+                completionStatusLine.textContent = `작업 진행 중 · 미측정 ${metrics.wait}건 남음 · 전체 측정 완료 후 [작업 완료] 가능`;
+            }
+        }
+
+        function focusCompletionMessage() {
+            if (completionStatusLine) {
+                completionStatusLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function completeWork() {
+            const metrics = calculateMetrics();
+
+            if (metrics.wait > 0) {
+                const message = `미측정 ${metrics.wait}건이 남아 있어 작업 완료가 불가합니다.`;
+                alert(message);
+                showSheetResult(message, false);
+                updateCompletionUI();
+                focusCompletionMessage();
+                return;
+            }
+
+            if (metrics.ng > 0) {
+                const ok = confirm(`NG ${metrics.ng}건이 있습니다. 그래도 작업 완료 처리하시겠습니까?`);
+                if (!ok) {
+                    showSheetResult('작업 완료 처리를 취소했습니다.', false);
+                    focusCompletionMessage();
+                    return;
+                }
+            }
+
+            isCompleted = true;
+            completedAt = new Date().toISOString();
+
+            autoSaveWork('sheet');
+            updateCompletionUI();
+            showSheetResult(`작업 완료 처리되었습니다. 완료 시각: ${formatDateTime(completedAt)}`, true);
+            focusCompletionMessage();
+        }
+
+        function unlockWork() {
+            const ok = confirm('완료 상태를 해제하고 측정값 수정을 다시 허용하시겠습니까?');
+            if (!ok) return;
+
+            isCompleted = false;
+            completedAt = null;
+
+            autoSaveWork('sheet');
+            updateCompletionUI();
+            showSheetResult('완료 상태가 해제되었습니다. 측정값 수정이 가능합니다.', true);
+        }
+
+        function ensureEditable() {
+            if (!isCompleted) return true;
+
+            showSheetResult('작업 완료 상태입니다. 수정하려면 [완료 해제]를 먼저 눌러주세요.', false);
+            return false;
+        }
+
+        function bindPmButtons() {
+            pmButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    pmButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentPm = this.getAttribute('data-pm') || 'pm1';
+                    updateCurrentPoint();
+                    renderTorqueTable();
+                    autoSaveWork('sheet');
+                    showSheetResult(`현재 측정 열이 ${currentPm.toUpperCase()}로 변경되었습니다.`, true);
+                });
+            });
+        }
+
+        function applyMeasurement(value, source) {
+            if (!ensureEditable()) return false;
+
+            const row = torqueRows[currentIndex];
+            if (!row) return false;
+            const numericValue = parseFloat(String(value).replace(',', '.'));
+            if (Number.isNaN(numericValue)) { showSheetResult('측정값은 숫자로 입력해주세요.', false); manualValueInput.focus(); return false; }
+
+            const result = numericValue >= row.minValue && numericValue <= row.maxValue ? 'OK' : 'NG';
+            row.measurements[currentPm] = {
+                value: Number(numericValue.toFixed(2)),
+                result,
+                source,
+                measuredAt: new Date().toISOString()
+            };
+
+            renderTorqueTable();
+            updateCurrentPoint();
+            updateMetrics();
+
+            if (result === 'OK') {
+                showSheetResult(`${row.point} / ${currentPm.toUpperCase()} = ${numericValue} ${UNIT} · OK`, true);
+                moveNextPoint();
+            } else {
+                showSheetResult(`${row.point} / ${currentPm.toUpperCase()} = ${numericValue} ${UNIT} · NG`, false);
+                autoSaveWork('sheet');
+            }
+            return true;
+        }
+
+        function applyManualMeasurement() {
+            const value = manualValueInput.value.trim();
+            if (!value) { showSheetResult('측정값을 입력해주세요.', false); manualValueInput.focus(); return; }
+            const ok = applyMeasurement(value, 'MANUAL');
+            if (ok) manualValueInput.value = '';
+        }
+
+        function markCurrentNg() {
+            if (!ensureEditable()) return;
+
+            const row = torqueRows[currentIndex];
+            if (!row) return;
+            row.measurements[currentPm] = { value: null, result: 'NG', source: 'MANUAL', measuredAt: new Date().toISOString() };
+            renderTorqueTable();
+            updateMetrics();
+            autoSaveWork('sheet');
+            showSheetResult(`${row.point} / ${currentPm.toUpperCase()}가 NG로 표시되었습니다.`, false);
+        }
+
+        function clearCurrentMeasurement() {
+            if (!ensureEditable()) return;
+
+            const row = torqueRows[currentIndex];
+            if (!row) return;
+            row.measurements[currentPm] = createEmptyMeasurement();
+            renderTorqueTable();
+            updateMetrics();
+            autoSaveWork('sheet');
+            showSheetResult(`${row.point} / ${currentPm.toUpperCase()} 측정값을 삭제했습니다.`, true);
+        }
+
+        function moveNextPoint() {
+            if (currentIndex < torqueRows.length - 1) {
+                currentIndex++;
+                updateCurrentPoint();
+                renderTorqueTable();
+                autoSaveWork('sheet');
+            }
+        }
+
+        function movePrevPoint() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateCurrentPoint();
+                renderTorqueTable();
+                autoSaveWork('sheet');
+            }
+        }
+
+        function openPasteModal() {
+            if (!ensureEditable()) return;
+
+            pasteTextArea.value = '';
+            pastePreview.textContent = '붙여넣기 후 [미리보기]를 누르면 적용 대상과 OK/NG를 확인합니다.';
+            pastePreviewBox.style.display = 'none';
+            pastePreviewBody.innerHTML = '';
+            lastPastePreviewRows = [];
+            pastePmText.textContent = currentPm.toUpperCase();
+            pasteModal.classList.add('show');
+            setTimeout(() => pasteTextArea.focus(), 50);
+        }
+
+        function closePasteModal() {
+            pasteModal.classList.remove('show');
+        }
+
+        function splitPasteLine(line) {
+            if (line.includes('\t')) return line.split('\t').map(v => v.trim());
+            if (line.includes(',')) return line.split(',').map(v => v.trim());
+            return line.trim().split(/\s+/).map(v => v.trim());
+        }
+
+        function extractNumbersFromText(text) {
+            const matches = String(text || '').match(/-?\d+(?:[.,]\d+)?/g);
+            if (!matches) return [];
+            return matches.map(v => parseFloat(v.replace(',', '.'))).filter(v => !Number.isNaN(v));
+        }
+
+        function extractPasteValues() {
+            const mode = pasteParseMode.value;
+            const columnNo = Math.max(1, parseInt(pasteColumnNo.value, 10) || 1);
+            const lines = String(pasteTextArea.value || '').split(/\r?\n/);
+            const values = [];
+
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (!trimmed) return;
+
+                if (mode === 'VALUE_ONLY') {
+                    const value = parseFloat(trimmed.replace(',', '.'));
+                    if (!Number.isNaN(value)) values.push(value);
+                    return;
+                }
+
+                if (mode === 'COLUMN') {
+                    const cells = splitPasteLine(trimmed);
+                    const target = cells[columnNo - 1] || '';
+                    const nums = extractNumbersFromText(target);
+                    if (nums.length > 0) values.push(nums[0]);
+                    return;
+                }
+
+                const nums = extractNumbersFromText(trimmed);
+                if (nums.length === 0) return;
+                if (mode === 'FIRST_NUMBER') values.push(nums[0]);
+                if (mode === 'LAST_NUMBER') values.push(nums[nums.length - 1]);
+            });
+
+            return values;
+        }
+
+        function buildPastePreview() {
+            const values = extractPasteValues();
+            const startIndex = pasteStartMode.value === 'FIRST' ? 0 : currentIndex;
+            const overwriteMode = pasteOverwriteMode.value;
+            const previewRows = [];
+            let valuePointer = 0;
+
+            for (let i = startIndex; i < torqueRows.length && valuePointer < values.length; i++) {
+                const row = torqueRows[i];
+                const currentMeasurement = row.measurements[currentPm];
+                const hasExisting = currentMeasurement && currentMeasurement.value !== null;
+
+                if (overwriteMode === 'EMPTY_ONLY' && hasExisting) {
+                    previewRows.push({ rowIndex: i, pointText: `${row.item} / ${row.point}`, value: null, specText: `${row.minValue} ~ ${row.maxValue}`, result: '-', action: '기존값 유지', apply: false });
+                    continue;
+                }
+
+                const value = Number(values[valuePointer].toFixed(2));
+                const result = value >= row.minValue && value <= row.maxValue ? 'OK' : 'NG';
+                previewRows.push({ rowIndex: i, pointText: `${row.item} / ${row.point}`, value, specText: `${row.minValue} ~ ${row.maxValue}`, result, action: hasExisting ? '덮어쓰기' : '입력', apply: true });
+                valuePointer++;
+            }
+
+            return {
+                values, previewRows, startIndex,
+                usedCount: previewRows.filter(r => r.apply).length,
+                skippedCount: previewRows.filter(r => !r.apply).length,
+                unusedCount: Math.max(0, values.length - previewRows.filter(r => r.apply).length)
+            };
+        }
+
+        function renderPastePreview() {
+            const result = buildPastePreview();
+            lastPastePreviewRows = result.previewRows;
+            pastePreviewBody.innerHTML = '';
+
+            result.previewRows.slice(0, 100).forEach(row => {
+                const tr = document.createElement('tr');
+                const resultClass = row.result === 'OK' ? 'preview-ok' : row.result === 'NG' ? 'preview-ng' : 'preview-skip';
+                tr.innerHTML = `
+          <td class="td-left">${escapeHtml(row.pointText)}</td>
+          <td>${row.value === null ? '-' : row.value}</td>
+          <td>${escapeHtml(row.specText)}</td>
+          <td class="${resultClass}">${escapeHtml(row.result)}</td>
+          <td>${escapeHtml(row.action)}</td>
+        `;
+                pastePreviewBody.appendChild(tr);
+            });
+
+            pastePreviewBox.style.display = result.previewRows.length > 0 ? 'block' : 'none';
+            const targetRemain = torqueRows.length - result.startIndex;
+            const warning = result.values.length !== targetRemain ? `<br><strong>주의:</strong> 추출값 ${result.values.length}개 / 대상 Point ${targetRemain}개입니다.` : '';
+            pastePreview.innerHTML =
+                `추출된 측정값: <strong>${result.values.length}개</strong><br>` +
+                `적용 예정: <strong>${result.usedCount}건</strong>, 건너뜀: <strong>${result.skippedCount}건</strong>, 남는 값: <strong>${result.unusedCount}개</strong><br>` +
+                `적용 대상: <strong>${currentPm.toUpperCase()}</strong>` + warning;
+
+            if (result.previewRows.length === 0) pastePreview.innerHTML = '적용할 측정값이 없습니다. 붙여넣기 데이터와 파싱 방식을 확인하세요.';
+        }
+
+        function fillPasteSample() {
+            pasteParseMode.value = 'COLUMN';
+            pasteColumnNo.value = '4';
+            pasteStartMode.value = 'CURRENT';
+            pasteOverwriteMode.value = 'OVERWRITE';
+            pasteTextArea.value = [
+                '1,2026-05-08,10:31:22,25.1,kgf.cm',
+                '2,2026-05-08,10:31:30,25.0,kgf.cm',
+                '3,2026-05-08,10:31:38,24.9,kgf.cm',
+                '4,2026-05-08,10:31:45,25.2,kgf.cm',
+                '5,2026-05-08,10:31:53,25.0,kgf.cm',
+                '6,2026-05-08,10:32:01,25.1,kgf.cm'
+            ].join('\n');
+            renderPastePreview();
+        }
+
+        function applyPastePreviewRows() {
+            if (!ensureEditable()) return;
+
+            if (lastPastePreviewRows.length === 0) renderPastePreview();
+            const rowsToApply = lastPastePreviewRows.filter(r => r.apply && r.value !== null);
+            if (rowsToApply.length === 0) { pastePreview.innerHTML = '적용할 미리보기 결과가 없습니다.'; return; }
+
+            let okCount = 0, ngCount = 0, lastAppliedIndex = currentIndex;
+            rowsToApply.forEach(preview => {
+                const row = torqueRows[preview.rowIndex];
+                row.measurements[currentPm] = { value: preview.value, result: preview.result, source: 'PASTE', measuredAt: new Date().toISOString() };
+                if (preview.result === 'OK') okCount++;
+                if (preview.result === 'NG') ngCount++;
+                lastAppliedIndex = preview.rowIndex;
+            });
+
+            currentIndex = Math.min(lastAppliedIndex + 1, torqueRows.length - 1);
+            renderTorqueTable();
+            updateCurrentPoint();
+            updateMetrics();
+            autoSaveWork('sheet');
+            closePasteModal();
+            showSheetResult(`${currentPm.toUpperCase()} 붙여넣기 적용 완료: ${rowsToApply.length}건, OK ${okCount}건, NG ${ngCount}건`, ngCount === 0);
+        }
+
+        function downloadCSV() {
+            const data = [];
+            const header = [
+                'WO', 'Model', 'Module', 'BP', 'Name', 'Inspection',
+                'No', 'Check Item', 'Bolt Size', 'Point', 'Image Path',
+                'Spec', 'Unit', 'Min', 'Max',
+                'PM1 Value', 'PM1 Result', 'PM1 Source', 'PM1 Time',
+                'PM2 Value', 'PM2 Result', 'PM2 Source', 'PM2 Time',
+                'PM3 Value', 'PM3 Result', 'PM3 Source', 'PM3 Time'
+            ];
+            data.push(header);
+
+            torqueRows.forEach(row => {
+                data.push([
+                    entryData?.wo || '', entryData?.model || '', entryData?.module || '', entryData?.bp || '', entryData?.name || '', entryData?.inspectionType || '',
+                    row.no, row.item, row.boltSize, row.point, row.imagePath || '',
+                    row.specValue, row.unit, row.minValue, row.maxValue,
+                    row.measurements.pm1.value ?? '', row.measurements.pm1.result, row.measurements.pm1.source ?? '', row.measurements.pm1.measuredAt ?? '',
+                    row.measurements.pm2.value ?? '', row.measurements.pm2.result, row.measurements.pm2.source ?? '', row.measurements.pm2.measuredAt ?? '',
+                    row.measurements.pm3.value ?? '', row.measurements.pm3.result, row.measurements.pm3.source ?? '', row.measurements.pm3.measuredAt ?? ''
+                ]);
+            });
+
+            const csvText = data.map(row => row.map(csvEscape).join(',')).join('\n');
+            const bom = '\uFEFF';
+            const blob = new Blob([bom + csvText], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const filename = `${buildOutputBaseName()}_${formatDateForFile()}.csv`;
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            showSheetResult(`CSV 파일을 내보냈습니다: ${filename}`, true);
+        }
+
+        function csvEscape(value) {
+            const text = String(value ?? '');
+            if (text.includes(',') || text.includes('"') || text.includes('\n')) return '"' + text.replace(/"/g, '""') + '"';
+            return text;
+        }
+
+        function printSheet() {
+            updateMetrics();
+            renderPrintMergedTable();
+
+            const originalTitle = document.title;
+            const printTitle = buildOutputBaseName();
+            document.title = printTitle;
+
+            window.print();
+
+            setTimeout(() => {
+                document.title = originalTitle;
+            }, 1000);
+        }
+
+        function formatDateForFile() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            return `${y}${m}${d}_${hh}${mm}`;
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function bindEvents() {
+            document.getElementById('searchBtn').addEventListener('click', searchWO);
+            document.getElementById('sampleBtn').addEventListener('click', fillSample);
+            document.getElementById('resetBtn').addEventListener('click', resetForm);
+            document.getElementById('restoreWorkBtn').addEventListener('click', restoreSavedWork);
+            document.getElementById('clearSavedWorkBtn').addEventListener('click', clearSavedWork);
+            document.getElementById('saveBtn').addEventListener('click', saveFormData);
+            document.getElementById('nextBtn').addEventListener('click', goSheet);
+            document.getElementById('backBtn').addEventListener('click', () => location.href = 'dashboard.html');
+            document.getElementById('backToEntryBtn').addEventListener('click', goEntry);
+
+            [woInput, modelInput, moduleInput, bpInput, nameInput, fixtureInput, stationInput, memoInput].forEach(el => {
+                el.addEventListener('input', function () {
+                    updateEntrySummary();
+                    scheduleAutoSave('entry');
+                });
+            });
+
+            woInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter') { e.preventDefault(); searchWO(); }
+            });
+
+            manualValueInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter') { e.preventDefault(); applyManualMeasurement(); }
+            });
+
+            document.getElementById('manualApplyBtn').addEventListener('click', applyManualMeasurement);
+            document.getElementById('prevPointBtn').addEventListener('click', movePrevPoint);
+            document.getElementById('nextPointBtn').addEventListener('click', moveNextPoint);
+            document.getElementById('clearPointBtn').addEventListener('click', clearCurrentMeasurement);
+            document.getElementById('markNgBtn').addEventListener('click', markCurrentNg);
+
+            document.getElementById('pasteOpenBtn').addEventListener('click', openPasteModal);
+            document.getElementById('completeBtn').addEventListener('click', completeWork);
+            document.getElementById('unlockBtn').addEventListener('click', unlockWork);
+            document.getElementById('pasteCloseBtn').addEventListener('click', closePasteModal);
+            document.getElementById('pasteSampleBtn').addEventListener('click', fillPasteSample);
+            document.getElementById('pastePreviewBtn').addEventListener('click', renderPastePreview);
+            document.getElementById('pasteApplyBtn').addEventListener('click', applyPastePreviewRows);
+
+            [pasteParseMode, pasteStartMode, pasteOverwriteMode, pasteColumnNo].forEach(el => {
+                el.addEventListener('change', () => { lastPastePreviewRows = []; pastePreviewBox.style.display = 'none'; });
+                el.addEventListener('input', () => { lastPastePreviewRows = []; pastePreviewBox.style.display = 'none'; });
+            });
+
+            document.getElementById('csvBtn').addEventListener('click', downloadCSV);
+            document.getElementById('printBtn').addEventListener('click', printSheet);
+
+            pasteModal.addEventListener('click', e => {
+                if (e.target === pasteModal) closePasteModal();
+            });
+        }
+
+        function init() {
+            setHeaderDate();
+            bindEntryToggle();
+            bindPmButtons();
+            bindEvents();
+            updateEntrySummary();
+            renderTorqueTable();
+            updateCurrentPoint();
+            updateMetrics();
+            updateCompletionUI();
+
+            if (hasSavedWork()) {
+                const savedAt = localStorage.getItem(STORAGE_KEYS.savedAt);
+                updateAutoSaveStatus(`저장된 작업 있음: ${formatDateTime(savedAt)} · [이전 작업 불러오기]를 누르세요.`, true);
+            } else {
+                updateAutoSaveStatus('저장된 작업 없음', false);
+            }
+
+            window.addEventListener('beforeunload', function () {
+                const currentEntry = getFormData();
+                const hasCurrentWork = !!currentEntry.wo || sheetScreen.classList.contains('active');
+                if (hasCurrentWork) {
+                    autoSaveWork(sheetScreen.classList.contains('active') ? 'sheet' : 'entry');
+                }
+            });
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

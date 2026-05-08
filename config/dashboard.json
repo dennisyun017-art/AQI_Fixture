@@ -1,7 +1,7 @@
 {
   "title": "AQI (Assembly Quality Inspection) System",
   "subtitle": "PSK Group",
-  "version": "v0.2.1",
+  "version": "v0.2.2",
   "lastModified": "2026-05-08",
   "menus": [
     {
@@ -26,7 +26,7 @@
       "label": "Torque Check",
       "desc": "토크 체결값 측정 및 기록",
       "color": "#1A3A5C",
-      "enabled": false
+      "enabled": true
     },
     {
       "id": "leak",

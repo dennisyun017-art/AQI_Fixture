@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-<!--
+  <!--
 ============================================
 파일명  : dashboard.html
 작성일  : 2026-05-08
@@ -19,21 +20,27 @@ v0.2.1  2026-05-08  상단 브랜드/시스템명 변경 및 dashboard.json 메�
   <title>AQI (Assembly Quality Inspection) System — PSK Group</title>
   <style>
     /* ===== 리셋 ===== */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     /* ===== CSS 변수 ===== */
     :root {
-      --purple:      #6B21A8;
+      --purple: #6B21A8;
       --purple-dark: #4C1D95;
-      --purple-mid:  #7C3AED;
-      --accent:      #C9951A;
-      --bg:          #F4F6F9;
-      --surface:     #FFFFFF;
-      --border:      #E2E8F0;
-      --text:        #1E293B;
-      --text-sub:    #64748B;
-      --radius:      14px;
-      --shadow:      0 2px 12px rgba(0,0,0,0.07);
+      --purple-mid: #7C3AED;
+      --accent: #C9951A;
+      --bg: #F4F6F9;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --text: #1E293B;
+      --text-sub: #64748B;
+      --radius: 14px;
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
     }
 
     body {
@@ -72,13 +79,13 @@ v0.2.1  2026-05-08  상단 브랜드/시스템명 변경 및 dashboard.json 메�
     .top-bar-divider {
       width: 1px;
       height: 20px;
-      background: rgba(255,255,255,0.35);
+      background: rgba(255, 255, 255, 0.35);
     }
 
     .top-bar-title {
       font-size: 14px;
       font-weight: 600;
-      color: rgba(255,255,255,0.92);
+      color: rgba(255, 255, 255, 0.92);
       white-space: nowrap;
     }
 
@@ -87,12 +94,12 @@ v0.2.1  2026-05-08  상단 브랜드/시스템명 변경 및 dashboard.json 메�
       align-items: center;
       gap: 16px;
       font-size: 12px;
-      color: rgba(255,255,255,0.8);
+      color: rgba(255, 255, 255, 0.8);
     }
 
     .top-bar-version {
-      background: rgba(255,255,255,0.18);
-      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       padding: 3px 10px;
       border-radius: 20px;
       font-size: 11px;
@@ -107,7 +114,7 @@ v0.2.1  2026-05-08  상단 브랜드/시스템명 변경 및 dashboard.json 메�
       align-items: center;
       padding: 0 28px;
       gap: 4px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .tab-item {
@@ -117,7 +124,7 @@ v0.2.1  2026-05-08  상단 브랜드/시스템명 변경 및 dashboard.json 메�
       padding: 12px 18px;
       font-size: 13px;
       font-weight: 600;
-      color: rgba(255,255,255,0.6);
+      color: rgba(255, 255, 255, 0.6);
       cursor: pointer;
       border-bottom: 3px solid transparent;
       transition: color 0.2s, border-color 0.2s;
@@ -125,7 +132,7 @@ v0.2.1  2026-05-08  상단 브랜드/시스템명 변경 및 dashboard.json 메�
     }
 
     .tab-item:hover {
-      color: rgba(255,255,255,0.9);
+      color: rgba(255, 255, 255, 0.9);
     }
 
     .tab-item.active {
@@ -180,14 +187,19 @@ v0.2.1  2026-05-08  상단 브랜드/시스템명 변경 및 dashboard.json 메�
     }
 
     @keyframes cardIn {
-      to { opacity: 1; transform: translateY(0); }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* 카드 상단 컬러 라인 */
     .menu-card::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0;
+      top: 0;
+      left: 0;
+      right: 0;
       height: 4px;
       background: var(--card-color, var(--purple));
       border-radius: var(--radius) var(--radius) 0 0;
@@ -195,7 +207,7 @@ v0.2.1  2026-05-08  상단 브랜드/시스템명 변경 및 dashboard.json 메�
 
     .menu-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 10px 32px rgba(0,0,0,0.11);
+      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.11);
       border-color: var(--card-color, var(--purple));
     }
 
@@ -278,7 +290,10 @@ v0.2.1  2026-05-08  상단 브랜드/시스템명 변경 및 dashboard.json 메�
       transition: opacity 0.35s;
     }
 
-    .loading.hide { opacity: 0; pointer-events: none; }
+    .loading.hide {
+      opacity: 0;
+      pointer-events: none;
+    }
 
     .loading-spinner {
       width: 32px;
@@ -289,9 +304,16 @@ v0.2.1  2026-05-08  상단 브랜드/시스템명 변경 및 dashboard.json 메�
       animation: spin 0.7s linear infinite;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
-    .loading-text { font-size: 13px; color: var(--text-sub); }
+    .loading-text {
+      font-size: 13px;
+      color: var(--text-sub);
+    }
 
     /* ===== 에러 ===== */
     .error-notice {
@@ -304,7 +326,10 @@ v0.2.1  2026-05-08  상단 브랜드/시스템명 변경 및 dashboard.json 메�
       color: #B91C1C;
       display: none;
     }
-    .error-notice.show { display: block; }
+
+    .error-notice.show {
+      display: block;
+    }
 
     /* ===== 푸터 ===== */
     .footer {
@@ -321,23 +346,39 @@ v0.2.1  2026-05-08  상단 브랜드/시스템명 변경 및 dashboard.json 메�
 
     /* ===== 반응형 ===== */
     @media (max-width: 900px) {
-      .menu-grid { grid-template-columns: repeat(2, 1fr); }
-      .top-bar-title { font-size: 13px; }
+      .menu-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .top-bar-title {
+        font-size: 13px;
+      }
     }
 
     @media (max-width: 600px) {
-      body { min-width: 0; }
-      .menu-grid { grid-template-columns: 1fr; }
-      .main { padding: 20px 16px 40px; }
+      body {
+        min-width: 0;
+      }
+
+      .menu-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .main {
+        padding: 20px 16px 40px;
+      }
+
       .top-bar {
         padding: 0 16px;
       }
+
       .top-bar-title {
         display: none;
       }
     }
   </style>
 </head>
+
 <body>
 
   <!-- 로딩 -->
@@ -395,12 +436,12 @@ v0.2.1  2026-05-08  상단 브랜드/시스템명 변경 및 dashboard.json 메�
 
     // 화면 URL 매핑 (id → 파일명) — 화면 추가 시 여기만 수정
     const SCREEN_MAP = {
-      defect:   'issue.html',
+      defect: 'issue.html',
       standard: 'standard.html',
-      torque:   'torque.html',
-      leak:     'leak.html',
-      visual:   'visual.html',
-      report:   'report.html',
+      torque: 'torque.html',
+      leak: 'leak.html',
+      visual: 'visual.html',
+      report: 'report.html',
     };
     /* ==================================== */
 
@@ -414,12 +455,12 @@ v0.2.1  2026-05-08  상단 브랜드/시스템명 변경 및 dashboard.json 메�
 
     // 기본 메뉴 (dashboard.json 로드 실패 시 폴백)
     const DEFAULT_MENUS = [
-      { id: 'defect',   icon: '🔍', label: 'Issue DB',          desc: 'Issue 사례 조회 및 작업 전 체크리스트', color: '#C0392B', enabled: true  },
-      { id: 'standard', icon: '📋', label: 'Working Spec',     desc: 'Critical Defect 공정 표준서',           color: '#2980B9', enabled: false },
-      { id: 'torque',   icon: '🔧', label: 'Torque Check',      desc: '토크 체결값 측정 및 기록',             color: '#1A3A5C', enabled: false },
-      { id: 'leak',     icon: '💨', label: 'Leak Check',        desc: 'Leak Check 값 측정 및 기록',           color: '#1E8C45', enabled: false },
-      { id: 'visual',   icon: '👁️', label: 'Visual Check',      desc: '외관 검사 기록 및 이력 관리',           color: '#7B3FA0', enabled: false },
-      { id: 'report',   icon: '📊', label: 'Automated Report',  desc: '자동 보고서 생성 및 다운로드',           color: '#E67E22', enabled: false },
+      { id: 'defect', icon: '🔍', label: 'Issue DB', desc: 'Issue 사례 조회 및 작업 전 체크리스트', color: '#C0392B', enabled: true },
+      { id: 'standard', icon: '📋', label: 'Working Spec', desc: 'Critical Defect 공정 표준서', color: '#2980B9', enabled: false },
+      { id: 'torque', icon: '🔧', label: 'Torque Check', desc: '토크 체결값 측정 및 기록', color: '#1A3A5C', enabled: true },
+      { id: 'leak', icon: '💨', label: 'Leak Check', desc: 'Leak Check 값 측정 및 기록', color: '#1E8C45', enabled: false },
+      { id: 'visual', icon: '👁️', label: 'Visual Check', desc: '외관 검사 기록 및 이력 관리', color: '#7B3FA0', enabled: false },
+      { id: 'report', icon: '📊', label: 'Automated Report', desc: '자동 보고서 생성 및 다운로드', color: '#E67E22', enabled: false },
     ];
 
     // 날짜 표시
@@ -516,4 +557,5 @@ v0.2.1  2026-05-08  상단 브랜드/시스템명 변경 및 dashboard.json 메�
     loadDashboard();
   </script>
 </body>
+
 </html>
