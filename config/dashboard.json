@@ -1,8 +1,8 @@
 {
   "title": "AQI System",
   "subtitle": "PSK Holdings — 제조부문",
-  "version": "v0.1.0",
-  "lastModified": "2026-04-29",
+  "version": "v0.2.0",
+  "lastModified": "2026-05-08",
   "menus": [
     {
       "id": "defect",
@@ -34,6 +34,22 @@
       "label": "Leak Check",
       "desc": "Leak Check 값 측정 및 기록",
       "color": "#1E8C45",
+      "enabled": false
+    },
+    {
+      "id": "visual",
+      "icon": "👁️",
+      "label": "Visual Check",
+      "desc": "외관 검사 기록 및 이력 관리",
+      "color": "#7B3FA0",
+      "enabled": false
+    },
+    {
+      "id": "report",
+      "icon": "📊",
+      "label": "Automated Report",
+      "desc": "자동 보고서 생성 및 다운로드",
+      "color": "#E67E22",
       "enabled": false
     }
   ]
